@@ -28,9 +28,7 @@ const transitions = [
   [ "colourDistance", function () {
     return { interpolationPower: 6 * Math.random() };
   } ],
-  [ "swap", function () {
-    return { depth: 1 + 4 * Math.random(), perspective: 0.9 + Math.random() * Math.random() };
-  } ],
+  "swap",
   [ "doorway", function () {
     return { perspective: Math.random() * Math.random(), depth: 1 + 10 * Math.random() * Math.random() };
   } ],
@@ -40,7 +38,6 @@ const transitions = [
   "TilesScanline",
   "Dreamy",
   "Swirl",
-  "HSVfade",
   "burn",
   "Radial",
   [ "ripple", function () {
@@ -53,7 +50,7 @@ const transitions = [
   ["ButterflyWaveScrawler", function () {
     return {
       amplitude: Math.random(),
-      waves: 100 * Math.random() * Math.random(),
+      waves: 50 * Math.random() * Math.random(),
       colorSeparation: 0.8 * Math.random() * Math.random()
     };
   } ],
