@@ -81,7 +81,8 @@ class AdvancedEffects extends React.Component {
           width={viewportW}
           height={transitionH}
           images={images.slice(2)}
-          duration={3}
+          pauseDuration={0.5}
+          transitionDuration={1.5}
         />
 
       </View>

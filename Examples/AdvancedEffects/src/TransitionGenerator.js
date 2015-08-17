@@ -12,8 +12,6 @@ const transitions = [
     return { strength: 0.5 * Math.random() };
   } ],
   "glitch displace",
-  "crosshatch",
-  "PageCurl",
   [ "Mosaic", function () {
     const dx = Math.round(Math.random() * 6 - 3), dy = Math.round(Math.random() * 6 - 3);
     if (dx===0 && dy===0) dy = -1;
@@ -38,23 +36,12 @@ const transitions = [
   } ],
   "Star Wipe",
   "pinwheel",
-  [ "Slide", function () {
-    const choices = [
-      { translateX: 0, translateY: -1 },
-      { translateX: 0, translateY: 1 },
-      { translateX: -1, translateY: 0 },
-      { translateX: 1, translateY: 0 }
-    ];
-    return choices[Math.floor(choices.length * Math.random())];
-  } ],
   "SimpleFlip",
   "TilesScanline",
   "Dreamy",
   "Swirl",
   "HSVfade",
-  [ "burn", function () {
-    return { color: [0,0,0].map(Math.random) };
-  } ],
+  "burn",
   "Radial",
   [ "ripple", function () {
     return {
@@ -74,7 +61,7 @@ const transitions = [
     return { flashIntensity: 4 * Math.random() };
   } ],
   [ "randomsquares", function () {
-    const size = Math.round(4 + 30 * Math.random());
+    const size = Math.round(4 + 20 * Math.random());
     return {
       size: [ size, size ],
       smoothness: Math.random()
@@ -96,10 +83,7 @@ const transitions = [
   } ],
   "circleopen",
   [ "wind", function () {
-    return { size: 0.5 * Math.random() };
-  } ],
-  [ "fadecolor", function () {
-    return { color: [0,0,0].map(Math.random) };
+    return { size: 0.1+0.2 * Math.random() };
   } ]
 ].map(function (obj) {
   let name, genUniforms;
