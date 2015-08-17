@@ -23,7 +23,6 @@ class Slideshow extends React.Component {
     if (currentTransition !== this._currentTransition) {
       this._currentTransition = currentTransition;
       const { name, uniforms } = TransitionGenerator.random();
-      console.log(name);
       this._name = name;
       this._shader = shaders[name];
       this._uniforms = uniforms;

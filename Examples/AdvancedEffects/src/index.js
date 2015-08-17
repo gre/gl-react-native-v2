@@ -18,9 +18,10 @@ class AdvancedEffects extends React.Component {
     this.state = {
       time: 0.02,
       frames: 1,
+      embeddedImage: require("image!Image"),
       images:
        //"MQtLWbD,N8a9CkZ,adCmISK,AedZQ4N,y9qRJR3,brzKTYZ,NSyk07l,EaZiWfn,I1KZdnl,DoQBdzT,slIt2Ww,DA12puU,IYLdRFW,oqmO4Po,T6NaLyI,6XAPrAY,thYzbif,4qmqo3o,8xT2J96,ZCa2pWq,loQfDN2,oabfA68,uOXqDRY,MyyS4vK,fhNYTX4"
-        "ljVkFzQ,ljVkFzQ,qM9BHCy,F7NKlQF,rYcweR7,IE8T6UX,3On9QEu"
+        "wxqlQkh,G2Whuq3,0bUSEBX,giP58XN,iKdXwVm,IvpoR40,zJIxPEo,CKlmtPs,fnMylHI,vGXYiYy,MnOB9Le,YqsZKgc,0BJobQo,Otbz312"
           .split(",")
           .map(id => ({ uri: `http://imgur.com/${id}.jpg` }))
     };
@@ -40,7 +41,7 @@ class AdvancedEffects extends React.Component {
   }
 
   render () {
-    const {time, frames, images} = this.state;
+    const {time, frames, images, embeddedImage} = this.state;
 
     const nbVignettes = 1;
     const imgW = Math.floor(viewportW/nbVignettes);
@@ -64,17 +65,12 @@ class AdvancedEffects extends React.Component {
           height={introH}
         />
 
-        <View style={{ flex: 1, flexWrap: "wrap", flexDirection: "row" }}>
-        {images.slice(0, nbVignettes).map((source, i) =>
-          <Vignette key={i}
-            time={time}
-            width={imgW}
-            height={imgH}
-            i={i}
-            source={source}
-          />
-        )}
-        </View>
+        <Vignette
+          time={time}
+          width={imgW}
+          height={imgH}
+          source={embeddedImage}
+        />
 
         <Slideshow
           time={time}
