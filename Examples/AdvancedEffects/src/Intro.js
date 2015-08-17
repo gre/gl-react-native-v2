@@ -46,13 +46,13 @@ class Intro extends React.Component {
       opaque={false}
       uniforms={{
         time: time,
-        freq: 12 - 9 * Math.sin(time / 7),
-        amp: 0.04 - 0.03 * Math.cos(time / 4),
+        freq: 20 - 14 * Math.sin(time / 7),
+        amp: 0.05 - 0.03 * Math.cos(time / 4),
         colorSeparation: 0.02,
         moving: 1
       }}>
       <GL.Target uniform="texture" style={{ justifyContent: "center" }}>
-        <Text style={{ color: "#00BDF3", fontSize: 24, letterSpacing: -2.0 }}>
+        <Text style={{ color: "#00BDF3", fontSize: 32, letterSpacing: -1.0 }}>
           GL REACT NATIVE
         </Text>
         <View style={{ flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center" }}>

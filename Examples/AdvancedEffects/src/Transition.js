@@ -4,6 +4,7 @@ const GL = require("gl-react-native");
 class Transition extends React.Component {
   render () {
     const { width, height, shader, progress, from, to, uniforms } = this.props;
+    const scale = React.PixelRatio.get();
     return <GL.View
       shader={shader}
       style={{ width, height }}
@@ -12,7 +13,8 @@ class Transition extends React.Component {
         progress,
         from,
         to,
-        ...uniforms
+        ...uniforms,
+        resolution: [ width * scale, height * scale ]
       }}
     />;
   }

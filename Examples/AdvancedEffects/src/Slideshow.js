@@ -1,68 +1,15 @@
 const React = require("react-native");
 const GL = require("gl-react-native");
+const TransitionGenerator = require("./TransitionGenerator");
 const Transition = require("./Transition");
 
-const shaders = GL.Shaders.create({
-  transitionDirectionalWipe: {
-    frag: `
-precision highp float;
-varying vec2 uv;
-uniform sampler2D from;
-uniform sampler2D to;
-uniform float progress;
-uniform vec2 direction;
-uniform float smoothness;
-
-const vec2 center = vec2(0.5, 0.5);
-
-void main() {
-  vec2 v = normalize(direction);
-  v /= abs(v.x)+abs(v.y);
-  float d = v.x * center.x + v.y * center.y;
-  float m = smoothstep(-smoothness, 0.0, v.x * uv.x + v.y * uv.y - (d-0.5+progress*(1.+smoothness)));
-  gl_FragColor = mix(texture2D(to, uv), texture2D(from, uv), m);
-}
-`
-  },
-  transitionRandomSquares: {
-    frag: `
-precision highp float;
-varying vec2 uv;
-uniform sampler2D from;
-uniform sampler2D to;
-uniform float progress;
-uniform ivec2 size;
-uniform float smoothness;
-float rand (vec2 co) {
-  return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-}
-void main() {
-  float r = rand(floor(vec2(size) * uv));
-  float m = smoothstep(0.0, -smoothness, r - (progress * (1.0 + smoothness)));
-  gl_FragColor = mix(texture2D(from, uv), texture2D(to, uv), m);
-}
-    `
-  },
-  transitionWind: {
-    frag: `
-precision highp float;
-varying vec2 uv;
-uniform sampler2D from, to;
-uniform float progress;
-uniform float size;
-float rand (vec2 co) {
-  return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-}
-void main() {
-  float r = rand(vec2(0, uv.y));
-  float m = smoothstep(0.0, -size, uv.x*(1.0-size) + size*r - (progress * (1.0 + size)));
-  gl_FragColor = mix(texture2D(from, uv), texture2D(to, uv), m);
-}
-`
-  }
-});
+const shaders = GL.Shaders.create(TransitionGenerator.shaders);
 
 class Slideshow extends React.Component {
+  constructor (props) {
+    super(props);
+    this._currentTransition = -1;
+  }
   render () {
     const { duration, width, height, time, images } = this.props;
     const slide = time / duration;
@@ -70,7 +17,18 @@ class Slideshow extends React.Component {
     let transitionFrom = images[Math.floor(slide) % images.length];
     let transitionTo = images[Math.floor(slide+1) % images.length];
 
-    let transitionShader, transitionUniforms;
+    const currentTransition = Math.floor(slide);
+    if (currentTransition !== this._currentTransition) {
+      this._currentTransition = currentTransition;
+      const { name, uniforms } = TransitionGenerator.random();
+      this._shader = shaders[name];
+      this._uniforms = uniforms;
+    }
+
+    const transitionShader = this._shader;
+    const transitionUniforms = this._uniforms;
+
+    /*
     switch (Math.floor(slide/4) % 3) {
     case 0:
       transitionShader = shaders.transitionRandomSquares;
@@ -94,6 +52,7 @@ class Slideshow extends React.Component {
       };
       break;
     }
+    */
 
     return <Transition
       width={width}

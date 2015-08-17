@@ -15,9 +15,11 @@ const Shaders = {
     invariant(typeof obj === "object", "config must be an object");
     const result = {};
     for (let key in obj) {
-      // TODO : validate first
+      const shader = obj[key];
+      invariant(typeof shader === "object" && typeof shader.frag === "string",
+      "invalid shader given to Shaders.create(). A valid shader is a { frag: String }");
       const id = _uid ++;
-      GLShadersRegistry.register(id, obj[key]);
+      GLShadersRegistry.register(id, shader);
       result[key] = id;
     }
     return result;
