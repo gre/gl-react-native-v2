@@ -1,0 +1,25 @@
+{
+  "name": "gl-react-native",
+  "version": "0.0.1",
+  "description": "OpenGL bindings for react-native for complex effects on images and components",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "github.com:ProjectSeptemberInc/gl-react-native.git"
+  },
+  "keywords": [
+    "gl",
+    "react-native"
+  ],
+  "author": "Project September <tech@projectseptember.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "react-native": "^0.9.0"
+  },
+  "peerDependencies": {
+    "react-native": "^0.9.0"
+  },
+  "dependencies": {
+    "invariant": "^2.1.0"
+  }
+}
