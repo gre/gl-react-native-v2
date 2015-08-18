@@ -127,6 +127,11 @@ NSString* srcResource (id res)
   [self setNeedsDisplay];
 }
 
+- (void)setTargetIncrement:(NSNumber *)targetIncrement
+{
+  [self setNeedsDisplay];
+}
+
 - (void)setTargetUniforms:(NSArray *)targetUniforms
 {
   _targetUniforms = targetUniforms;

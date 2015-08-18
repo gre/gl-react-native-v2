@@ -45,6 +45,12 @@ Target.propTypes = {
 
 const GLViewNative = requireNativeComponent("GLView", GLView);
 class GLView extends Component {
+
+  constructor (props, context) {
+    super(props, context);
+    this._targetIncrement = 0; // This is a current workaround to force the refresh of targets
+  }
+
   setNativeProps (props) {
     this.refs.native.setNativeProps(props);
   }
@@ -85,7 +91,13 @@ class GLView extends Component {
       });
       return <View style={parentStyle}>
         {targets}
-        <GLViewNative ref="native" {...props} style={nativeStyle} children={undefined} targetUniforms={targetUniforms} />
+        <GLViewNative
+          ref="native"
+          {...props}
+          style={nativeStyle}
+          children={undefined}
+          targetUniforms={targetUniforms}
+          targetIncrement={this._targetIncrement++} />
       </View>;
     }
     else {
