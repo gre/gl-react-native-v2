@@ -2,7 +2,7 @@
 #import "GLUtils.h"
 #import "RCTLog.h"
 
-GLuint compileShader (NSString* shaderString, GLenum shaderType) {
+GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shaderType) {
   
   GLuint shaderHandle = glCreateShader(shaderType);
   
@@ -18,7 +18,7 @@ GLuint compileShader (NSString* shaderString, GLenum shaderType) {
     GLchar messages[256];
     glGetShaderInfoLog(shaderHandle, sizeof(messages), 0, &messages[0]);
     NSString *messageString = [NSString stringWithUTF8String:messages];
-    RCTLogError(@"GL: Shader Failed to compile: %@", messageString);
+    RCTLogError(@"Shader '%@' failed to compile: %@", shaderName, messageString);
     return -1;
   }
   

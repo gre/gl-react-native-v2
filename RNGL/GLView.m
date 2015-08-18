@@ -69,8 +69,8 @@ RCT_NOT_IMPLEMENTED(-init)
   _textures = textures;
   _textureUnits = textureUnits;
   
-  // use the shader's context (currently it is the same for all shaders)
-  [self setContext:glShader.context];
+  [self setContext:glShader.context]; // use the shader's context (currently it is the same for all shaders)
+  [self setUniforms:_uniforms]; // Ensure uniforms are not set before
   [self setNeedsDisplay];
 }
 

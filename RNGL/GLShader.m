@@ -12,6 +12,7 @@
  */
 @implementation GLShader
 {
+  NSString *_name;
   EAGLContext *_context; // Context related to this shader
   GLuint program; // Program of the shader
   GLuint buffer; // the buffer currently contains 2 static triangles covering the surface
@@ -20,10 +21,11 @@
   NSDictionary *_uniformLocations; // The uniform locations cache
 }
 
-- (instancetype)initWithContext: (EAGLContext*)context withVert:(NSString *)vert withFrag:(NSString *)frag
+- (instancetype)initWithContext: (EAGLContext*)context withName:(NSString *)name withVert:(NSString *)vert withFrag:(NSString *)frag
 {
   self = [super init];
   if (self) {
+    _name = name;
     _context = context;
     _vert = vert;
     _frag = frag;
@@ -41,7 +43,7 @@
 - (bool) ensureContext
 {
   if (![EAGLContext setCurrentContext:_context]) {
-    RCTLogError(@"Failed to set current OpenGL context");
+    RCTLogError(@"Shader '%@': Failed to set current OpenGL context", _name);
     return false;
   }
   return true;
@@ -51,7 +53,7 @@
 {
   if (![self ensureContext]) return;
   if ( glIsProgram(program) != GL_TRUE ){
-    RCTLogError(@"not a program!");
+    RCTLogError(@"Shader '%@': not a program!", _name);
     return;
   }
   glUseProgram(program);
@@ -63,7 +65,7 @@
 - (void) setUniform: (NSString *)name withValue:(id)value
 {
   if ([_uniformLocations objectForKey:name] == nil) {
-    RCTLogError(@"uniform '%@' does not exist", name);
+    RCTLogError(@"Shader '%@': uniform '%@' does not exist", _name, name);
     return;
   }
   GLint location = [_uniformLocations[name] intValue];
@@ -74,7 +76,7 @@
     case GL_FLOAT: {
       NSNumber *v = [RCTConvert NSNumber:value];
       if (!v) {
-        RCTLogError(@"uniform '%@' should be a float", name);
+        RCTLogError(@"Shader '%@': uniform '%@' should be a float", _name, name);
         return;
       }
       glUniform1f(location, [v floatValue]);
@@ -84,7 +86,7 @@
     case GL_INT: {
       NSNumber *v = [RCTConvert NSNumber:value];
       if (!v) {
-        RCTLogError(@"uniform '%@' should be a int", name);
+        RCTLogError(@"Shader '%@': uniform '%@' should be a int", _name, name);
         return;
       }
       glUniform1i(location, [v intValue]);
@@ -100,14 +102,14 @@
     case GL_FLOAT_VEC2: {
       NSArray *v = [RCTConvert NSArray:value];
       if (!v || [v count]!=2) {
-        RCTLogError(@"uniform '%@' should be an array of 2 numbers", name);
+        RCTLogError(@"Shader '%@': uniform '%@' should be an array of 2 numbers", _name, name);
         return;
       }
       GLfloat arr[2];
       for (int i=0; i<2; i++) {
         NSNumber *n = [RCTConvert NSNumber: v[i]];
         if (!n) {
-          RCTLogError(@"uniform '%@' array should only contains numbers", name);
+          RCTLogError(@"Shader '%@': uniform '%@' array should only contains numbers", _name, name);
           return;
         }
         arr[i] = [n floatValue];
@@ -119,14 +121,14 @@
     case GL_FLOAT_VEC3: {
       NSArray *v = [RCTConvert NSArray:value];
       if (!v || [v count]!=3) {
-        RCTLogError(@"uniform '%@' should be an array of 3 numbers", name);
+        RCTLogError(@"Shader '%@': uniform '%@' should be an array of 3 numbers", _name, name);
         return;
       }
       GLfloat arr[3];
       for (int i=0; i<3; i++) {
         NSNumber *n = [RCTConvert NSNumber: v[i]];
         if (!n) {
-          RCTLogError(@"uniform '%@' array should only contains numbers", name);
+          RCTLogError(@"Shader '%@': uniform '%@' array should only contains numbers", _name, name);
           return;
         }
         arr[i] = [n floatValue];
@@ -138,14 +140,14 @@
     case GL_FLOAT_VEC4: {
       NSArray *v = [RCTConvert NSArray:value];
       if (!v || [v count]!=4) {
-        RCTLogError(@"uniform '%@' should be an array of 4 numbers", name);
+        RCTLogError(@"Shader '%@': uniform '%@' should be an array of 4 numbers", _name, name);
         return;
       }
       GLfloat arr[4];
       for (int i=0; i<4; i++) {
         NSNumber *n = [RCTConvert NSNumber: v[i]];
         if (!n) {
-          RCTLogError(@"uniform '%@' array should only contains numbers", name);
+          RCTLogError(@"Shader '%@': uniform '%@' array should only contains numbers", _name, name);
           return;
         }
         arr[i] = [n floatValue];
@@ -158,14 +160,14 @@
     case GL_INT_VEC2: {
       NSArray *v = [RCTConvert NSArray:value];
       if (!v || [v count]!=2) {
-        RCTLogError(@"uniform '%@' should be an array of 2 numbers", name);
+        RCTLogError(@"Shader '%@': uniform '%@' should be an array of 2 numbers", _name, name);
         return;
       }
       GLint arr[2];
       for (int i=0; i<2; i++) {
         NSNumber *n = [RCTConvert NSNumber: v[i]];
         if (!n) {
-          RCTLogError(@"uniform '%@' array should only contains numbers", name);
+          RCTLogError(@"Shader '%@': uniform '%@' array should only contains numbers", _name, name);
           return;
         }
         arr[i] = [n intValue];
@@ -178,14 +180,14 @@
     case GL_INT_VEC3: {
       NSArray *v = [RCTConvert NSArray:value];
       if (!v || [v count]!=3) {
-        RCTLogError(@"uniform '%@' should be an array of 3 numbers", name);
+        RCTLogError(@"Shader '%@': uniform '%@' should be an array of 3 numbers", _name, name);
         return;
       }
       GLint arr[3];
       for (int i=0; i<3; i++) {
         NSNumber *n = [RCTConvert NSNumber: v[i]];
         if (!n) {
-          RCTLogError(@"uniform '%@' array should only contains numbers", name);
+          RCTLogError(@"Shader '%@': uniform '%@' array should only contains numbers", _name, name);
           return;
         }
         arr[i] = [n intValue];
@@ -198,14 +200,14 @@
     case GL_INT_VEC4: {
       NSArray *v = [RCTConvert NSArray:value];
       if (!v || [v count]!=4) {
-        RCTLogError(@"uniform '%@' should be an array of 4 numbers", name);
+        RCTLogError(@"Shader '%@': uniform '%@' should be an array of 4 numbers", _name, name);
         return;
       }
       GLint arr[4];
       for (int i=0; i<4; i++) {
         NSNumber *n = [RCTConvert NSNumber: v[i]];
         if (!n) {
-          RCTLogError(@"uniform '%@' array should only contains numbers", name);
+          RCTLogError(@"Shader '%@': uniform '%@' array should only contains numbers", _name, name);
           return;
         }
         arr[i] = [n intValue];
@@ -217,14 +219,14 @@
     case GL_FLOAT_MAT2: {
       NSArray *v = [RCTConvert NSArray:value];
       if (!v || [v count]!=4) {
-        RCTLogError(@"uniform '%@' should be an array of 4 numbers (matrix)", name);
+        RCTLogError(@"Shader '%@': uniform '%@' should be an array of 4 numbers (matrix)", _name, name);
         return;
       }
       GLfloat arr[4];
       for (int i=0; i<4; i++) {
         NSNumber *n = [RCTConvert NSNumber: v[i]];
         if (!n) {
-          RCTLogError(@"uniform '%@' array should only contains numbers", name);
+          RCTLogError(@"Shader '%@': uniform '%@' array should only contains numbers", _name, name);
           return;
         }
         arr[i] = [n floatValue];
@@ -236,14 +238,14 @@
     case GL_FLOAT_MAT3: {
       NSArray *v = [RCTConvert NSArray:value];
       if (!v || [v count]!=9) {
-        RCTLogError(@"uniform '%@' should be an array of 9 numbers (matrix)", name);
+        RCTLogError(@"Shader '%@': uniform '%@' should be an array of 9 numbers (matrix)", _name, name);
         return;
       }
       GLfloat arr[9];
       for (int i=0; i<9; i++) {
         NSNumber *n = [RCTConvert NSNumber: v[i]];
         if (!n) {
-          RCTLogError(@"uniform '%@' array should only contains numbers", name);
+          RCTLogError(@"Shader '%@': uniform '%@' array should only contains numbers", _name, name);
           return;
         }
         arr[i] = [n floatValue];
@@ -255,14 +257,14 @@
     case GL_FLOAT_MAT4: {
       NSArray *v = [RCTConvert NSArray:value];
       if (!v || [v count]!=16) {
-        RCTLogError(@"uniform '%@' should be an array of 16 numbers (matrix)", name);
+        RCTLogError(@"Shader '%@': uniform '%@' should be an array of 16 numbers (matrix)", _name, name);
         return;
       }
       GLfloat arr[16];
       for (int i=0; i<16; i++) {
         NSNumber *n = [RCTConvert NSNumber: v[i]];
         if (!n) {
-          RCTLogError(@"uniform '%@' array should only contains numbers", name);
+          RCTLogError(@"Shader '%@': uniform '%@' array should only contains numbers", _name, name);
           return;
         }
         arr[i] = [n floatValue];
@@ -279,7 +281,7 @@
     }
 
     default:
-      RCTLogError(@"uniform '%@': unsupported type %i", name, type);
+      RCTLogError(@"Shader '%@': uniform '%@': unsupported type %i", _name, name, type);
   }
 }
 
@@ -292,7 +294,7 @@
     GLchar messages[256];
     glGetProgramInfoLog(program, sizeof(messages), 0, &messages[0]);
     NSString *messageString = [NSString stringWithUTF8String:messages];
-    RCTLogError(@"GL: Validation failed %@", messageString);
+    RCTLogError(@"Shader '%@': Validation failed %@", _name, messageString);
   }
 }
 
@@ -325,10 +327,10 @@
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  GLuint vertex = compileShader(_vert, GL_VERTEX_SHADER);
+  GLuint vertex = compileShader(_name, _vert, GL_VERTEX_SHADER);
   if (vertex == -1) return;
 
-  GLuint fragment = compileShader(_frag, GL_FRAGMENT_SHADER);
+  GLuint fragment = compileShader(_name, _frag, GL_FRAGMENT_SHADER);
   if (fragment == -1) return;
 
   program = glCreateProgram();
@@ -342,7 +344,7 @@
     GLchar messages[256];
     glGetProgramInfoLog(program, sizeof(messages), 0, &messages[0]);
     NSString *messageString = [NSString stringWithUTF8String:messages];
-    RCTLogError(@"GL: Linking failed %@", messageString);
+    RCTLogError(@"Shader '%@': Linking failed %@", _name, messageString);
     return;
   }
 

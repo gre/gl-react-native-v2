@@ -1,7 +1,7 @@
 #import <GLKit/GLKit.h>
 #import "ImageData.h"
 
-GLuint compileShader (NSString* shaderString, GLenum shaderType);
+GLuint compileShader (NSString *shaderName, NSString *shaderString, GLenum shaderType);
 
 ImageData* genPixelsEmpty (int width, int height);
 ImageData* genPixelsRandom (int width, int height);

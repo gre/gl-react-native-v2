@@ -11,7 +11,7 @@
 /**
  * Create a new shader with a vertex and fragment
  */
-- (instancetype)initWithContext: (EAGLContext*)context withVert:(NSString *)vert withFrag:(NSString *)frag;
+- (instancetype)initWithContext: (EAGLContext*)context withName:(NSString *)name withVert:(NSString *)vert withFrag:(NSString *)frag;
 
 /**
  * Bind the shader program as the current one

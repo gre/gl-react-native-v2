@@ -19,7 +19,7 @@ const Shaders = {
       invariant(typeof shader === "object" && typeof shader.frag === "string",
       "invalid shader given to Shaders.create(). A valid shader is a { frag: String }");
       const id = _uid ++;
-      GLShadersRegistry.register(id, shader);
+      GLShadersRegistry.register(id, shader, key);
       result[key] = id;
     }
     return result;
