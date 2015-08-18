@@ -111,7 +111,6 @@ GLView.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   uniforms: PropTypes.object,
-  childrenUniform: PropTypes.string,
   opaque: PropTypes.bool
 };
 GLView.defaultProps = {
