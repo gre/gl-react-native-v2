@@ -29,7 +29,8 @@ class Banner extends React.Component {
     const { width, height, time } = this.props;
     return <GL.View
       shader={shaders.banner}
-      style={{ width, height }}
+      width={width}
+      height={height}
       uniforms={{ time: time }}
       opaque={false}
     />;

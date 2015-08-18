@@ -60,7 +60,8 @@ class Vignette extends React.Component {
       onMoveShouldSetResponder={() => true}
       onResponderMove={this.onResponderMove}
       shader={shaders.imageVignette}
-      style={{ width, height }}
+      width={width}
+      height={height}
       opaque={false}
       uniforms={{
         time: time,

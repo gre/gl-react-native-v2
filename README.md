@@ -1,3 +1,14 @@
+# gl-react-native
+
+`gl-react-native` implements OpenGL bindings for react-native.
+
+It lets you implements complex effects on top of images and components
+and in the Virtual DOM descriptive paradigm.
+
+More technically, `gl-react-native` allows you to write a fragment shader that renders either: in a standalone way, using images, or over any UI content.
+
+A React version also exists: [`gl-react`](http://github.com/ProjectSeptemberInc/gl-react).
+
 
 ## Installation
 

@@ -64,16 +64,16 @@ class GLView extends Component {
     if (children) {
       const parentStyle = {
         position: "relative",
-        width: nativeStyle.width,
-        height: nativeStyle.height,
+        width: width,
+        height: height,
         overflow: "hidden"
       };
       const childrenStyle = {
         position: "absolute",
         top: 0,
         left: 0,
-        width: nativeStyle.width,
-        height: nativeStyle.height
+        width: width,
+        height: height
       };
 
       const targetUniforms = [];
@@ -96,8 +96,8 @@ class GLView extends Component {
 GLView.displayName = "GL.View";
 GLView.propTypes = {
   shader: PropTypes.number.isRequired,
-  width: PropTypes.number,
-  height: PropTypes.number,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
   uniforms: PropTypes.object,
   childrenUniform: PropTypes.string,
   opaque: PropTypes.bool

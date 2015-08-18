@@ -42,7 +42,8 @@ class Intro extends React.Component {
     const { time, fps, width, height } = this.props;
     return <GL.View
       shader={shaders.drunkEffect}
-      style={{ width, height }}
+      width={width}
+      height={height}
       opaque={false}
       uniforms={{
         time: time,

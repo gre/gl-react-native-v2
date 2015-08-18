@@ -7,7 +7,8 @@ class Transition extends React.Component {
     const scale = React.PixelRatio.get();
     return <GL.View
       shader={shader}
-      style={{ width, height }}
+      width={width}
+      height={height}
       opaque={false}
       uniforms={{
         progress,
