@@ -13,6 +13,9 @@ const {
 const HelloGL = require("./HelloGL");
 const Saturation = require("./Saturation");
 const HueRotate = require("./HueRotate");
+const PieProgress = require("./PieProgress");
+const OneFingerResponse = require("./OneFingerResponse");
+const AnimatedHelloGL = require("./AnimatedHelloGL");
 
 class Simple extends React.Component {
   constructor (props) {
@@ -20,6 +23,7 @@ class Simple extends React.Component {
     this.state = {
       saturationFactor: 1,
       hue: 0,
+      progress: 0.2,
       text: "and I will return leading the pack"
     };
   }
@@ -29,7 +33,8 @@ class Simple extends React.Component {
     const {
       saturationFactor,
       hue,
-      text
+      text,
+      progress
     } = this.state;
 
     return <ScrollView style={styles.container}>
@@ -43,7 +48,7 @@ class Simple extends React.Component {
           <HelloGL width={256} height={171} />
         </View>
 
-        <Text style={styles.demoTitle}>2. Saturation on an Image</Text>
+        <Text style={styles.demoTitle}>2. Saturate an Image</Text>
         <View style={styles.demo}>
           <Saturation
             width={256}
@@ -52,13 +57,12 @@ class Simple extends React.Component {
             image={{ uri: "http://i.imgur.com/iPKTONG.jpg" }}
           />
         <SliderIOS
-          value={saturationFactor}
           maximumValue={8}
           onValueChange={saturationFactor => this.setState({ saturationFactor })}
         />
         </View>
 
-        <Text style={styles.demoTitle}>3. Hue Rotation on Text + Image</Text>
+        <Text style={styles.demoTitle}>3. Hue Rotate on Text+Image</Text>
         <View style={styles.demo}>
           <HueRotate
             width={256}
@@ -69,7 +73,6 @@ class Simple extends React.Component {
             <Text style={styles.demoText2}>{text}</Text>
           </HueRotate>
           <SliderIOS
-            value={hue}
             maximumValue={2 * Math.PI}
             onValueChange={hue => this.setState({ hue })}
           />
@@ -77,6 +80,34 @@ class Simple extends React.Component {
             style={{ height: 30, borderColor: "#aaa", borderWidth: 1 }}
             onChangeText={text => this.setState({ text })}
             value={text}
+          />
+        </View>
+
+        <Text style={styles.demoTitle}>4. Progress Indicator</Text>
+        <View style={styles.demo}>
+          <PieProgress
+            width={256}
+            height={180}
+            progress={progress}
+          />
+          <SliderIOS
+            onValueChange={progress => this.setState({ progress })}
+          />
+        </View>
+
+        <Text style={styles.demoTitle}>5. Touch Responsive</Text>
+        <View style={styles.demo}>
+          <OneFingerResponse
+            width={256}
+            height={180}
+          />
+        </View>
+
+        <Text style={styles.demoTitle}>6. Animation</Text>
+        <View style={styles.demo}>
+          <AnimatedHelloGL
+            width={256}
+            height={180}
           />
         </View>
 
@@ -100,12 +131,21 @@ const styles = StyleSheet.create({
   demos: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
+    marginLeft: 40,
+    width: 276,
+    marginBottom: 40,
   },
   demoTitle: {
+    marginBottom: 16,
+    fontStyle: "italic",
+    alignSelf: "flex-start",
+    color: "#999",
+    fontWeight: "300",
     fontSize: 20,
-    margin: 5,
-    fontStyle: "italic"
+  },
+  demo: {
+    marginBottom: 64,
+    marginLeft: 20,
   },
   demoText1: {
     position: "absolute",

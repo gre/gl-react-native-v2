@@ -13,7 +13,7 @@ const transitions = [
   } ],
   "glitch displace",
   [ "Mosaic", function () {
-    const dx = Math.round(Math.random() * 6 - 3), dy = Math.round(Math.random() * 6 - 3);
+    let dx = Math.round(Math.random() * 6 - 3), dy = Math.round(Math.random() * 6 - 3);
     if (dx===0 && dy===0) dy = -1;
     return { endx: dx, endy: dy };
   } ],
