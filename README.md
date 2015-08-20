@@ -52,7 +52,7 @@ class HelloGL extends React.Component {
 
 a few steps are required to install `gl-react-native`:
 
-**Install the dependency from your React Native application:**
+**Install the dependency to your React Native application:**
 
 ```
 npm i --save gl-react-native
