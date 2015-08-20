@@ -2,22 +2,21 @@
 
 `gl-react-native` implements OpenGL bindings for react-native.
 
-It lets you implement complex effects on top of images and components
-and in the Virtual DOM descriptive paradigm.
+It lets you implement complex effects over images and components, in the Virtual DOM descriptive paradigm.
 
-More technically, `gl-react-native` allows you to write a fragment shader that covers a View. This shader can render: some graphics/demos, any effects over images, any effects over any UI content.
+More technically, `gl-react-native` allows you to write a [fragment shader](https://www.opengl.org/wiki/Fragment_Shader) that covers a View. The shader can render: generated graphics/demos, effects on top of images, effects over any UI content... anything you can imagine!
 
-A React version also exists: [`gl-react`](http://github.com/ProjectSeptemberInc/gl-react).
+There's also a React version [`gl-react`](http://github.com/ProjectSeptemberInc/gl-react) with the same API.
 
 [![](docs/examples/simple.gif)](./Examples/Simple)[![](docs/examples/advancedeffects.gif)](./Examples/AdvancedEffects)
 
 ## Focus
 
-- **Virtual DOM and immutable** paradigm: OpenGL is a low level imperative and mutable API. This library takes the best of it to expose it in a immutable and descriptive way.
+- **Virtual DOM and immutable** paradigm: OpenGL is a low level imperative and mutable API. This library takes the best of it and exposes it in an immutable, descriptive way.
 - **Performance**
-- **Developer experience**: the application does not crash if developer make mistakes, it uses React Native error message to display GLSL errors and help him developing the effects with Live Reload support.
+- **Developer experience**: the application doesn't crash on bugs - it uses React Native error message to display GLSL errors, with Live Reload support to make experimenting with effects easy.
 - **Uniform bindings**: The library implements binding from the JavaScript objects to the OpenGL GLSL language types (bool, int, float, vec2, vec3, vec4, mat2, mat3, mat4, sampler2D...)
-- **Support for images** as texture uniform.
+- **Support for images** as a texture uniform.
 - **Support for UIView rasterisation** as a texture uniform.
 
 
