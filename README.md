@@ -15,7 +15,7 @@ There's also a React version [`gl-react`](http://github.com/ProjectSeptemberInc/
 - **Virtual DOM and immutable** paradigm: OpenGL is a low level imperative and mutable API. This library takes the best of it and exposes it in an immutable, descriptive way.
 - **Performance**
 - **Developer experience**: the application doesn't crash on bugs - it uses React Native error message to display GLSL errors, with Live Reload support to make experimenting with effects easy.
-- **Uniform bindings**: The library implements binding from the JavaScript objects to the OpenGL GLSL language types (bool, int, float, vec2, vec3, vec4, mat2, mat3, mat4, sampler2D...)
+- **Uniform bindings**: bindings from the JavaScript objects to OpenGL GLSL language types (bool, int, float, vec2, vec3, vec4, mat2, mat3, mat4, sampler2D...)
 - **Support for images** as a texture uniform.
 - **Support for UIView rasterisation** as a texture uniform.
 
