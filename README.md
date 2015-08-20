@@ -9,6 +9,8 @@ More technically, `gl-react-native` allows you to write a fragment shader that c
 
 A React version also exists: [`gl-react`](http://github.com/ProjectSeptemberInc/gl-react).
 
+[![](docs/examples/simple.gif)](./Examples/Simple)[![](docs/examples/advancedeffects.gif)](./Examples/AdvancedEffects)
+
 ## Focus
 
 - **Virtual DOM and immutable** paradigm: OpenGL is a low level imperative and mutable API. This library takes the best of it to expose it in a immutable and descriptive way.
@@ -40,5 +42,6 @@ npm i --save gl-react-native
 - [GLSL.io](http://glsl.io/) and [Diaporama](https://github.com/gre/diaporama)
 - Source code of [React Native](https://github.com/facebook/react-native)
 
-
 ## Documentation
+
+![Index](./docs)
