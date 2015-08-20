@@ -71,4 +71,4 @@ npm i --save gl-react-native
 
 ## Documentation
 
-![Index](./docs)
+...soon... link to gitbooks
