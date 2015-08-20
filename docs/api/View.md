@@ -8,8 +8,10 @@ Renders a "standalone" shader:
 
 ```js
 render () {
-  return <GL.View shader={shaders.myEffect}
-    width={200} height={100} />;
+  return <GL.View
+    shader={shaders.myEffect}
+    width={200}
+    height={100} />;
 }
 ```
 
@@ -17,8 +19,10 @@ Renders a shader with uniform parameters:
 
 ```js
 render () {
-  return <GL.View shader={shaders.myEffect2}
-    width={200} height={100}
+  return <GL.View
+    shader={shaders.myEffect2}
+    width={200}
+    height={100}
     uniforms={{
       floatValue: 0.5,
       vec3Value: [ 1, 0.5, 0.5 ]
@@ -35,8 +39,10 @@ Renders a shader with an image (texture):
 
 ```js
 render () {
-  return <GL.View shader={shaders.myEffect3}
-    width={200} height={100}
+  return <GL.View
+    shader={shaders.myEffect3}
+    width={200}
+    height={100}
     uniforms={{
       textureName: {{ uri: "...url" }} // RN convention
     }} />;
@@ -50,10 +56,10 @@ render () {
 
 ## Props
 
-- **`shader`** *id created by GL.Shaders.create* **(required)**: The shader to use for rendering the `GL.View`.
-- **`width`** and **`height`** *Number* **(required)**: the size of the view.
-- **`uniforms`**: an object that contains all uniform parameters to send to the shader. The key is the uniform name and the value is whatever value that makes sense for the uniform's type (see below).
-- **`opaque`**: specify if the view should be opaque. By default, it is true, meaning that the GL View won't support texture opacity and alpha channel.
+- **`shader`** *(id created by GL.Shaders.create)* **(required)**: The shader to use for rendering the `GL.View`.
+- **`width`** and **`height`** *(Number)* **(required)**: the size of the view.
+- **`uniforms`** *(object)*: an object that contains all uniform parameters to send to the shader. The key is the uniform name and the value is whatever value that makes sense for the uniform's type (see below).
+- **`opaque`** *(bool)*: specify if the view should be opaque. By default, it is true, meaning that the GL View won't support texture opacity and alpha channel.
 
 ## Uniform types
 
