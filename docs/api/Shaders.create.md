@@ -22,7 +22,7 @@ void main () {
 ```
 
 There are two kinds of OpenGL Shaders: vertex and fragment shaders.
-The vertex shader iterates over polygons and computes a position, the fragment shaders iterates over pixels and computes a color.
+The vertex shader iterates over polygons and computes pixel positions, the fragment shaders iterates over pixels and computes a color.
 
 In current version of `gl-react-native`, the vertex shader is implemented for you
 and you only have to implement the fragment shader.
