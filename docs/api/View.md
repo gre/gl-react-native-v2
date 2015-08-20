@@ -60,6 +60,7 @@ render () {
 - **`width`** and **`height`** *(Number)* **(required)**: the size of the view.
 - **`uniforms`** *(object)*: an object that contains all uniform parameters to send to the shader. The key is the uniform name and the value is whatever value that makes sense for the uniform's type (see below).
 - **`opaque`** *(bool)*: specify if the view should be opaque. By default, it is true, meaning that the GL View won't support texture opacity and alpha channel.
+- **...any other props** get directly passed to the underlying view.
 
 ## Uniform types
 
