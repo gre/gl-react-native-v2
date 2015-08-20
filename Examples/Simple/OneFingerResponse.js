@@ -2,7 +2,7 @@ const React = require("react-native");
 const GL = require("gl-react-native");
 
 const shaders = GL.Shaders.create({
-  pieProgress: {
+  oneFingerResponse: {
     frag: `
 precision mediump float;
 varying vec2 uv;
@@ -20,7 +20,7 @@ void main () {
   }
 });
 
-class PieProgress extends React.Component {
+class OneFingerResponse extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -65,10 +65,10 @@ class PieProgress extends React.Component {
       onResponderTerminate={this.onTouchEnd}
       width={width}
       height={height}
-      shader={shaders.pieProgress}
+      shader={shaders.oneFingerResponse}
       uniforms={{ pressed, position }}
     />;
   }
 }
 
-module.exports = PieProgress;
+module.exports = OneFingerResponse;
