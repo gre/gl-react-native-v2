@@ -2,8 +2,6 @@
 
 OpenGL bindings for react-native to implement complex effects over images and components, in VDOM descriptive paradigm.
 
-It lets you implement complex effects over images and components, in the Virtual DOM descriptive paradigm.
-
 More technically, `gl-react-native` allows you to write a [fragment shader](https://www.opengl.org/wiki/Fragment_Shader) that covers a View. The shader can render: generated graphics/demos, effects on top of images, effects over any UI content... anything you can imagine!
 
 **There's also a React version [`gl-react`](http://github.com/ProjectSeptemberInc/gl-react) with the same API.**
