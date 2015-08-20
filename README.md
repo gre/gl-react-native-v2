@@ -71,4 +71,4 @@ npm i --save gl-react-native
 
 ## Documentation
 
-...soon... link to gitbooks
+[**Gitbook**](http://projectseptemberinc.gitbooks.io/gl-react-native/content/)
