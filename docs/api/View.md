@@ -67,7 +67,7 @@ render () {
 Here is the correspondance of GLSL and JavaScript types.
 
 - `int`, `float`, `bool` : Number (e.g: `42`).
-- `sampler2D` : an object with an `uri` (`require("image!id")` is also supported), exactly like the `source` prop of `React.Image`.
+- `sampler2D` : either the image URL (String) OR an Object with an `uri` (`require("image!id")` is also supported), exactly like the `source` prop of `React.Image`.
 - `vecN`,`ivecN`,`bvecN` where N is {2,3,4} : an array of N Number (e.g: `[1, 2, 3.5]` for a `vec3`)
 
 Complex struct types and uniform array **are not** currently supported.

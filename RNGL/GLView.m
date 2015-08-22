@@ -76,9 +76,14 @@ RCT_NOT_IMPLEMENTED(-init)
 
 NSString* srcResource (id res)
 {
-  BOOL isStatic = [RCTConvert BOOL:res[@"isStatic"]];
-  NSString *src = [RCTConvert NSString:res[@"path"]];
-  if (!src || isStatic) src = [RCTConvert NSString:res[@"uri"]];
+  NSString *src;
+  if ([res isKindOfClass:[NSString class]]) {
+    src = [RCTConvert NSString:res];
+  } else {
+    BOOL isStatic = [RCTConvert BOOL:res[@"isStatic"]];
+    src = [RCTConvert NSString:res[@"path"]];
+    if (!src || isStatic) src = [RCTConvert NSString:res[@"uri"]];
+  }
   return src;
 }
 
