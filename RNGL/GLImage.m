@@ -1,17 +1,17 @@
 
-#import "GLReactImage.h"
-#import "GLUtils.h"
-#import "ImageData.h"
+#import "GLImage.h"
+#import "GLImageData.h"
 #import "RCTBridge.h"
 #import "RCTImageLoader.h"
 #import "RCTLog.h"
+#import "GLTexture.h"
 
-
-@implementation GLReactImage
+@implementation GLImage
 {
   RCTBridge *_bridge; // React's bridge allow to access the imageLoader
   UIImage *_image; // The currently loaded image (nil if no image fully loaded yet)
-  ImageData *_data; // Cache of the _data related to this image (computed by getImageData)
+  GLImageData *_data; // Cache of the data related to this image (computed by getImageData)
+  GLTexture *_texture; // Cache of the texture
   void (^_onload)(void); // called everytime an image loads
   RCTImageLoaderCancellationBlock _loading; // the current loading cancellation function
 }
@@ -23,6 +23,7 @@
     _onload = onload;
     _image = nil;
     _loading = nil;
+    _texture = [[GLTexture alloc] init];
   }
   return self;
 }
@@ -34,6 +35,7 @@
   _onload = nil;
   _loading = nil;
   _bridge = nil;
+  _texture = nil;
 }
 
 RCT_NOT_IMPLEMENTED(-init)
@@ -44,17 +46,23 @@ RCT_NOT_IMPLEMENTED(-init)
   _data = nil;
 }
 
-- (ImageData *) getImageData
+- (GLTexture *) getTexture
 {
-  if (!_data) {
-    _data = genPixelsWithImage(_image);
+  if (_image) {
+    if (!_data) {
+      _data = genPixelsWithImage(_image);
+    }
+    [_texture setPixels:_data];
   }
-  return _data;
+  else {
+    [_texture setPixelsEmpty];
+  }
+  return _texture;
 }
 
 - (void)setSrc:(NSString *)src
 {
-  if (![src isEqual:_src]) {
+  if (![src isEqualToString:_src]) {
     _src = [src copy];
     [self reloadImage];
   }

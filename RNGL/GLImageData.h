@@ -1,6 +1,6 @@
 #import <GLKit/GLKit.h>
 
-@interface ImageData: NSObject
+@interface GLImageData: NSObject
 
 @property (nonatomic) GLubyte *data;
 @property (nonatomic) int width;

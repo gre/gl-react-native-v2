@@ -3,8 +3,30 @@
 #import "RCTBridgeModule.h"
 #import "RCTLog.h"
 #import "RCTConvert.h"
-#import "GLUtils.h"
 #import "GLShader.h"
+
+GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shaderType) {
+  
+  GLuint shaderHandle = glCreateShader(shaderType);
+  
+  const char * shaderStringUTF8 = [shaderString UTF8String];
+  int shaderStringLength = (int) [shaderString length];
+  glShaderSource(shaderHandle, 1, &shaderStringUTF8, &shaderStringLength);
+  
+  glCompileShader(shaderHandle);
+  
+  GLint compileSuccess;
+  glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &compileSuccess);
+  if (compileSuccess == GL_FALSE) {
+    GLchar messages[256];
+    glGetShaderInfoLog(shaderHandle, sizeof(messages), 0, &messages[0]);
+    NSString *messageString = [NSString stringWithUTF8String:messages];
+    RCTLogError(@"Shader '%@' failed to compile: %@", shaderName, messageString);
+    return -1;
+  }
+  
+  return shaderHandle;
+}
 
 /**
  * a GLShader represents the atomic component of GL React Native.
