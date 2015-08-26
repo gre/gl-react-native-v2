@@ -139,7 +139,7 @@ NSString* srcResource (id res)
             }
             if (image == nil) {
               image = [[GLImage alloc] initWithBridge:_bridge withOnLoad:^{
-                [self requestSyncData];
+                [self setNeedsDisplay];
               }];
               image.src = src;
               images[src] = image;
