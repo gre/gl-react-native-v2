@@ -37,7 +37,7 @@ class HelloGL extends GL.Component {
 }
 ```
 
-![](imgs/hellogl.jpg)
+![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/imgs/hellogl.jpg)
 
 ## Installation
 
@@ -51,7 +51,7 @@ npm i --save gl-react-native
 
 **Configure your React Native Application:**
 
-![](imgs/install-steps.png)
+![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/imgs/install-steps.png)
 
 
 ## Influence / Credits
