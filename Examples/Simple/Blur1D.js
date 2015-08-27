@@ -2,12 +2,12 @@ const React = require("react-native");
 const GL = require("gl-react-native");
 
 const shaders = GL.Shaders.create({
-  blurX: {
+  blur1D: {
     frag: `
 precision highp float;
 varying vec2 uv;
-uniform sampler2D image;
-uniform float factor;
+uniform sampler2D t;
+uniform vec2 direction;
 uniform vec2 resolution;
 
 // from https://github.com/Jam3/glsl-fast-gaussian-blur
@@ -27,26 +27,26 @@ vec4 blur13(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
 }
 
 void main () {
-  gl_FragColor = blur13(image, uv, resolution, vec2(factor, 0.0));
+  gl_FragColor = blur13(t, uv, resolution, direction);
 }
     `
   }
 });
 
-class BlurX extends React.Component {
+class Blur1D extends GL.Component {
   render () {
-    const { width, height, factor, children } = this.props;
+    const { width, height, direction, children } = this.props;
     return <GL.View
-      shader={shaders.blurX}
+      shader={shaders.blur1D}
       width={width}
       height={height}
       uniforms={{
-        factor,
+        direction,
         resolution: [ width, height ]
       }}>
-      <GL.Target uniform="image">{children}</GL.Target>
+      <GL.Target uniform="t">{children}</GL.Target>
     </GL.View>;
   }
 }
 
-module.exports = BlurX;
+module.exports = Blur1D;

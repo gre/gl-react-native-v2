@@ -16,6 +16,7 @@ const HueRotate = require("./HueRotate");
 const PieProgress = require("./PieProgress");
 const OneFingerResponse = require("./OneFingerResponse");
 const AnimatedHelloGL = require("./AnimatedHelloGL");
+const Blur = require("./Blur");
 
 class Simple extends React.Component {
   constructor (props) {
@@ -23,7 +24,8 @@ class Simple extends React.Component {
     this.state = {
       saturationFactor: 1,
       hue: 0,
-      progress: 0.2,
+      progress: 0,
+      factor: 0,
       text: "and I will return leading the pack"
     };
   }
@@ -34,7 +36,8 @@ class Simple extends React.Component {
       saturationFactor,
       hue,
       text,
-      progress
+      progress,
+      factor
     } = this.state;
 
     return <ScrollView style={styles.container}>
@@ -109,6 +112,16 @@ class Simple extends React.Component {
             width={256}
             height={180}
           />
+        </View>
+
+        <Text style={styles.demoTitle}>7. Blur (2-pass)</Text>
+        <View style={styles.demo}>
+          <Blur width={256} height={180} factor={factor}>
+            http://i.imgur.com/3On9QEu.jpg
+          </Blur>
+          <SliderIOS
+            maximumValue={2}
+            onValueChange={factor => this.setState({ factor })} />
         </View>
 
       </View>

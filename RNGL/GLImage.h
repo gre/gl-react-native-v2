@@ -1,8 +1,8 @@
 
 #import "RCTBridge.h"
-#import "ImageData.h"
+#import "GLTexture.h"
 
-@interface GLReactImage: NSObject
+@interface GLImage: NSObject
 
 @property (nonatomic, copy) NSString *src;
 @property (nonatomic) UIImage *image;
@@ -10,6 +10,6 @@
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge withOnLoad:(void (^)(void))onload NS_DESIGNATED_INITIALIZER;
 
-- (ImageData *) getImageData;
+- (GLTexture *) getTexture;
 
 @end

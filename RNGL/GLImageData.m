@@ -1,8 +1,10 @@
 
-#import "ImageData.h"
+#import "GLImageData.h"
+
+// TODO: rename to GLImageData
 
 // This structure aims to be used in an immutable way
-@implementation ImageData
+@implementation GLImageData
 {
   GLubyte *_data;
   int _width;
