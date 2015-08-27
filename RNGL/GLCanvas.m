@@ -61,6 +61,13 @@ NSString* srcResource (id res)
   return src;
 }
 
+- (void)setRenderId:(NSNumber *)renderId
+{
+  if (_nbTargets > 0) {
+    [self setNeedsDisplay];
+  }
+}
+
 - (void)setData:(GLData *)data
 {
   _data = data;
@@ -94,7 +101,7 @@ NSString* srcResource (id res)
       for (GLData *child in data.children) {
         if (fboId == frameIndex) fboId ++;
         fbosMapping[[NSNumber numberWithInt:i]] = [NSNumber numberWithInt:fboId];
-        [children addObject:traverseTree(child, fboId)];
+        [children addObject:weak_traverseTree(child, fboId)];
         fboId ++;
         i ++;
       }
@@ -180,6 +187,7 @@ NSString* srcResource (id res)
 - (void)setNbTargets:(NSNumber *)nbTargets
 {
   [self resizeTargets:[nbTargets intValue]];
+  _nbTargets = nbTargets;
 }
 
 - (void)resizeTargets:(int)n
@@ -245,7 +253,7 @@ NSString* srcResource (id res)
       float h = [renderData.height floatValue] * scale;
       
       for (GLRenderData *child in renderData.children)
-        recDraw(child);
+        weak_recDraw(child);
       
       if (renderData.frameIndex == -1) {
         glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);

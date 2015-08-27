@@ -23,13 +23,14 @@ const renderVtarget = function (style, width, height, id, children) {
   return <View style={[ childrenStyle, style ]}>{children}</View>;
 };
 
-const renderVGL = function (props, width, height, data, nbTargets) {
+const renderVGL = function (props, width, height, data, nbTargets, renderId) {
   return <GLCanvas
     ref="native"
     {...props}
     style={{ ...props.style, width, height }}
     data={data}
     nbTargets={nbTargets}
+    renderId={renderId}
   />;
 };
 
