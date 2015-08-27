@@ -5,8 +5,12 @@
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "github.com:ProjectSeptemberInc/gl-react-native.git"
+    "url": "git+https://github.com/ProjectSeptemberInc/gl-react-native.git"
   },
+  "bugs": {
+    "url": "https://github.com/ProjectSeptemberInc/gl-react-native/issues"
+  },
+  "homepage": "https://github.com/ProjectSeptemberInc/gl-react-native#readme",
   "keywords": [
     "gl",
     "opengl",
