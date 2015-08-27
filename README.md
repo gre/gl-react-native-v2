@@ -6,7 +6,7 @@ More technically, `gl-react-native` allows you to write a [fragment shader](http
 
 **`gl-react-native` is directly inspired from [`gl-react`](http://github.com/ProjectSeptemberInc/gl-react) and implement the same API (so you can write "universal" code).**
 
-[![](imgs/simple.gif)](./Examples/Simple)[![](imgs/advancedeffects.gif)](./Examples/AdvancedEffects)
+[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/imgs/simple.gif)](./Examples/Simple)[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/imgs/advancedeffects.gif)](./Examples/AdvancedEffects)
 
 ### HelloGL Gist
 
