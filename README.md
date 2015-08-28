@@ -1,3 +1,5 @@
+**[Gitbook documentation](http://projectseptemberinc.gitbooks.io/gl-react/content/) / [Github](https://github.com/ProjectSeptemberInc/gl-react-native/) / [gl-react](https://github.com/ProjectSeptemberInc/gl-react/)**
+
 # gl-react-native
 
 OpenGL bindings for react-native to implement complex effects over images and components, in the descriptive VDOM paradigm.
