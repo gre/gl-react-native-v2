@@ -6,7 +6,7 @@ OpenGL bindings for react-native to implement complex effects over images and co
 
 More technically, `gl-react-native` allows you to write a [fragment shader](https://www.opengl.org/wiki/Fragment_Shader) that covers a View. The shader can render: generated graphics/demos, effects on top of images, effects over any UI content... anything you can imagine!
 
-**`gl-react-native` is directly inspired from [`gl-react`](http://github.com/ProjectSeptemberInc/gl-react) and implement the same API (so you can write "universal" code).**
+**`gl-react-native` is directly inspired from our other project, [`gl-react`](http://github.com/ProjectSeptemberInc/gl-react) and implements the same API (so you can write "universal" code).**
 
 [![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/imgs/simple.gif)](./Examples/Simple)[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/imgs/advancedeffects.gif)](./Examples/AdvancedEffects)
 
