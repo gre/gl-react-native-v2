@@ -27,7 +27,7 @@ const renderVGL = function (props, width, height, data, nbTargets, renderId) {
   return <GLCanvas
     ref="native"
     {...props}
-    style={{ ...props.style, width, height }}
+    style={[ props.style, { width, height } ]}
     data={data}
     nbTargets={nbTargets}
     renderId={renderId}
@@ -36,13 +36,12 @@ const renderVGL = function (props, width, height, data, nbTargets, renderId) {
 
 const renderVcontainer = function (style, width, height, targets, renderer) {
   if (targets) {
-    const parentStyle = {
-      ...style,
+    const parentStyle = [ style, {
       position: "relative",
       width: width,
       height: height,
       overflow: "hidden"
-    };
+    }];
     return <View style={parentStyle}>
       {targets}
       {renderer}
