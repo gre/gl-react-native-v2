@@ -78,7 +78,7 @@ RCT_NOT_IMPLEMENTED(-init)
     
     // Load the image (without resizing it)
     
-    if (![_src hasPrefix:@"http://"] && ![_src hasPrefix:@"http://"]) {
+    if (![_src hasPrefix:@"http://"] && ![_src hasPrefix:@"https://"]) {
       self.image = [UIImage imageNamed:_src];
       if(_onload) _onload();
     } else {
