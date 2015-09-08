@@ -1,7 +1,7 @@
 const {createView} = require("gl-react-core");
 const React = require("react-native");
 const Shaders = require("./Shaders");
-const Target = require("./Target");
+const Uniform = require("./Uniform");
 const Component = require("./Component");
 
 const {
@@ -11,7 +11,7 @@ const {
 
 const GLCanvas = requireNativeComponent("GLCanvas", null);
 
-const renderVtarget = function (style, width, height, id, children) {
+const renderVcontent = function (width, height, id, children) {
   const childrenStyle = {
     position: "absolute",
     top: 0,
@@ -20,39 +20,32 @@ const renderVtarget = function (style, width, height, id, children) {
     height: height,
     overflow: "hidden"
   };
-  return <View style={[ childrenStyle, style ]}>{children}</View>;
+  return <View style={childrenStyle}>{children}</View>;
 };
 
-const renderVGL = function (props, width, height, data, nbTargets, renderId) {
+const renderVGL = function (props) {
+  const { width, height, ...restProps } = props;
   return <GLCanvas
-    ref="native"
-    {...props}
-    style={[ props.style, { width, height } ]}
-    data={data}
-    nbTargets={nbTargets}
-    renderId={renderId}
+    key="native"
+    {...restProps}
+    style={{ width, height }}
   />;
 };
 
-const renderVcontainer = function (style, width, height, targets, renderer) {
-  if (targets) {
-    const parentStyle = [ style, {
-      position: "relative",
-      width: width,
-      height: height,
-      overflow: "hidden"
-    }];
-    return <View style={parentStyle}>
-      {targets}
-      {renderer}
-    </View>;
-  }
-  else {
-    return renderer;
-  }
+const renderVcontainer = function (width, height, contents, renderer) {
+  const parentStyle = {
+    position: "relative",
+    width: width,
+    height: height,
+    overflow: "hidden"
+  };
+  return <View style={parentStyle}>
+    {contents}
+    {renderer}
+  </View>;
 };
 
-const GLView = createView(React, Shaders, Target, Component, renderVcontainer, renderVtarget, renderVGL);
+const GLView = createView(React, Shaders, Uniform, Component, renderVcontainer, renderVcontent, renderVGL);
 
 GLView.prototype.setNativeProps = function (props) {
   this.refs.native.setNativeProps(props);

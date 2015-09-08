@@ -52,23 +52,25 @@ class Intro extends React.Component {
         colorSeparation: 0.02,
         moving: 1
       }}>
-      <GL.Target uniform="texture" style={{ justifyContent: "center" }}>
-        <Text style={{ color: "#00BDF3", fontSize: 32, letterSpacing: -1.0 }}>
-          GL REACT NATIVE
-        </Text>
-        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-          <View style={{ backgroundColor: "#00FF66", marginRight: 8, width: 14, height: 14, borderRadius: 7, opacity: time%1 < 0.6 ? 1 : 0 }} />
-          <Text style={{ flex: 1, color: "#00FF66", fontSize: 14 }}>
-            {time.toFixed(2)}s
+      <GL.Uniform name="texture">
+        <View style={{ flex: 1, justifyContent: "center" }}>
+          <Text style={{ color: "#00BDF3", fontSize: 32, letterSpacing: -1.0 }}>
+            GL REACT NATIVE
           </Text>
-          <Text style={{ flex: 1, color: "#fff", fontSize: 14 }}>
-            {(fps).toFixed(0)} fps
-          </Text>
-          <Text style={{ flex: 1, color: "#999", fontSize: 14 }}>
-            {"<Text />"}
-          </Text>
+          <View style={{ flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+            <View style={{ backgroundColor: "#00FF66", marginRight: 8, width: 14, height: 14, borderRadius: 7, opacity: time%1 < 0.6 ? 1 : 0 }} />
+            <Text style={{ flex: 1, color: "#00FF66", fontSize: 14 }}>
+              {time.toFixed(2)}s
+            </Text>
+            <Text style={{ flex: 1, color: "#fff", fontSize: 14 }}>
+              {(fps).toFixed(0)} fps
+            </Text>
+            <Text style={{ flex: 1, color: "#999", fontSize: 14 }}>
+              {"<Text />"}
+            </Text>
+          </View>
         </View>
-      </GL.Target>
+      </GL.Uniform>
     </GL.View>;
   }
 }

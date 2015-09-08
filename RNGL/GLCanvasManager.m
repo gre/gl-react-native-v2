@@ -18,10 +18,11 @@ RCT_EXPORT_MODULE();
   return self;
 }
 
-RCT_EXPORT_VIEW_PROPERTY(nbTargets, NSNumber);
+RCT_EXPORT_VIEW_PROPERTY(nbContentTextures, NSNumber);
 RCT_EXPORT_VIEW_PROPERTY(opaque, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(data, GLData);
 RCT_EXPORT_VIEW_PROPERTY(renderId, NSNumber);
+RCT_EXPORT_VIEW_PROPERTY(imagesToPreload, NSArray);
 
 - (UIView *)view
 {

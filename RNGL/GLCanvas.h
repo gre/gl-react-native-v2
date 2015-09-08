@@ -5,8 +5,9 @@
 
 @property (nonatomic) GLData *data;
 @property (nonatomic) BOOL opaque;
-@property (nonatomic) NSNumber *nbTargets;
+@property (nonatomic) NSNumber *nbContentTextures;
 @property (nonatomic) NSNumber *renderId;
+@property (nonatomic) NSArray *imagesToPreload;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                    withContext:(EAGLContext*)context;

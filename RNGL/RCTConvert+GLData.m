@@ -10,18 +10,28 @@
   NSDictionary *uniforms = [self NSDictionary:json[@"uniforms"]];
   NSNumber *width = [self NSNumber:json[@"width"]];
   NSNumber *height = [self NSNumber:json[@"height"]];
+  NSNumber *fboId = [self NSNumber:json[@"fboId"]];
+  NSArray *contextChildrenJSON = [self NSArray: json[@"contextChildren"]];
   NSArray *childrenJSON = [self NSArray: json[@"children"]];
-  NSMutableArray *children = [NSMutableArray array];
   
+  NSMutableArray *children = [NSMutableArray array];
   for (NSObject *childJSON in childrenJSON) {
     GLData *child = [self GLData:childJSON];
     [children addObject:child];
   }
   
+  NSMutableArray *contextChildren = [NSMutableArray array];
+  for (NSObject *childJSON in contextChildrenJSON) {
+    GLData *child = [self GLData:childJSON];
+    [contextChildren addObject:child];
+  }
+
   return [[GLData alloc] initWithShader: shader
                            withUniforms: uniforms
                               withWidth: width
                              withHeight: height
+                              withFboId: fboId
+                    withContextChildren: contextChildren
                            withChildren: children];
 }
 

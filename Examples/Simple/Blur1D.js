@@ -35,17 +35,17 @@ void main () {
 
 class Blur1D extends GL.Component {
   render () {
-    const { width, height, direction, children } = this.props;
+    const { width, height, direction, children: t } = this.props;
     return <GL.View
       shader={shaders.blur1D}
       width={width}
       height={height}
       uniforms={{
         direction,
-        resolution: [ width, height ]
-      }}>
-      <GL.Target uniform="t">{children}</GL.Target>
-    </GL.View>;
+        resolution: [ width, height ],
+        t
+      }}
+    />;
   }
 }
 

@@ -18,12 +18,12 @@
 
   GLRenderData *_renderData;
   
-  NSArray *_targetTextures;
+  NSArray *_contentTextures;
   NSDictionary *_images; // This caches the currently used images (imageSrc -> GLReactImage)
   
   BOOL _opaque; // opaque prop (if false, the GLCanvas will become transparent)
   
-  BOOL _deferredRendering; // This flag indicates a render has been deferred to the next frame (when using GL.Target)
+  BOOL _deferredRendering; // This flag indicates a render has been deferred to the next frame (when using contents)
   
   GLint defaultFBO;
 }
@@ -63,7 +63,7 @@ NSString* srcResource (id res)
 
 - (void)setRenderId:(NSNumber *)renderId
 {
-  if (_nbTargets > 0) {
+  if (_nbContentTextures > 0) {
     [self setNeedsDisplay];
   }
 }
@@ -87,23 +87,21 @@ NSString* srcResource (id res)
     NSDictionary *prevImages = _images;
     NSMutableDictionary *images = [[NSMutableDictionary alloc] init];
     
-    GLRenderData * (^traverseTree) (GLData *data, int frameIndex);
-    __block __weak GLRenderData * (^weak_traverseTree)(GLData *data, int frameIndex);
-    weak_traverseTree = traverseTree = ^GLRenderData *(GLData *data, int frameIndex) {
+    GLRenderData * (^traverseTree) (GLData *data);
+    __block __weak GLRenderData * (^weak_traverseTree)(GLData *data);
+    weak_traverseTree = traverseTree = ^GLRenderData *(GLData *data) {
       NSNumber *width = data.width;
       NSNumber *height = data.height;
+      int fboId = [data.fboId intValue];
       
-      // Traverse children and compute GLRenderData
+      NSMutableArray *contextChildren = [[NSMutableArray alloc] init];
+      for (GLData *child in data.contextChildren) {
+        [contextChildren addObject:weak_traverseTree(child)];
+      }
+      
       NSMutableArray *children = [[NSMutableArray alloc] init];
-      NSMutableDictionary *fbosMapping = [[NSMutableDictionary alloc] init];
-      int fboId = 0;
-      int i = 0;
       for (GLData *child in data.children) {
-        if (fboId == frameIndex) fboId ++;
-        fbosMapping[[NSNumber numberWithInt:i]] = [NSNumber numberWithInt:fboId];
-        [children addObject:weak_traverseTree(child, fboId)];
-        fboId ++;
-        i ++;
+        [children addObject:weak_traverseTree(child)];
       }
       
       GLShader *shader = [GLShadersRegistry getShader:data.shader];
@@ -119,15 +117,15 @@ NSString* srcResource (id res)
         if (value && (type == GL_SAMPLER_2D || type == GL_SAMPLER_CUBE)) {
           uniforms[uniformName] = [NSNumber numberWithInt:units++];
           NSString *type = [RCTConvert NSString:value[@"type"]];
-          if ([type isEqualToString:@"target"]) {
+          if ([type isEqualToString:@"content"]) {
             int id = [[RCTConvert NSNumber:value[@"id"]] intValue];
-            if (id >= [_targetTextures count]) {
-              [self resizeTargets:id+1];
+            if (id >= [_contentTextures count]) {
+              [self resizeUniformContentTextures:id+1];
             }
-            textures[uniformName] = _targetTextures[id];
+            textures[uniformName] = _contentTextures[id];
           }
           else if ([type isEqualToString:@"framebuffer"]) {
-            NSNumber *id = fbosMapping[[RCTConvert NSNumber:value[@"id"]]];
+            NSNumber *id = [RCTConvert NSNumber:value[@"id"]];
             GLFBO *fbo = [GLShadersRegistry getFBO:id];
             textures[uniformName] = fbo.color[0];
           }
@@ -174,47 +172,58 @@ NSString* srcResource (id res)
         }
       }
 
-      return [[GLRenderData alloc] initWithShader:shader withUniforms:uniforms withTextures:textures withWidth:width withHeight:height withFrameIndex:frameIndex withChildren:children];
+      return [[GLRenderData alloc]
+              initWithShader:shader
+              withUniforms:uniforms
+              withTextures:textures
+              withWidth:width
+              withHeight:height
+              withFboId:fboId
+              withContextChildren:contextChildren
+              withChildren:children];
     };
     
-    _renderData = traverseTree(_data, -1);
+    _renderData = traverseTree(_data);
     _images = images;
     
     [self setNeedsDisplay];
   }
 }
 
-- (void)setNbTargets:(NSNumber *)nbTargets
+- (void)setNbContentTextures:(NSNumber *)nbContentTextures
 {
-  [self resizeTargets:[nbTargets intValue]];
-  _nbTargets = nbTargets;
+  [self resizeUniformContentTextures:[nbContentTextures intValue]];
+  _nbContentTextures = nbContentTextures;
 }
 
-- (void)resizeTargets:(int)n
+- (void)resizeUniformContentTextures:(int)n
 {
   [EAGLContext setCurrentContext:self.context];
-  int length = (int) [_targetTextures count];
+  int length = (int) [_contentTextures count];
   if (length == n) return;
   if (n < length) {
-    _targetTextures = [_targetTextures subarrayWithRange:NSMakeRange(0, n)];
+    _contentTextures = [_contentTextures subarrayWithRange:NSMakeRange(0, n)];
   }
   else {
-    NSMutableArray *targetTextures = [[NSMutableArray alloc] initWithArray:_targetTextures];
-    for (int i = (int) [_targetTextures count]; i < n; i++) {
-      [targetTextures addObject:[[GLTexture alloc] init]];
+    NSMutableArray *contentTextures = [[NSMutableArray alloc] initWithArray:_contentTextures];
+    for (int i = (int) [_contentTextures count]; i < n; i++) {
+      [contentTextures addObject:[[GLTexture alloc] init]];
     }
-    _targetTextures = targetTextures;
+    _contentTextures = contentTextures;
   }
 }
 
 
-- (void)syncTargetTextures
+- (void)syncContentTextures
 {
   int i = 0;
-  for (GLTexture *texture in _targetTextures) {
+  for (GLTexture *texture in _contentTextures) {
     UIView* view = self.superview.subviews[i]; // We take siblings by index (closely related to the JS code)
     if (view) {
-      [texture setPixelsWithView:view];
+      if ([view.subviews count] == 1)
+        [texture setPixelsWithView:view.subviews[0]];
+      else
+        [texture setPixelsWithView:view];
     } else {
       [texture setPixelsEmpty];
     }
@@ -224,7 +233,7 @@ NSString* srcResource (id res)
 
 - (void)drawRect:(CGRect)rect
 {
-  BOOL needsDeferredRendering = _nbTargets > 0;
+  BOOL needsDeferredRendering = _nbContentTextures > 0;
   if (needsDeferredRendering && !_deferredRendering) {
     dispatch_async(dispatch_get_main_queue(), ^{
       _deferredRendering = true;
@@ -252,15 +261,18 @@ NSString* srcResource (id res)
       float w = [renderData.width floatValue] * scale;
       float h = [renderData.height floatValue] * scale;
       
+      for (GLRenderData *child in renderData.contextChildren)
+        weak_recDraw(child);
+      
       for (GLRenderData *child in renderData.children)
         weak_recDraw(child);
       
-      if (renderData.frameIndex == -1) {
+      if (renderData.fboId == -1) {
         glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
         glViewport(0, 0, w, h);
       }
       else {
-        GLFBO *fbo = [GLShadersRegistry getFBO:[NSNumber numberWithInt:renderData.frameIndex]];
+        GLFBO *fbo = [GLShadersRegistry getFBO:[NSNumber numberWithInt:renderData.fboId]];
         [fbo setShapeWithWidth:w withHeight:h];
         [fbo bind];
       }
@@ -285,7 +297,7 @@ NSString* srcResource (id res)
     
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
     
-    [self syncTargetTextures];
+    [self syncContentTextures];
     
     recDraw(_renderData);
     

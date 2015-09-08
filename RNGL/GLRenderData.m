@@ -8,7 +8,8 @@
                   withTextures: (NSDictionary *)textures
                      withWidth: (NSNumber *)width
                     withHeight: (NSNumber *)height
-                withFrameIndex: (int)frameIndex
+                     withFboId: (int)fboId
+           withContextChildren: (NSArray *)contextChildren
                   withChildren: (NSArray *)children
 {
   
@@ -18,7 +19,8 @@
     self.textures = textures;
     self.width = width;
     self.height = height;
-    self.frameIndex = frameIndex;
+    self.fboId = fboId;
+    self.contextChildren = contextChildren;
     self.children = children;
   }
   return self;
