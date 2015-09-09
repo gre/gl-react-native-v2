@@ -270,7 +270,11 @@ NSString* srcResource (id res)
 
 - (void)drawRect:(CGRect)rect
 {
-  if (!_preloadingDone) return;
+  if (!_preloadingDone) {
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    return;
+  }
   BOOL needsDeferredRendering = _nbContentTextures > 0;
   if (needsDeferredRendering && !_deferredRendering) {
     dispatch_async(dispatch_get_main_queue(), ^{
