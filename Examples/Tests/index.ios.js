@@ -19,7 +19,7 @@ const Tests = React.createClass({
       <HelloGL width={64} height={64} />;
 
     const txt =
-      <View style={{ width: 800, height: 800, position: "relative" }}>
+      <View style={{ width: 800, height: 800, position: "relative", backgroundColor: "transparent" }}>
         {[0,1,2,3].map(i => <Text style={{
           position: "absolute",
           top: 40+200*i,
