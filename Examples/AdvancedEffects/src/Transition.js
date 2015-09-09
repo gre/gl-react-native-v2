@@ -6,6 +6,7 @@ class Transition extends React.Component {
     const { width, height, shader, progress, from, to, uniforms } = this.props;
     const scale = React.PixelRatio.get();
     return <GL.View
+      preload
       shader={shader}
       width={width}
       height={height}

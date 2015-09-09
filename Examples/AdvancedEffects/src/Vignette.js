@@ -56,6 +56,7 @@ class Vignette extends React.Component {
     const { width, height, time, source } = this.props;
     const { finger } = this.state;
     return <GL.View
+      preload
       onStartShouldSetResponder={() => true}
       onMoveShouldSetResponder={() => true}
       onResponderMove={this.onResponderMove}
