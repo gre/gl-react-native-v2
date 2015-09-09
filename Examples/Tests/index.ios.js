@@ -34,7 +34,7 @@ const Tests = React.createClass({
         </Text>)}
       </View>;
 
-    const img = "http://i.imgur.com/zJIxPEo.jpg";
+    const img = "http://i.imgur.com/zJIxPEo.jpg?t="+Date.now();
 
     const blurredImage =
       <Blur factor={4} passes={6} width={200} height={200}>

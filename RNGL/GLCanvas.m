@@ -15,7 +15,7 @@
 @implementation GLCanvas
 {
   RCTBridge *_bridge; // bridge is required to instanciate GLReactImage
-
+  
   GLRenderData *_renderData;
   
   NSArray *_contentTextures;
@@ -26,6 +26,9 @@
   BOOL _deferredRendering; // This flag indicates a render has been deferred to the next frame (when using contents)
   
   GLint defaultFBO;
+  
+  NSMutableArray *_preloaded;
+  BOOL _preloadingDone;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -34,6 +37,8 @@
   if ((self = [super init])) {
     _bridge = bridge;
     _images = @{};
+    _preloaded = [[NSMutableArray alloc] init];
+    _preloadingDone = false;
     self.context = context;
   }
   return self;
@@ -41,6 +46,14 @@
 
 RCT_NOT_IMPLEMENTED(-init)
 
+-(void)setImagesToPreload:(NSArray *)imagesToPreload
+{
+  if (_preloadingDone) return;
+  if ([imagesToPreload count] == 0) {
+    _preloadingDone = true;
+  }
+  _imagesToPreload = imagesToPreload;
+}
 
 - (void)setOpaque:(BOOL)opaque
 {
@@ -83,7 +96,7 @@ NSString* srcResource (id res)
 {
   [EAGLContext setCurrentContext:self.context];
   @autoreleasepool {
-  
+    
     NSDictionary *prevImages = _images;
     NSMutableDictionary *images = [[NSMutableDictionary alloc] init];
     
@@ -135,7 +148,7 @@ NSString* srcResource (id res)
             if (!src) {
               RCTLogError(@"invalid uniform '%@' texture value '%@'", uniformName, value);
             }
-           
+            
             GLImage *image = images[src];
             if (image == nil) {
               image = prevImages[src];
@@ -144,7 +157,7 @@ NSString* srcResource (id res)
             }
             if (image == nil) {
               image = [[GLImage alloc] initWithBridge:_bridge withOnLoad:^{
-                [self requestSyncData];
+                [self onImageLoad:src];
               }];
               image.src = src;
               images[src] = image;
@@ -171,7 +184,7 @@ NSString* srcResource (id res)
           RCTLogError(@"All defined uniforms must be provided. Missing '%@'", uniformName);
         }
       }
-
+      
       return [[GLRenderData alloc]
               initWithShader:shader
               withUniforms:uniforms
@@ -187,6 +200,30 @@ NSString* srcResource (id res)
     _images = images;
     
     [self setNeedsDisplay];
+  }
+}
+
+- (bool)allPreloaded
+{
+  for (id toload in _imagesToPreload) {
+    if (![_preloaded containsObject:srcResource(toload)])
+      return false;
+  }
+  return true;
+}
+
+- (void)onImageLoad:(NSString *)loaded
+{
+  if (!_preloadingDone) {
+    [_preloaded addObject:loaded];
+    if ([self allPreloaded]) {
+      _preloadingDone = true;
+      [self requestSyncData];
+    }
+  }
+  else {
+    // Any texture image load will trigger a future re-sync of data (if no preloaded)
+    [self requestSyncData];
   }
 }
 
@@ -233,6 +270,7 @@ NSString* srcResource (id res)
 
 - (void)drawRect:(CGRect)rect
 {
+  if (!_preloadingDone) return;
   BOOL needsDeferredRendering = _nbContentTextures > 0;
   if (needsDeferredRendering && !_deferredRendering) {
     dispatch_async(dispatch_get_main_queue(), ^{
