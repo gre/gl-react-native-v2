@@ -13,7 +13,6 @@ const GLCanvas = requireNativeComponent("GLCanvas", null);
 
 const renderVcontent = function (width, height, id, children) {
   const childrenStyle = {
-    key: id,
     position: "absolute",
     top: 0,
     left: 0,
@@ -21,7 +20,7 @@ const renderVcontent = function (width, height, id, children) {
     height: height,
     overflow: "hidden"
   };
-  return <View style={childrenStyle}>{children}</View>;
+  return <View key={id} style={childrenStyle}>{children}</View>;
 };
 
 const renderVGL = function (props) {
