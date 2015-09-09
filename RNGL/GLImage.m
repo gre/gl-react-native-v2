@@ -79,8 +79,9 @@ RCT_NOT_IMPLEMENTED(-init)
     // Load the image (without resizing it)
     
     if (![_src hasPrefix:@"http://"] && ![_src hasPrefix:@"https://"]) {
+      // N.B: in this case we don't trigger onload because image is already loaded.
+      // this behavior is specific to GLCanvas needs
       self.image = [UIImage imageNamed:_src];
-      if(_onload) _onload();
     } else {
       _loading = [_bridge.imageLoader loadImageWithTag:_src
                                        size:CGSizeZero
