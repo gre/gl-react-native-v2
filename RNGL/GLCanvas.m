@@ -2,6 +2,7 @@
 #import "RCTBridge.h"
 #import "RCTUtils.h"
 #import "RCTConvert.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "GLCanvas.h"
 #import "GLShader.h"
@@ -9,6 +10,7 @@
 #import "GLTexture.h"
 #import "GLImage.h"
 #import "GLRenderData.h"
+#import "UIView+React.h"
 
 // For reference, see implementation of gl-shader's GLCanvas
 
@@ -32,7 +34,7 @@
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
-                   withContext:(EAGLContext*)context
+                   withContext:(EAGLContext *)context
 {
   if ((self = [super init])) {
     _bridge = bridge;
@@ -50,9 +52,33 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if (_preloadingDone) return;
   if ([imagesToPreload count] == 0) {
+    [self dispatchOnLoad];
     _preloadingDone = true;
   }
+  else {
+    _preloadingDone = false;
+  }
   _imagesToPreload = imagesToPreload;
+}
+
+- (void)dispatchOnLoad
+{
+  if (_onLoad) {
+    [_bridge.eventDispatcher sendInputEventWithName:@"load" body:@{ @"target": self.reactTag }];
+  }
+}
+
+- (void)dispatchOnProgress: (double)progress withLoaded:(int)loaded withTotal:(int)total
+{
+  if (_onProgress) {
+    NSDictionary *event =
+  @{
+    @"target": self.reactTag,
+    @"progress": @(progress),
+    @"loaded": @(loaded),
+    @"total": @(total) };
+    [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
+  }
 }
 
 - (void)setOpaque:(BOOL)opaque
@@ -203,20 +229,26 @@ NSString* srcResource (id res)
   }
 }
 
-- (bool)allPreloaded
+- (int)countPreloaded
 {
+  int nb = 0;
   for (id toload in _imagesToPreload) {
-    if (![_preloaded containsObject:srcResource(toload)])
-      return false;
+    if ([_preloaded containsObject:srcResource(toload)])
+      nb++;
   }
-  return true;
+  return nb;
 }
 
 - (void)onImageLoad:(NSString *)loaded
 {
   if (!_preloadingDone) {
     [_preloaded addObject:loaded];
-    if ([self allPreloaded]) {
+    int count = [self countPreloaded];
+    int total = (int) [_imagesToPreload count];
+    double progress = ((double) count) / ((double) total);
+    [self dispatchOnProgress:progress withLoaded:count withTotal:total];
+    if (count == total) {
+      [self dispatchOnLoad];
       _preloadingDone = true;
       [self requestSyncData];
     }

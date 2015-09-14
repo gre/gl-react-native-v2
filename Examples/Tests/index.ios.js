@@ -13,8 +13,20 @@ const HelloGL = require("./HelloGL");
 const Display2 = require("./Display2");
 const { width: viewportW, height: viewportH } = require("Dimensions").get("window");
 
-const Tests = React.createClass({
-  render: function() {
+class Tests extends React.Component {
+
+  constructor (props) {
+    super(props);
+    this.onLoad = this.onLoad.bind(this);
+    this.onProgress = this.onProgress.bind(this);
+  }
+  onLoad () {
+    console.log("LOADED");
+  }
+  onProgress ({nativeEvent: { progress, loaded, total }}) {
+    console.log("PROGRESS", progress, loaded, total);
+  }
+  render () {
     const helloGL =
       <HelloGL width={64} height={64} />;
 
@@ -48,7 +60,7 @@ const Tests = React.createClass({
       </Layer>;
 
     return <View style={{ backgroundColor: "#000" }}>
-      <Display2 width={viewportW} height={viewportH} vertical preload>
+      <Display2 width={viewportW} height={viewportH} vertical preload onLoad={this.onLoad} onProgress={this.onProgress}>
         <Display2 width={viewportW} height={viewportH/2}>
           <Add width={viewportW/2} height={viewportH/2}>
             {txt}
@@ -68,6 +80,6 @@ const Tests = React.createClass({
       </Display2>
     </View>;
   }
-});
+}
 
 AppRegistry.registerComponent("Tests", () => Tests);
