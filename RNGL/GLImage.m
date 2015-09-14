@@ -80,7 +80,9 @@ RCT_NOT_IMPLEMENTED(-init)
     
     if (![_src hasPrefix:@"http://"] && ![_src hasPrefix:@"https://"]) {
       self.image = [UIImage imageNamed:_src];
-      if(_onload) _onload();
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if (_onload) _onload();
+      });
     } else {
       _loading = [_bridge.imageLoader loadImageWithTag:_src
                                        size:CGSizeZero

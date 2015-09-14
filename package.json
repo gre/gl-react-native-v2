@@ -1,6 +1,6 @@
 {
   "name": "gl-react-native",
-  "version": "0.1.7",
+  "version": "1.0.0-rc1",
   "description": "OpenGL bindings for react-native to implement complex effects over images and components, in the descriptive VDOM paradigm",
   "main": "src/index.js",
   "repository": {
@@ -25,7 +25,7 @@
   "dependencies": {
     "invariant": "2.1.0",
     "react-native": ">=0.9.0 <0.11.0",
-    "gl-react-core": "^0.1.1"
+    "gl-react-core": "1.0.0-rc1"
   },
   "devDependencies": {
     "eslint": "^1.3.1",

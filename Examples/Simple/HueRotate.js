@@ -26,14 +26,13 @@ void main() {
 
 class HueRotate extends React.Component {
   render () {
-    const { width, height, hue, children } = this.props;
+    const { width, height, hue, children: tex } = this.props;
     return <GL.View
       shader={shaders.hueRotate}
       width={width}
       height={height}
-      uniforms={{ hue }}>
-      <GL.Target uniform="tex">{children}</GL.Target>
-    </GL.View>;
+      uniforms={{ hue, tex }}
+    />;
   }
 }
 
