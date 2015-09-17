@@ -7,6 +7,6 @@
   },
   "dependencies": {
     "gl-react-native": "file:../..",
-    "react-native": "^0.10.0"
+    "react-native": "^0.11.0"
   }
 }
