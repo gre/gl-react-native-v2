@@ -24,10 +24,11 @@ void main() {
   }
 });
 
-class HueRotate extends React.Component {
+class HueRotate extends GL.Component {
   render () {
-    const { width, height, hue, children: tex } = this.props;
+    const { width, height, hue, children: tex, ...rest } = this.props;
     return <GL.View
+      {...rest}
       shader={shaders.hueRotate}
       width={width}
       height={height}

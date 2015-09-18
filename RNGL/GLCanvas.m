@@ -31,6 +31,10 @@
   
   NSMutableArray *_preloaded;
   BOOL _preloadingDone;
+  
+  CADisplayLink *displayLink;
+  
+  NSTimer *animationTimer;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -105,6 +109,29 @@ NSString* srcResource (id res)
   if (_nbContentTextures > 0) {
     [self setNeedsDisplay];
   }
+}
+
+- (void)setAutoRedraw:(BOOL)autoRedraw
+{
+  if (autoRedraw) {
+    if (!animationTimer)
+      animationTimer = // FIXME: can we do better than this?
+      [NSTimer scheduledTimerWithTimeInterval:1.0/60.0
+                                       target:self
+                                     selector:@selector(setNeedsDisplay)
+                                     userInfo:nil
+                                      repeats:YES];
+  }
+  else {
+    if (animationTimer) {
+      [animationTimer invalidate];
+    }
+  }
+}
+
+- (void)setEventsThrough:(BOOL)eventsThrough
+{
+  self.userInteractionEnabled = !eventsThrough;
 }
 
 - (void)setData:(GLData *)data
@@ -302,12 +329,13 @@ NSString* srcResource (id res)
 
 - (void)drawRect:(CGRect)rect
 {
+  
   if (!_preloadingDone) {
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT);
     return;
   }
-  BOOL needsDeferredRendering = _nbContentTextures > 0;
+  BOOL needsDeferredRendering = _nbContentTextures > 0 && !_autoRedraw;
   if (needsDeferredRendering && !_deferredRendering) {
     dispatch_async(dispatch_get_main_queue(), ^{
       _deferredRendering = true;
@@ -315,15 +343,15 @@ NSString* srcResource (id res)
     });
   }
   else {
-    [self render:rect];
+    [self render];
     _deferredRendering = false;
   }
 }
 
-- (void)render:(CGRect)rect
+- (void)render
 {
   if (!_renderData) return;
-  
+
   self.layer.opaque = _opaque;
   
   CGFloat scale = RCTScreenScale();

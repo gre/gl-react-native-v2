@@ -5,6 +5,8 @@
 
 @property (nonatomic) GLData *data;
 @property (nonatomic) BOOL opaque;
+@property (nonatomic) BOOL autoRedraw;
+@property (nonatomic) BOOL eventsThrough;
 @property (nonatomic) NSNumber *nbContentTextures;
 @property (nonatomic) NSNumber *renderId;
 @property (nonatomic) NSArray *imagesToPreload;

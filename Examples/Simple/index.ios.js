@@ -8,6 +8,9 @@ const {
   TextInput,
   ScrollView,
   SliderIOS,
+  SwitchIOS,
+  ProgressViewIOS,
+  ActivityIndicatorIOS,
 } = React;
 
 const HelloGL = require("./HelloGL");
@@ -26,18 +29,23 @@ class Simple extends React.Component {
       hue: 0,
       progress: 0,
       factor: 0,
-      text: "and I will return leading the pack"
+      text: "and I will return leading the pack",
+      switch1: false,
+      switch2: false,
+      switch3: false,
     };
   }
 
   render () {
-
     const {
       saturationFactor,
       hue,
       text,
       progress,
-      factor
+      factor,
+      switch1,
+      switch2,
+      switch3,
     } = this.state;
 
     return <ScrollView style={styles.container}>
@@ -68,6 +76,7 @@ class Simple extends React.Component {
         <Text style={styles.demoTitle}>3. Hue Rotate on Text+Image</Text>
         <View style={styles.demo}>
           <HueRotate
+            autoRedraw
             width={256}
             height={180}
             hue={hue}>
@@ -122,6 +131,39 @@ class Simple extends React.Component {
           <SliderIOS
             maximumValue={2}
             onValueChange={factor => this.setState({ factor })} />
+        </View>
+
+
+        <Text style={styles.demoTitle}>8. Blur (2-pass) over UI</Text>
+        <View style={styles.demo}>
+          <Blur
+            autoRedraw
+            eventsThrough
+            width={256}
+            height={160}
+            factor={factor}>
+            <Blur
+              width={256}
+              height={160}
+              factor={factor/2}>
+              <HueRotate hue={-switch1 + 2 * switch2 + 4 * switch3}>
+                <View style={{ width: 256, height: 160, padding: 10 }}>
+                  <SliderIOS
+                    style={{ height: 80 }}
+                    maximumValue={2}
+                    onValueChange={factor => this.setState({ factor })}
+                  />
+                <View style={{ height: 60, flexDirection: "row", alignItems: "center" }}>
+                  <SwitchIOS style={{flex:1}} value={switch1} onValueChange={switch1 => this.setState({ switch1 })} />
+                  <SwitchIOS style={{flex:1}} value={switch2} onValueChange={switch2 => this.setState({ switch2 })} />
+                  <SwitchIOS style={{flex:1}} value={switch3} onValueChange={switch3 => this.setState({ switch3 })} />
+                </View>
+                <ProgressViewIOS progress={factor} style={{height: 10, marginTop: 8, flex:1}} />
+
+                </View>
+              </HueRotate>
+            </Blur>
+          </Blur>
         </View>
 
       </View>
