@@ -180,45 +180,51 @@ NSString* srcResource (id res)
         id value = [data.uniforms objectForKey:uniformName];
         GLenum type = [uniformTypes[uniformName] intValue];
         
-        if (value && (type == GL_SAMPLER_2D || type == GL_SAMPLER_CUBE)) {
+        if (type == GL_SAMPLER_2D || type == GL_SAMPLER_CUBE) {
           uniforms[uniformName] = [NSNumber numberWithInt:units++];
-          NSString *type = [RCTConvert NSString:value[@"type"]];
-          if ([type isEqualToString:@"content"]) {
-            int id = [[RCTConvert NSNumber:value[@"id"]] intValue];
-            if (id >= [_contentTextures count]) {
-              [self resizeUniformContentTextures:id+1];
-            }
-            textures[uniformName] = _contentTextures[id];
-          }
-          else if ([type isEqualToString:@"framebuffer"]) {
-            NSNumber *id = [RCTConvert NSNumber:value[@"id"]];
-            GLFBO *fbo = [GLShadersRegistry getFBO:id];
-            textures[uniformName] = fbo.color[0];
-          }
-          else if ([type isEqualToString:@"image"]) {
-            NSObject *val = value[@"value"];
-            NSString *src = srcResource(val);
-            if (!src) {
-              RCTLogError(@"invalid uniform '%@' texture value '%@'", uniformName, value);
-            }
-            
-            GLImage *image = images[src];
-            if (image == nil) {
-              image = prevImages[src];
-              if (image != nil)
-                images[src] = image;
-            }
-            if (image == nil) {
-              image = [[GLImage alloc] initWithBridge:_bridge withOnLoad:^{
-                [self onImageLoad:src];
-              }];
-              image.src = src;
-              images[src] = image;
-            }
-            textures[uniformName] = [image getTexture];
+          if (!value) {
+            GLTexture *emptyTexture = [[GLTexture alloc] init];
+            [emptyTexture setPixelsEmpty];
+            textures[uniformName] = emptyTexture;
           }
           else {
-            RCTLogError(@"invalid uniform '%@' value of type '%@'", uniformName, type);
+            NSString *type = [RCTConvert NSString:value[@"type"]];
+            if ([type isEqualToString:@"content"]) {
+              int id = [[RCTConvert NSNumber:value[@"id"]] intValue];
+              if (id >= [_contentTextures count]) {
+                [self resizeUniformContentTextures:id+1];
+              }
+              textures[uniformName] = _contentTextures[id];
+            }
+            else if ([type isEqualToString:@"fbo"]) {
+              NSNumber *id = [RCTConvert NSNumber:value[@"id"]];
+              GLFBO *fbo = [GLShadersRegistry getFBO:id];
+              textures[uniformName] = fbo.color[0];
+            }
+            else if ([type isEqualToString:@"uri"]) {
+              NSString *src = srcResource(value);
+              if (!src) {
+                RCTLogError(@"texture uniform '%@': Invalid uri format '%@'", uniformName, value);
+              }
+              
+              GLImage *image = images[src];
+              if (image == nil) {
+                image = prevImages[src];
+                if (image != nil)
+                  images[src] = image;
+              }
+              if (image == nil) {
+                image = [[GLImage alloc] initWithBridge:_bridge withOnLoad:^{
+                  [self onImageLoad:src];
+                }];
+                image.src = src;
+                images[src] = image;
+              }
+              textures[uniformName] = [image getTexture];
+            }
+            else {
+              RCTLogError(@"texture uniform '%@': Unexpected type '%@'", uniformName, type);
+            }
           }
         }
         else {
