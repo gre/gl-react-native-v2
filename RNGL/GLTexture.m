@@ -2,9 +2,6 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-// FIXME: the current approach of using a byte array is probably a bottleneck
-// this should be investigated: https://github.com/ProjectSeptemberInc/gl-react-native/issues/6
-
 GLImageData* genPixelsEmpty (int width, int height)
 {
   GLubyte* data = (GLubyte *) malloc(width*height*4*sizeof(GLubyte));
@@ -57,11 +54,17 @@ GLImageData* genPixelsWithImage (UIImage *image)
 
 GLImageData* genPixelsWithView (UIView *view)
 {
-  UIGraphicsBeginImageContextWithOptions(view.frame.size, NO, RCTScreenScale());
-  [view drawViewHierarchyInRect:view.frame afterScreenUpdates:YES];
-  UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return genPixelsWithImage(snapshot);
+  float width = RCTScreenScale() * view.bounds.size.width;
+  float height = RCTScreenScale() * view.bounds.size.height;
+  GLubyte *data = (GLubyte *)malloc(4 * width * height);
+  CGColorSpaceRef colourSpace = CGColorSpaceCreateDeviceRGB();
+  CGContextRef ctx = CGBitmapContextCreate(data, width, height, 8, 4 * width, colourSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
+  CGColorSpaceRelease(colourSpace);
+  CGContextClearRect(ctx, CGRectMake(0.0, 0.0, width, height));
+  CGContextScaleCTM(ctx, RCTScreenScale(), RCTScreenScale());
+  [view.layer renderInContext:ctx];
+  CGContextRelease(ctx);
+  return [[GLImageData alloc] initWithData:data withWidth:width withHeight:height];
 }
 
 @implementation GLTexture
