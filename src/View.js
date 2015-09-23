@@ -11,10 +11,10 @@ const {
 
 const GLCanvas = requireNativeComponent("GLCanvas", null);
 
-const renderVcontent = function (width, height, id, children, visibleContent) {
+const renderVcontent = function (width, height, id, children, { visibleContent }) {
   const childrenStyle = {
     position: "absolute",
-    top: visibleContent ? 0 : height,
+    top: visibleContent ? 0 : height, // as a workaround for RN, we offset the content so it is not visible but still can be rasterized
     left: 0,
     width: width,
     height: height,
@@ -32,7 +32,7 @@ const renderVGL = function (props) {
   />;
 };
 
-const renderVcontainer = function (width, height, contents, renderer, style) {
+const renderVcontainer = function ({ style, width, height }, contents, renderer) {
   const parentStyle = {
     position: "relative",
     ...style,

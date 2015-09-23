@@ -131,7 +131,20 @@ NSString* srcResource (id res)
 
 - (void)setEventsThrough:(BOOL)eventsThrough
 {
-  self.userInteractionEnabled = !eventsThrough;
+  _eventsThrough = eventsThrough;
+  [self updateUIE];
+}
+
+-(void)setVisibleContent:(BOOL)visibleContent
+{
+  _visibleContent = visibleContent;
+  [self updateUIE];
+}
+
+- (void) updateUIE
+{
+  self.userInteractionEnabled = !(_eventsThrough);
+  self.superview.userInteractionEnabled = !(_eventsThrough && !_visibleContent);
 }
 
 - (void)setData:(GLData *)data
