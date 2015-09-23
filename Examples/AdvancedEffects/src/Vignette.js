@@ -38,7 +38,7 @@ void main() {
 });
 
 
-class Vignette extends React.Component {
+class Vignette extends GL.Component {
   constructor (props) {
     super(props);
     this.onResponderMove = this.onResponderMove.bind(this);
