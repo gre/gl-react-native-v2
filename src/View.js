@@ -11,10 +11,10 @@ const {
 
 const GLCanvas = requireNativeComponent("GLCanvas", null);
 
-const renderVcontent = function (width, height, id, children) {
+const renderVcontent = function (width, height, id, children, visibleContent) {
   const childrenStyle = {
     position: "absolute",
-    top: 0,
+    top: visibleContent ? 0 : height,
     left: 0,
     width: width,
     height: height,
