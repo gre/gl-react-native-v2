@@ -32,9 +32,10 @@ const renderVGL = function (props) {
   />;
 };
 
-const renderVcontainer = function (width, height, contents, renderer) {
+const renderVcontainer = function (width, height, contents, renderer, style) {
   const parentStyle = {
     position: "relative",
+    ...style,
     width: width,
     height: height,
     overflow: "hidden"
