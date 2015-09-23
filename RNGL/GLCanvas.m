@@ -12,6 +12,20 @@
 #import "GLRenderData.h"
 #import "UIView+React.h"
 
+
+NSString* srcResource (id res)
+{
+  NSString *src;
+  if ([res isKindOfClass:[NSString class]]) {
+    src = [RCTConvert NSString:res];
+  } else {
+    BOOL isStatic = [RCTConvert BOOL:res[@"isStatic"]];
+    src = [RCTConvert NSString:res[@"path"]];
+    if (!src || isStatic) src = [RCTConvert NSString:res[@"uri"]];
+  }
+  return src;
+}
+
 // For reference, see implementation of gl-shader's GLCanvas
 
 @implementation GLCanvas
@@ -32,8 +46,6 @@
   NSMutableArray *_preloaded;
   BOOL _preloadingDone;
   
-  CADisplayLink *displayLink;
-  
   NSTimer *animationTimer;
 }
 
@@ -52,6 +64,8 @@
 
 RCT_NOT_IMPLEMENTED(-init)
 
+//// Props Setters
+
 -(void)setImagesToPreload:(NSArray *)imagesToPreload
 {
   if (_preloadingDone) return;
@@ -65,43 +79,10 @@ RCT_NOT_IMPLEMENTED(-init)
   _imagesToPreload = imagesToPreload;
 }
 
-- (void)dispatchOnLoad
-{
-  if (_onLoad) {
-    [_bridge.eventDispatcher sendInputEventWithName:@"load" body:@{ @"target": self.reactTag }];
-  }
-}
-
-- (void)dispatchOnProgress: (double)progress withLoaded:(int)loaded withTotal:(int)total
-{
-  if (_onProgress) {
-    NSDictionary *event =
-  @{
-    @"target": self.reactTag,
-    @"progress": @(progress),
-    @"loaded": @(loaded),
-    @"total": @(total) };
-    [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
-  }
-}
-
 - (void)setOpaque:(BOOL)opaque
 {
   _opaque = opaque;
   [self setNeedsDisplay];
-}
-
-NSString* srcResource (id res)
-{
-  NSString *src;
-  if ([res isKindOfClass:[NSString class]]) {
-    src = [RCTConvert NSString:res];
-  } else {
-    BOOL isStatic = [RCTConvert BOOL:res[@"isStatic"]];
-    src = [RCTConvert NSString:res[@"path"]];
-    if (!src || isStatic) src = [RCTConvert NSString:res[@"uri"]];
-  }
-  return src;
 }
 
 - (void)setRenderId:(NSNumber *)renderId
@@ -141,16 +122,24 @@ NSString* srcResource (id res)
   [self syncEventsThrough];
 }
 
-- (void) syncEventsThrough
-{
-  self.userInteractionEnabled = !(_eventsThrough);
-  self.superview.userInteractionEnabled = !(_eventsThrough && !_visibleContent);
-}
-
 - (void)setData:(GLData *)data
 {
   _data = data;
   [self requestSyncData];
+}
+
+- (void)setNbContentTextures:(NSNumber *)nbContentTextures
+{
+  [self resizeUniformContentTextures:[nbContentTextures intValue]];
+  _nbContentTextures = nbContentTextures;
+}
+
+//// Sync methods (called from props setters)
+
+- (void) syncEventsThrough
+{
+  self.userInteractionEnabled = !(_eventsThrough);
+  self.superview.userInteractionEnabled = !(_eventsThrough && !_visibleContent);
 }
 
 - (void)requestSyncData
@@ -275,60 +264,6 @@ NSString* srcResource (id res)
   }
 }
 
-- (int)countPreloaded
-{
-  int nb = 0;
-  for (id toload in _imagesToPreload) {
-    if ([_preloaded containsObject:srcResource(toload)])
-      nb++;
-  }
-  return nb;
-}
-
-- (void)onImageLoad:(NSString *)loaded
-{
-  if (!_preloadingDone) {
-    [_preloaded addObject:loaded];
-    int count = [self countPreloaded];
-    int total = (int) [_imagesToPreload count];
-    double progress = ((double) count) / ((double) total);
-    [self dispatchOnProgress:progress withLoaded:count withTotal:total];
-    if (count == total) {
-      [self dispatchOnLoad];
-      _preloadingDone = true;
-      [self requestSyncData];
-    }
-  }
-  else {
-    // Any texture image load will trigger a future re-sync of data (if no preloaded)
-    [self requestSyncData];
-  }
-}
-
-- (void)setNbContentTextures:(NSNumber *)nbContentTextures
-{
-  [self resizeUniformContentTextures:[nbContentTextures intValue]];
-  _nbContentTextures = nbContentTextures;
-}
-
-- (void)resizeUniformContentTextures:(int)n
-{
-  [EAGLContext setCurrentContext:self.context];
-  int length = (int) [_contentTextures count];
-  if (length == n) return;
-  if (n < length) {
-    _contentTextures = [_contentTextures subarrayWithRange:NSMakeRange(0, n)];
-  }
-  else {
-    NSMutableArray *contentTextures = [[NSMutableArray alloc] initWithArray:_contentTextures];
-    for (int i = (int) [_contentTextures count]; i < n; i++) {
-      [contentTextures addObject:[[GLTexture alloc] init]];
-    }
-    _contentTextures = contentTextures;
-  }
-}
-
-
 - (void)syncContentTextures
 {
   int i = 0;
@@ -345,6 +280,9 @@ NSString* srcResource (id res)
     i ++;
   }
 }
+
+
+//// Draw
 
 - (void)drawRect:(CGRect)rect
 {
@@ -427,6 +365,73 @@ NSString* srcResource (id res)
   }
 }
 
+//// utility methods
 
+- (void)onImageLoad:(NSString *)loaded
+{
+  if (!_preloadingDone) {
+    [_preloaded addObject:loaded];
+    int count = [self countPreloaded];
+    int total = (int) [_imagesToPreload count];
+    double progress = ((double) count) / ((double) total);
+    [self dispatchOnProgress:progress withLoaded:count withTotal:total];
+    if (count == total) {
+      [self dispatchOnLoad];
+      _preloadingDone = true;
+      [self requestSyncData];
+    }
+  }
+  else {
+    // Any texture image load will trigger a future re-sync of data (if no preloaded)
+    [self requestSyncData];
+  }
+}
+
+- (int)countPreloaded
+{
+  int nb = 0;
+  for (id toload in _imagesToPreload) {
+    if ([_preloaded containsObject:srcResource(toload)])
+      nb++;
+  }
+  return nb;
+}
+
+- (void)resizeUniformContentTextures:(int)n
+{
+  [EAGLContext setCurrentContext:self.context];
+  int length = (int) [_contentTextures count];
+  if (length == n) return;
+  if (n < length) {
+    _contentTextures = [_contentTextures subarrayWithRange:NSMakeRange(0, n)];
+  }
+  else {
+    NSMutableArray *contentTextures = [[NSMutableArray alloc] initWithArray:_contentTextures];
+    for (int i = (int) [_contentTextures count]; i < n; i++) {
+      [contentTextures addObject:[[GLTexture alloc] init]];
+    }
+    _contentTextures = contentTextures;
+  }
+}
+
+- (void)dispatchOnLoad
+{
+  if (_onLoad) {
+    [_bridge.eventDispatcher sendInputEventWithName:@"load" body:@{ @"target": self.reactTag }];
+  }
+}
+
+- (void)dispatchOnProgress: (double)progress withLoaded:(int)loaded withTotal:(int)total
+{
+  if (_onProgress) {
+    NSDictionary *event =
+    @{
+      @"target": self.reactTag,
+      @"progress": @(progress),
+      @"loaded": @(loaded),
+      @"total": @(total) };
+    [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
+  }
+}
 
 @end
