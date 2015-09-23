@@ -132,16 +132,16 @@ NSString* srcResource (id res)
 - (void)setEventsThrough:(BOOL)eventsThrough
 {
   _eventsThrough = eventsThrough;
-  [self updateUIE];
+  [self syncEventsThrough];
 }
 
 -(void)setVisibleContent:(BOOL)visibleContent
 {
   _visibleContent = visibleContent;
-  [self updateUIE];
+  [self syncEventsThrough];
 }
 
-- (void) updateUIE
+- (void) syncEventsThrough
 {
   self.userInteractionEnabled = !(_eventsThrough);
   self.superview.userInteractionEnabled = !(_eventsThrough && !_visibleContent);
@@ -372,6 +372,7 @@ NSString* srcResource (id res)
   if (!_renderData) return;
 
   self.layer.opaque = _opaque;
+  [self syncEventsThrough];
   
   CGFloat scale = RCTScreenScale();
   
