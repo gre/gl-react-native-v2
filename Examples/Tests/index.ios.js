@@ -92,13 +92,6 @@ class Tests extends React.Component {
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
-          <Copy width={debugSize} height={debugSize}>
-            http://i.imgur.com/S22HNaU.png
-          </Copy>
-          <Image source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
-        </NativeLayer>
-
-        <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
           <Copy width={debugSize} height={debugSize} opaque={false}>
             http://i.imgur.com/mp79p5T.png
@@ -106,18 +99,52 @@ class Tests extends React.Component {
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
-          <Copy width={debugSize} height={debugSize}>
-            http://i.imgur.com/S22HNaU.png
-          </Copy>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
           <Copy width={debugSize} height={debugSize} opaque={false}>
-            http://i.imgur.com/mp79p5T.png
+            <Copy>
+              http://i.imgur.com/mp79p5T.png
+            </Copy>
           </Copy>
         </NativeLayer>
 
-        <Layer width={debugSize} height={debugSize}>
-          {"http://i.imgur.com/S22HNaU.png"}
-          {"http://i.imgur.com/mp79p5T.png"}
-        </Layer>
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Copy width={debugSize} height={debugSize} opaque={false}>
+            <Copy>
+              <Copy>
+                http://i.imgur.com/mp79p5T.png
+              </Copy>
+            </Copy>
+          </Copy>
+        </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Copy width={debugSize} height={debugSize} opaque={false}>
+            <Copy>
+              <Copy>
+                <Copy>
+                  http://i.imgur.com/mp79p5T.png
+                </Copy>
+              </Copy>
+            </Copy>
+          </Copy>
+        </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Copy width={debugSize} height={debugSize} opaque={false}>
+            <Copy>
+              <Copy>
+                <Copy>
+                  <Copy>
+                    http://i.imgur.com/mp79p5T.png
+                  </Copy>
+                </Copy>
+              </Copy>
+            </Copy>
+          </Copy>
+        </NativeLayer>
       </View>
 
     </ScrollView>;

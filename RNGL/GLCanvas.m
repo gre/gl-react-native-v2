@@ -336,9 +336,6 @@ RCT_NOT_IMPLEMENTED(-init)
         [fbo bind];
       }
       
-      glClear(GL_COLOR_BUFFER_BIT);
-      glClearColor(0.0, 0.0,  0.0,  0.0);
-      
       [renderData.shader bind];
       
       for (NSString *uniformName in renderData.textures) {
@@ -351,22 +348,22 @@ RCT_NOT_IMPLEMENTED(-init)
         [renderData.shader setUniform:uniformName withValue:renderData.uniforms[uniformName]];
       }
       
+      glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+      glClearColor(0.0, 0.0, 0.0, 0.0);
+      glClear(GL_COLOR_BUFFER_BIT);
+      
+      glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
       glDrawArrays(GL_TRIANGLES, 0, 6);
     };
     
     // DRAWING THE SCENE
     
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
-    
-    glDisable(GL_BLEND);
-    
     [self syncContentTextures];
     
-    recDraw(_renderData);
-    
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+    recDraw(_renderData);
+    glDisable(GL_BLEND);
     glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
   }
 }
