@@ -21,10 +21,11 @@ void main () {
 
 class Layer extends GL.Component {
   render () {
-    const { width, height, children } = this.props;
+    const { width, height, children, ...rest } = this.props;
     if (!children || children.length !== 2) throw new Error("You must provide 2 children to Layer");
     const [t1, t2] = children;
     return <GL.View
+      {...rest}
       shader={shaders.layer}
       width={width}
       height={height}

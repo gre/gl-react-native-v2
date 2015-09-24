@@ -3,14 +3,18 @@ const {
   AppRegistry,
   Text,
   View,
+  ScrollView,
+  Image,
 } = React;
 
 const Blur = require("./Blur");
 const Add = require("./Add");
 const Multiply = require("./Multiply");
 const Layer = require("./Layer");
+const NativeLayer = require("./NativeLayer");
 const HelloGL = require("./HelloGL");
 const Display2 = require("./Display2");
+const Copy = require("./Copy");
 const { width: viewportW, height: viewportH } = require("Dimensions").get("window");
 
 class Tests extends React.Component {
@@ -27,6 +31,9 @@ class Tests extends React.Component {
     console.log("PROGRESS", progress, loaded, total);
   }
   render () {
+
+    const debugSize = viewportW / 2;
+
     const helloGL =
       <HelloGL width={64} height={64} />;
 
@@ -59,26 +66,61 @@ class Tests extends React.Component {
         {txt}
       </Layer>;
 
-    return <View style={{ backgroundColor: "#000" }}>
-      <Display2 width={viewportW} height={viewportH} vertical preload onLoad={this.onLoad} onProgress={this.onProgress}>
-        <Display2 width={viewportW} height={viewportH/2}>
-          <Add width={viewportW/2} height={viewportH/2}>
-            {txt}
-            {helloGL}
-          </Add>
-          <Display2 width={viewportW/2} height={viewportH/2} vertical>
-            <Blur factor={1} passes={4} width={viewportW/2} height={viewportH/4}>
-              <Multiply>
-                {blurredImageOverText}
-                {helloGL}
-              </Multiply>
-            </Blur>
-            {blurredImage}
-          </Display2>
+    return <ScrollView style={{ backgroundColor: "#000" }}>
+      <Display2 width={viewportW} height={viewportW} preload onLoad={this.onLoad} onProgress={this.onProgress}>
+        <Add width={viewportW/2} height={viewportH/2}>
+          {txt}
+          {helloGL}
+        </Add>
+        <Display2 width={viewportW/2} height={viewportH/2} vertical>
+          <Blur factor={1} passes={4} width={viewportW/2} height={viewportH/4}>
+            <Multiply>
+              {blurredImageOverText}
+              {helloGL}
+            </Multiply>
+          </Blur>
+          {blurredImage}
         </Display2>
-        {txt}
       </Display2>
-    </View>;
+
+
+      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Image source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
+        </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Copy width={debugSize} height={debugSize}>
+            http://i.imgur.com/S22HNaU.png
+          </Copy>
+          <Image source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
+        </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Copy width={debugSize} height={debugSize} opaque={false}>
+            http://i.imgur.com/mp79p5T.png
+          </Copy>
+        </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Copy width={debugSize} height={debugSize}>
+            http://i.imgur.com/S22HNaU.png
+          </Copy>
+          <Copy width={debugSize} height={debugSize} opaque={false}>
+            http://i.imgur.com/mp79p5T.png
+          </Copy>
+        </NativeLayer>
+
+        <Layer width={debugSize} height={debugSize}>
+          {"http://i.imgur.com/S22HNaU.png"}
+          {"http://i.imgur.com/mp79p5T.png"}
+        </Layer>
+      </View>
+
+    </ScrollView>;
   }
 }
 
