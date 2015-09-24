@@ -345,9 +345,6 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
 - (void) makeProgram
 {
   if (![self ensureContext]) return;
-  
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   GLuint vertex = compileShader(_name, _vert, GL_VERTEX_SHADER);
   if (vertex == -1) return;
