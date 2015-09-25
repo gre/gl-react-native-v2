@@ -11,6 +11,7 @@
                      withFboId: (int)fboId
            withContextChildren: (NSArray *)contextChildren
                   withChildren: (NSArray *)children
+        withPremultipliedAlpha: (BOOL)premultipliedAlpha
 {
   
   if ((self = [super init])) {
@@ -22,6 +23,7 @@
     self.fboId = fboId;
     self.contextChildren = contextChildren;
     self.children = children;
+    self.premultipliedAlpha = premultipliedAlpha;
   }
   return self;
 }

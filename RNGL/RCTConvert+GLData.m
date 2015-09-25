@@ -25,6 +25,8 @@
     GLData *child = [self GLData:childJSON];
     [contextChildren addObject:child];
   }
+  
+  BOOL premultipliedAlpha = [self BOOL:json[@"premultipliedAlpha"]];
 
   return [[GLData alloc] initWithShader: shader
                            withUniforms: uniforms
@@ -32,7 +34,8 @@
                              withHeight: height
                               withFboId: fboId
                     withContextChildren: contextChildren
-                           withChildren: children];
+                           withChildren: children
+                 withPremultipliedAlpha: premultipliedAlpha];
 }
 
 @end

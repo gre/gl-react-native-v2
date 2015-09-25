@@ -15,6 +15,7 @@ const NativeLayer = require("./NativeLayer");
 const HelloGL = require("./HelloGL");
 const Display2 = require("./Display2");
 const Copy = require("./Copy");
+const TransparentNonPremultiplied = require("./TransparentNonPremultiplied");
 const { width: viewportW, height: viewportH } = require("Dimensions").get("window");
 
 class Tests extends React.Component {
@@ -145,6 +146,71 @@ class Tests extends React.Component {
             </Copy>
           </Copy>
         </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <NativeLayer>
+            <Image source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
+            <TransparentNonPremultiplied width={debugSize} height={debugSize} premultipliedAlpha>
+              <HelloGL />
+            </TransparentNonPremultiplied>
+          </NativeLayer>
+        </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <NativeLayer>
+            <Image source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
+            <TransparentNonPremultiplied width={debugSize} height={debugSize} premultipliedAlpha>
+              <TransparentNonPremultiplied>
+                <HelloGL />
+              </TransparentNonPremultiplied>
+            </TransparentNonPremultiplied>
+          </NativeLayer>
+        </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <NativeLayer>
+            <Image source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
+            <TransparentNonPremultiplied width={debugSize} height={debugSize} premultipliedAlpha>
+              <Copy>
+                <TransparentNonPremultiplied>
+                  <Copy>
+                    http://i.imgur.com/S22HNaU.png
+                  </Copy>
+                </TransparentNonPremultiplied>
+              </Copy>
+            </TransparentNonPremultiplied>
+          </NativeLayer>
+        </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Layer width={debugSize} height={debugSize} opaque={false} premultipliedAlpha debug>
+            http://i.imgur.com/mp79p5T.png
+            <TransparentNonPremultiplied>
+              <HelloGL />
+            </TransparentNonPremultiplied>
+          </Layer>
+        </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Layer width={debugSize} height={debugSize} opaque={false}>
+            http://i.imgur.com/mp79p5T.png
+            <TransparentNonPremultiplied>
+              <Copy>
+                <TransparentNonPremultiplied>
+                  <Copy>
+                    http://i.imgur.com/S22HNaU.png
+                  </Copy>
+                </TransparentNonPremultiplied>
+              </Copy>
+            </TransparentNonPremultiplied>
+          </Layer>
+        </NativeLayer>
+
       </View>
 
     </ScrollView>;

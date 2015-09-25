@@ -11,6 +11,7 @@
 @property (nonatomic) NSNumber *fboId;
 @property (nonatomic) NSArray *contextChildren;
 @property (nonatomic) NSArray *children;
+@property (nonatomic) BOOL premultipliedAlpha;
 
 -(instancetype)initWithShader: (NSNumber *)shader
                  withUniforms: (NSDictionary *)uniforms
@@ -18,6 +19,7 @@
                    withHeight: (NSNumber *)height
                     withFboId: (NSNumber *)fboId
           withContextChildren: (NSArray *)contextChildren
-                 withChildren: (NSArray *)children;
+                 withChildren: (NSArray *)children
+       withPremultipliedAlpha: (BOOL)premultipliedAlpha;
 
 @end

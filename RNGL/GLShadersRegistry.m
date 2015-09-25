@@ -40,6 +40,7 @@ RCT_EXPORT_MODULE();
   self = [super init];
   if (self) {
     _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    
     if (!_context) {
       RCTLogError(@"Failed to initialize OpenGLES 2.0 context");
     }
