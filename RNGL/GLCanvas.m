@@ -160,7 +160,6 @@ RCT_NOT_IMPLEMENTED(-init)
     weak_traverseTree = traverseTree = ^GLRenderData *(GLData *data) {
       NSNumber *width = data.width;
       NSNumber *height = data.height;
-      BOOL premultipliedAlpha = data.premultipliedAlpha;
       int fboId = [data.fboId intValue];
       
       NSMutableArray *contextChildren = [[NSMutableArray alloc] init];
@@ -255,8 +254,7 @@ RCT_NOT_IMPLEMENTED(-init)
               withHeight:height
               withFboId:fboId
               withContextChildren:contextChildren
-              withChildren:children
-              withPremultipliedAlpha:premultipliedAlpha];
+              withChildren:children];
     };
     
     _renderData = traverseTree(_data);
@@ -350,14 +348,9 @@ RCT_NOT_IMPLEMENTED(-init)
         [renderData.shader setUniform:uniformName withValue:renderData.uniforms[uniformName]];
       }
       
-      glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glClearColor(0.0, 0.0, 0.0, 0.0);
       glClear(GL_COLOR_BUFFER_BIT);
-      
-      if (renderData.premultipliedAlpha)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      else
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
       glDrawArrays(GL_TRIANGLES, 0, 6);
     };
     
