@@ -134,11 +134,12 @@ class Simple extends React.Component {
         </View>
 
 
-        <Text style={styles.demoTitle}>8. Blur (2-pass) over UI</Text>
+        <Text style={styles.demoTitle}>8. Blur+Hue over UI</Text>
         <View style={styles.demo}>
           <Blur
             autoRedraw
             eventsThrough
+            visibleContent
             width={256}
             height={160}
             factor={factor}>
@@ -164,6 +165,11 @@ class Simple extends React.Component {
               </HueRotate>
             </Blur>
           </Blur>
+        </View>
+
+        <Text style={styles.demoTitle}>9. Texture from array</Text>
+        <View style={styles.demo}>
+          <Text>Not Supported Yet</Text>
         </View>
 
       </View>
