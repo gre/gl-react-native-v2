@@ -94,14 +94,14 @@ class Tests extends React.Component {
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Copy width={debugSize} height={debugSize} opaque={false}>
+          <Copy width={debugSize} height={debugSize} opaque={false} last>
             http://i.imgur.com/mp79p5T.png
           </Copy>
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Copy width={debugSize} height={debugSize} opaque={false}>
+          <Copy width={debugSize} height={debugSize} opaque={false} last>
             <Copy>
               http://i.imgur.com/mp79p5T.png
             </Copy>
@@ -110,7 +110,7 @@ class Tests extends React.Component {
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Copy width={debugSize} height={debugSize} opaque={false}>
+          <Copy width={debugSize} height={debugSize} opaque={false} last>
             <Copy>
               <Copy>
                 http://i.imgur.com/mp79p5T.png
@@ -121,7 +121,7 @@ class Tests extends React.Component {
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Copy width={debugSize} height={debugSize} opaque={false}>
+          <Copy width={debugSize} height={debugSize} opaque={false} last>
             <Copy>
               <Copy>
                 <Copy>
@@ -135,7 +135,7 @@ class Tests extends React.Component {
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
           <Copy width={debugSize} height={debugSize} opaque={false}>
-            <Copy>
+            <Copy last>
               <Copy>
                 <Copy>
                   <Copy>
