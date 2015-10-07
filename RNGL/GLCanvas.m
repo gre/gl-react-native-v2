@@ -216,8 +216,9 @@ RCT_NOT_IMPLEMENTED(-init)
                   images[src] = image;
               }
               if (image == nil) {
+                __weak GLCanvas *weakSelf = self;
                 image = [[GLImage alloc] initWithBridge:_bridge withOnLoad:^{
-                  [self onImageLoad:src];
+                  if (weakSelf) [weakSelf onImageLoad:src];
                 }];
                 image.src = src;
                 images[src] = image;
