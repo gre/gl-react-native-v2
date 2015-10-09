@@ -37,7 +37,7 @@ void main() {
   }
 });
 
-class Intro extends GL.Component {
+class Intro extends React.Component {
   render () {
     const { time, fps, width, height } = this.props;
     return <GL.View

@@ -32,10 +32,9 @@ void main () {
   }
 });
 
-class Blur1D extends GL.Component {
-  render () {
-    const { width, height, direction, children } = this.props;
-    return <GL.View
+module.exports = GL.createComponent(
+  ({ width, height, direction, children }) =>
+    <GL.View
       shader={shaders.blur1D}
       width={width}
       height={height}
@@ -44,15 +43,7 @@ class Blur1D extends GL.Component {
         resolution: [ width, height ]
       }}>
       <GL.Uniform name="t">{children}</GL.Uniform>
-    </GL.View>;
-  }
-}
-
-Blur1D.propTypes = {
-  width: PropTypes.number,
-  height: PropTypes.number,
-  direction: PropTypes.array.isRequired,
-  children: PropTypes.any.isRequired
-};
-
-module.exports = Blur1D;
+    </GL.View>
+, {
+  displayName: "Blur1D"
+});

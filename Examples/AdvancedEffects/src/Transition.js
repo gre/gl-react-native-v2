@@ -1,9 +1,8 @@
 const React = require("react-native");
 const GL = require("gl-react-native");
 
-class Transition extends GL.Component {
-  render () {
-    const { width, height, shader, progress, from, to, uniforms } = this.props;
+module.exports = GL.createComponent(
+  ({ width, height, shader, progress, from, to, uniforms }) => {
     const scale = React.PixelRatio.get();
     return <GL.View
       preload
@@ -19,7 +18,5 @@ class Transition extends GL.Component {
         resolution: [ width * scale, height * scale ]
       }}
     />;
-  }
-}
-
-module.exports = Transition;
+  },
+  { displayName: "Transition" });

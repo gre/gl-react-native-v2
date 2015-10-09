@@ -2,7 +2,6 @@ const {createView} = require("gl-react-core");
 const React = require("react-native");
 const Shaders = require("./Shaders");
 const Uniform = require("./Uniform");
-const Component = require("./Component");
 
 const {
   requireNativeComponent,
@@ -46,7 +45,7 @@ const renderVcontainer = function ({ style, width, height }, contents, renderer)
   </View>;
 };
 
-const GLView = createView(React, Shaders, Uniform, Component, renderVcontainer, renderVcontent, renderVGL);
+const GLView = createView(React, Shaders, Uniform, renderVcontainer, renderVcontent, renderVGL);
 
 GLView.prototype.setNativeProps = function (props) {
   this.refs.native.setNativeProps(props);

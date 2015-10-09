@@ -33,21 +33,18 @@ void main () {
   }
 });
 
-class Blur1D extends GL.Component {
-  render () {
-    const { width, height, direction, children: t, ...rest } = this.props;
-    return <GL.View
-      {...rest}
+module.exports = GL.createComponent(
+  ({ width, height, direction, children }) =>
+    <GL.View
       shader={shaders.blur1D}
       width={width}
       height={height}
       uniforms={{
         direction,
-        resolution: [ width, height ],
-        t
-      }}
-    />;
-  }
-}
-
-module.exports = Blur1D;
+        resolution: [ width, height ]
+      }}>
+      <GL.Uniform name="t">{children}</GL.Uniform>
+    </GL.View>
+, {
+  displayName: "Blur1D"
+});

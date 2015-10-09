@@ -24,7 +24,7 @@ void main( void ) {
   }
 });
 
-class Banner extends GL.Component {
+class Banner extends React.Component {
   render () {
     const { width, height, time } = this.props;
     return <GL.View
