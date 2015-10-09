@@ -8,6 +8,6 @@
   "dependencies": {
     "gl-react-native": "file:../..",
     "glsl-transitions": "^2015.8.17",
-    "react-native": "^0.11.0"
+    "react-native": "^0.12.0"
   }
 }
