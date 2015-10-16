@@ -136,18 +136,21 @@ class Simple extends React.Component {
 
         <Text style={styles.demoTitle}>8. Blur+Hue over UI</Text>
         <View style={styles.demo}>
-          <Blur
-            autoRedraw
-            eventsThrough
-            visibleContent
+          <HueRotate
+            hue={-switch1 + 2 * switch2 + 4 * switch3}
             width={256}
             height={160}
-            factor={factor}>
+            autoRedraw
+            eventsThrough
+            visibleContent>
             <Blur
               width={256}
               height={160}
-              factor={factor/2}>
-              <HueRotate hue={-switch1 + 2 * switch2 + 4 * switch3}>
+              factor={factor}>
+              <Blur
+                width={256}
+                height={160}
+                factor={factor/2}>
                 <View style={{ width: 256, height: 160, padding: 10 }}>
                   <SliderIOS
                     style={{ height: 80 }}
@@ -162,9 +165,9 @@ class Simple extends React.Component {
                 <ProgressViewIOS progress={factor} style={{height: 10, marginTop: 8, flex:1}} />
 
                 </View>
-              </HueRotate>
+              </Blur>
             </Blur>
-          </Blur>
+          </HueRotate>
         </View>
 
         <Text style={styles.demoTitle}>9. Texture from array</Text>
