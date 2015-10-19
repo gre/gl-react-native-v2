@@ -418,22 +418,18 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)dispatchOnLoad
 {
-  if (_onLoad) {
-    [_bridge.eventDispatcher sendInputEventWithName:@"load" body:@{ @"target": self.reactTag }];
-  }
+  [_bridge.eventDispatcher sendInputEventWithName:@"load" body:@{ @"target": self.reactTag }];
 }
 
 - (void)dispatchOnProgress: (double)progress withLoaded:(int)loaded withTotal:(int)total
 {
-  if (_onProgress) {
-    NSDictionary *event =
-    @{
-      @"target": self.reactTag,
-      @"progress": @(progress),
-      @"loaded": @(loaded),
-      @"total": @(total) };
-    [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
-  }
+  NSDictionary *event =
+  @{
+    @"target": self.reactTag,
+    @"progress": @(progress),
+    @"loaded": @(loaded),
+    @"total": @(total) };
+  [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
 }
 
 @end
