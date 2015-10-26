@@ -58,6 +58,7 @@ NSString* srcResource (id res)
     _preloaded = [[NSMutableArray alloc] init];
     _preloadingDone = false;
     self.context = context;
+    self.contentScaleFactor = RCTScreenScale();
   }
   return self;
 }
