@@ -1,6 +1,6 @@
 {
   "name": "gl-react-native",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "OpenGL bindings for react-native to implement complex effects over images and components, in the descriptive VDOM paradigm",
   "main": "src/index.js",
   "repository": {
