@@ -2,13 +2,11 @@ const {createView} = require("gl-react-core");
 const React = require("react-native");
 const Shaders = require("./Shaders");
 const Uniform = require("./Uniform");
+const GLCanvas = require("./GLCanvas");
 
 const {
-  requireNativeComponent,
   View,
 } = React;
-
-const GLCanvas = requireNativeComponent("GLCanvas", null);
 
 const renderVcontent = function (width, height, id, children, { visibleContent }) {
   const childrenStyle = {
@@ -23,12 +21,7 @@ const renderVcontent = function (width, height, id, children, { visibleContent }
 };
 
 const renderVGL = function (props) {
-  const { width, height, ...restProps } = props;
-  return <GLCanvas
-    key="native"
-    {...restProps}
-    style={{ width, height }}
-  />;
+  return <GLCanvas ref="canvas" {...props} />;
 };
 
 const renderVcontainer = function ({ style, width, height }, contents, renderer) {

@@ -20,6 +20,7 @@ const PieProgress = require("./PieProgress");
 const OneFingerResponse = require("./OneFingerResponse");
 const AnimatedHelloGL = require("./AnimatedHelloGL");
 const Blur = require("./Blur");
+const Button = require("./Button");
 
 class Simple extends React.Component {
   constructor (props) {
@@ -33,7 +34,15 @@ class Simple extends React.Component {
       switch1: false,
       switch2: false,
       switch3: false,
+      captured: null
     };
+    this.onCapture1 = this.onCapture1.bind(this);
+  }
+
+  onCapture1 () {
+    this.refs.helloGL.captureFrame(data64 => {
+      this.setState({ captured: data64 });
+    });
   }
 
   render () {
@@ -46,6 +55,7 @@ class Simple extends React.Component {
       switch1,
       switch2,
       switch3,
+      captured
     } = this.state;
 
     return <ScrollView style={styles.container}>
@@ -56,7 +66,11 @@ class Simple extends React.Component {
 
         <Text style={styles.demoTitle}>1. Hello GL</Text>
         <View style={styles.demo}>
-          <HelloGL width={256} height={171} />
+          <HelloGL width={256} height={171} ref="helloGL" />
+          <View style={{ paddingTop: 20, alignItems: "center", flexDirection: "row" }}>
+            <Button onPress={this.onCapture1}>captureFrame()</Button>
+            {captured && <Image source={{ uri:captured }} style={{ marginLeft: 20, width: 51, height: 34 }} />}
+          </View>
         </View>
 
         <Text style={styles.demoTitle}>2. Saturate an Image</Text>

@@ -47,6 +47,8 @@ NSString* srcResource (id res)
   BOOL _preloadingDone;
   
   NSTimer *animationTimer;
+  
+  int _lastCaptureId;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -57,6 +59,7 @@ NSString* srcResource (id res)
     _images = @{};
     _preloaded = [[NSMutableArray alloc] init];
     _preloadingDone = false;
+    _lastCaptureId = 0;
     self.context = context;
     self.contentScaleFactor = RCTScreenScale();
   }
@@ -133,6 +136,12 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   [self resizeUniformContentTextures:[nbContentTextures intValue]];
   _nbContentTextures = nbContentTextures;
+}
+
+- (void)setCaptureNextFrameId:(int)captureNextFrameId
+{
+  _captureNextFrameId = captureNextFrameId;
+  [self setNeedsDisplay];
 }
 
 //// Sync methods (called from props setters)
@@ -290,6 +299,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   self.layer.opaque = _opaque;
   [self syncEventsThrough];
+  __weak GLCanvas *weakSelf = self;
   
   if (!_preloadingDone) {
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -299,13 +309,27 @@ RCT_NOT_IMPLEMENTED(-init)
   BOOL needsDeferredRendering = _nbContentTextures > 0 && !_autoRedraw;
   if (needsDeferredRendering && !_deferredRendering) {
     dispatch_async(dispatch_get_main_queue(), ^{
+      if (!weakSelf) return;
       _deferredRendering = true;
-      [self setNeedsDisplay];
+      [weakSelf setNeedsDisplay];
     });
   }
   else {
     [self render];
     _deferredRendering = false;
+    if (_captureNextFrameId > _lastCaptureId) {
+      _lastCaptureId ++;
+      int id = _lastCaptureId;
+      dispatch_async(dispatch_get_main_queue(), ^{ // snapshot not allowed in render tick. defer it.
+        if (!weakSelf) return;
+        UIImage *frameImage = [weakSelf snapshot];
+        NSData *frameData = UIImagePNGRepresentation(frameImage);
+        NSString *frame =
+        [NSString stringWithFormat:@"data:image/png;base64,%@",
+         [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];
+        [weakSelf dispatchOnCapture:frame withId:id];
+      });
+    }
   }
 }
 
@@ -431,6 +455,13 @@ RCT_NOT_IMPLEMENTED(-init)
     @"loaded": @(loaded),
     @"total": @(total) };
   [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
+}
+
+- (void)dispatchOnCapture: (NSString *)frame withId:(int)id
+{
+  NSDictionary *event = @{ @"target": self.reactTag, @"frame": frame, @"id":@(id) };
+  // FIXME: using onChange is a hack before we use the new system to directly call callbacks. we will replace with: self.onCaptureNextFrame(...)
+  [_bridge.eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 @end
