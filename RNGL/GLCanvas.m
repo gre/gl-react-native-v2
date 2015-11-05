@@ -4,9 +4,9 @@
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RNGLContext.h"
 #import "GLCanvas.h"
 #import "GLShader.h"
-#import "GLShadersRegistry.h"
 #import "GLTexture.h"
 #import "GLImage.h"
 #import "GLRenderData.h"
@@ -30,7 +30,7 @@ NSString* srcResource (id res)
 
 @implementation GLCanvas
 {
-  RCTBridge *_bridge; // bridge is required to instanciate GLReactImage
+  RCTBridge *_bridge;
   
   GLRenderData *_renderData;
   
@@ -52,7 +52,6 @@ NSString* srcResource (id res)
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
-                   withContext:(EAGLContext *)context
 {
   if ((self = [super init])) {
     _bridge = bridge;
@@ -60,7 +59,7 @@ NSString* srcResource (id res)
     _preloaded = [[NSMutableArray alloc] init];
     _preloadingDone = false;
     _lastCaptureId = 0;
-    self.context = context;
+    self.context = [bridge.rnglContext getContext];
     self.contentScaleFactor = RCTScreenScale();
   }
   return self;
@@ -182,7 +181,7 @@ RCT_NOT_IMPLEMENTED(-init)
         [children addObject:weak_traverseTree(child)];
       }
       
-      GLShader *shader = [GLShadersRegistry getShader:data.shader];
+      GLShader *shader = [_bridge.rnglContext getShader:data.shader];
       
       NSDictionary *uniformTypes = [shader uniformTypes];
       NSMutableDictionary *uniforms = [[NSMutableDictionary alloc] init];
@@ -210,7 +209,7 @@ RCT_NOT_IMPLEMENTED(-init)
             }
             else if ([type isEqualToString:@"fbo"]) {
               NSNumber *id = [RCTConvert NSNumber:value[@"id"]];
-              GLFBO *fbo = [GLShadersRegistry getFBO:id];
+              GLFBO *fbo = [_bridge.rnglContext getFBO:id];
               textures[uniformName] = fbo.color[0];
             }
             else if ([type isEqualToString:@"uri"]) {
@@ -357,7 +356,7 @@ RCT_NOT_IMPLEMENTED(-init)
         glViewport(0, 0, w, h);
       }
       else {
-        GLFBO *fbo = [GLShadersRegistry getFBO:[NSNumber numberWithInt:renderData.fboId]];
+        GLFBO *fbo = [_bridge.rnglContext getFBO:[NSNumber numberWithInt:renderData.fboId]];
         [fbo setShapeWithWidth:w withHeight:h];
         [fbo bind];
       }

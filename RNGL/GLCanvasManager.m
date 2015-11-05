@@ -4,8 +4,6 @@
 #import "RCTLog.h"
 #import <UIKit/UIKit.h>
 
-#import "GLShadersRegistry.h"
-
 @implementation GLCanvasManager
 
 RCT_EXPORT_MODULE();
@@ -34,7 +32,7 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, BOOL);
 - (UIView *)view
 {
   GLCanvas * v;
-  v = [[GLCanvas alloc] initWithBridge:self.bridge withContext:[GLShadersRegistry getContext]];
+  v = [[GLCanvas alloc] initWithBridge:self.bridge];
   return v;
   
 }

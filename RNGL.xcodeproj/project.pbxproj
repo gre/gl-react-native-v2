@@ -16,9 +16,9 @@
 		34D202A31B8DDDEF000A6FB5 /* GLFBO.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D202A21B8DDDEF000A6FB5 /* GLFBO.m */; };
 		34EA054A1B82179E00A4FAFF /* GLImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EA053B1B82179E00A4FAFF /* GLImage.m */; };
 		34EA054B1B82179E00A4FAFF /* GLShader.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EA053D1B82179E00A4FAFF /* GLShader.m */; };
-		34EA054C1B82179E00A4FAFF /* GLShadersRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EA053F1B82179E00A4FAFF /* GLShadersRegistry.m */; };
 		34EA054D1B82179E00A4FAFF /* GLTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EA05411B82179E00A4FAFF /* GLTexture.m */; };
 		34EA05511B82179E00A4FAFF /* GLImageData.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EA05491B82179E00A4FAFF /* GLImageData.m */; };
+		34F489BE1BEB8DC400148438 /* RNGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F489BD1BEB8DC400148438 /* RNGLContext.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,12 +63,12 @@
 		34EA053B1B82179E00A4FAFF /* GLImage.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = GLImage.m; sourceTree = "<group>"; tabWidth = 2; };
 		34EA053C1B82179E00A4FAFF /* GLShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLShader.h; sourceTree = "<group>"; };
 		34EA053D1B82179E00A4FAFF /* GLShader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLShader.m; sourceTree = "<group>"; };
-		34EA053E1B82179E00A4FAFF /* GLShadersRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLShadersRegistry.h; sourceTree = "<group>"; };
-		34EA053F1B82179E00A4FAFF /* GLShadersRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLShadersRegistry.m; sourceTree = "<group>"; };
 		34EA05401B82179E00A4FAFF /* GLTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLTexture.h; sourceTree = "<group>"; };
 		34EA05411B82179E00A4FAFF /* GLTexture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLTexture.m; sourceTree = "<group>"; };
 		34EA05481B82179E00A4FAFF /* GLImageData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLImageData.h; sourceTree = "<group>"; };
 		34EA05491B82179E00A4FAFF /* GLImageData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLImageData.m; sourceTree = "<group>"; };
+		34F489BC1BEB8DC400148438 /* RNGLContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGLContext.h; sourceTree = "<group>"; };
+		34F489BD1BEB8DC400148438 /* RNGLContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGLContext.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,8 +139,8 @@
 				34EA05491B82179E00A4FAFF /* GLImageData.m */,
 				34EA053C1B82179E00A4FAFF /* GLShader.h */,
 				34EA053D1B82179E00A4FAFF /* GLShader.m */,
-				34EA053E1B82179E00A4FAFF /* GLShadersRegistry.h */,
-				34EA053F1B82179E00A4FAFF /* GLShadersRegistry.m */,
+				34F489BC1BEB8DC400148438 /* RNGLContext.h */,
+				34F489BD1BEB8DC400148438 /* RNGLContext.m */,
 				34EA05401B82179E00A4FAFF /* GLTexture.h */,
 				34EA05411B82179E00A4FAFF /* GLTexture.m */,
 			);
@@ -251,8 +251,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34F489BE1BEB8DC400148438 /* RNGLContext.m in Sources */,
 				34D202901B8DC278000A6FB5 /* RCTConvert+GLData.m in Sources */,
-				34EA054C1B82179E00A4FAFF /* GLShadersRegistry.m in Sources */,
 				34EA054A1B82179E00A4FAFF /* GLImage.m in Sources */,
 				34D2029F1B8DD2FC000A6FB5 /* GLRenderData.m in Sources */,
 				34EA054D1B82179E00A4FAFF /* GLTexture.m in Sources */,

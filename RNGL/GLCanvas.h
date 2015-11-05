@@ -16,7 +16,6 @@
 @property (nonatomic, assign) BOOL onLoad;
 @property (nonatomic, assign) BOOL onChange;
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                   withContext:(EAGLContext *)context;
+- (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 @end

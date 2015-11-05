@@ -1,6 +1,6 @@
 const {createShaders} = require("gl-react-core");
-const { NativeModules: { GLShadersRegistry } } = require("react-native");
+const { NativeModules: { RNGLContext } } = require("react-native");
 
 module.exports = createShaders(function (id, shader) {
-  GLShadersRegistry.register(id, shader);
+  RNGLContext.addShader(id, shader);
 });
