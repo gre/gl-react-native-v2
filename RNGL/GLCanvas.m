@@ -194,7 +194,7 @@ RCT_NOT_IMPLEMENTED(-init)
         
         if (type == GL_SAMPLER_2D || type == GL_SAMPLER_CUBE) {
           uniforms[uniformName] = [NSNumber numberWithInt:units++];
-          if (!value) {
+          if ([value isEqual:[NSNull null]]) {
             GLTexture *emptyTexture = [[GLTexture alloc] init];
             [emptyTexture setPixelsEmpty];
             textures[uniformName] = emptyTexture;
