@@ -8,7 +8,7 @@ More technically, `gl-react-native` allows you to write a [fragment shader](http
 
 **`gl-react-native` is directly inspired from our other project, [`gl-react`](http://github.com/ProjectSeptemberInc/gl-react) and implements the same API (so you can write "universal" code).**
 
-[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/imgs/simple.gif)](./Examples/Simple)[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/imgs/advancedeffects.gif)](./Examples/AdvancedEffects)
+[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/docs/simple.gif)](./Examples/Simple)[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/docs/advancedeffects.gif)](./Examples/AdvancedEffects)
 
 ### HelloGL Gist
 
@@ -39,7 +39,7 @@ class HelloGL extends GL.Component {
 }
 ```
 
-![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/imgs/hellogl.jpg)
+![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/docs/hellogl.jpg)
 
 ## Installation
 
@@ -53,7 +53,7 @@ npm i --save gl-react-native
 
 **Configure your React Native Application:**
 
-![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/imgs/install-steps.png)
+![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/docs/install-steps.png)
 
 
 ## Influence / Credits
