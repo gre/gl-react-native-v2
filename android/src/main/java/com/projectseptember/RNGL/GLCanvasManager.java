@@ -1,17 +1,16 @@
 package com.projectseptember.RNGL;
 
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import android.opengl.GLSurfaceView;
 
-import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.SimpleViewManager;
+import com.facebook.react.uimanager.ThemedReactContext;
 
-public class GLCanvasManager extends SimpleViewManager<GLCanvasView> {
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
+
+public class GLCanvasManager extends SimpleViewManager<GLSurfaceView> {
 
   public static final String REACT_CLASS = "GLCanvas";
 
@@ -23,14 +22,32 @@ public class GLCanvasManager extends SimpleViewManager<GLCanvasView> {
   }
 
   @Override
-  public GLCanvasView createViewInstance(ThemedReactContext context) {
-    return new GLCanvasView(context, Fresco.newDraweeControllerBuilder(), mCallerContext);
+  public GLSurfaceView createViewInstance(ThemedReactContext context) {
+    GLSurfaceView view = new GLSurfaceView(context);
+    view.setRenderer(new GLSurfaceView.Renderer() {
+      @Override
+      public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+
+      }
+
+      @Override
+      public void onSurfaceChanged(GL10 gl, int width, int height) {
+        gl.glViewport(0, 0, width, height);
+      }
+
+      @Override
+      public void onDrawFrame(GL10 gl) {
+        gl.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+        gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+      }
+    });
+    return view;
   }
 
   @Override
-  public void updateView(final ReactImageView view, final CatalystStylesDiffMap props) {
+  public void updateView(final GLSurfaceView view, final CatalystStylesDiffMap props) {
     super.updateView(view, props);
     // TODO... call setters with props
-    view.maybeUpdateView();
+    // view.requestRender();
   }
 }

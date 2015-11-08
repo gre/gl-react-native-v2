@@ -27,9 +27,8 @@ project.xcworkspace
 node_modules/
 npm-debug.log
 
-
 # android
-
+#
 android/build/
 android/.gradle/
 android/.idea/

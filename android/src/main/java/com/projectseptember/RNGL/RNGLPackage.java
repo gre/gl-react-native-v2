@@ -11,9 +11,21 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.bridge.JavaScriptModule;
 
-public class GLCanvas implements ReactPackage {
+public class RNGLPackage implements ReactPackage {
 
   @Override
+  public List<NativeModule> createNativeModules(ReactApplicationContext reactApplicationContext) {
+      List<NativeModule> modules = new ArrayList<>();
+      modules.add(new RNGLContext(reactApplicationContext));
+      return modules;
+  }
+
+    @Override
+    public List<Class<? extends JavaScriptModule>> createJSModules() {
+        return Collections.emptyList();
+    }
+
+    @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     return Arrays.<ViewManager>asList(
       new GLCanvasManager()

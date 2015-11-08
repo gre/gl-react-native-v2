@@ -28,3 +28,14 @@ DerivedData
 #
 node_modules/
 npm-debug.log
+
+# android
+#
+android/build/
+android/.gradle/
+android/.idea/
+android/android.iml
+android/gradle/
+android/gradlew
+android/gradlew.bat
+android/local.properties
