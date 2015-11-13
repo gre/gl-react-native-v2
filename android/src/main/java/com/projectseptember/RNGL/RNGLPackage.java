@@ -13,7 +13,7 @@ import com.facebook.react.bridge.JavaScriptModule;
 
 public class RNGLPackage implements ReactPackage {
 
-  @Override
+    @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactApplicationContext) {
       List<NativeModule> modules = new ArrayList<>();
       modules.add(new RNGLContext(reactApplicationContext));

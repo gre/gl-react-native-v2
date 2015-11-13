@@ -1,20 +1,65 @@
 package com.projectseptember.RNGL;
 
-import android.opengl.GLSurfaceView;
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.pm.ConfigurationInfo;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+import com.facebook.react.uimanager.ReactProp;
 
 
-public class GLCanvasManager extends SimpleViewManager<GLSurfaceView> {
+public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
 
   public static final String REACT_CLASS = "GLCanvas";
 
-  // TODO... props
+  @ReactProp(name="nbContentTextures")
+  public void setNbContentTextures (GLCanvas view, int nbContentTextures) {
+    view.setNbContentTextures(nbContentTextures);
+  }
+  @ReactProp(name="renderId")
+  public void setRenderId (GLCanvas view, int renderId) {
+    view.setRenderId(renderId);
+  }
+
+  @ReactProp(name="opaque")
+  public void setOpaque(GLCanvas view, boolean opaque) {
+    view.setOpaque(opaque);
+  }
+
+  @ReactProp(name="autoRedraw")
+  public void setAutoRedraw(GLCanvas view, boolean autoRedraw) {
+    view.setAutoRedraw(autoRedraw);
+  }
+
+  @ReactProp(name="eventsThrough")
+  public void setEventsThrough(GLCanvas view, boolean eventsThrough) {
+    view.setEventsThrough(eventsThrough);
+  }
+
+  @ReactProp(name="visibleContent")
+  public void setVisibleContent(GLCanvas view, boolean visibleContent) {
+    view.setVisibleContent(visibleContent);
+  }
+
+  @ReactProp(name="captureNextFrameId")
+  public void setCaptureNextFrameId(GLCanvas view, int captureNextFrameId) {
+    view.setCaptureNextFrameId(captureNextFrameId);
+  }
+
+  @ReactProp(name="data")
+  public void setData(GLCanvas view, @Nullable ReadableMap glData) {
+    view.setData(glData == null ? null : GLData.fromMap(glData));
+  }
+
+  @ReactProp(name="imagesToPreload")
+  public void setImagesToPreload(GLCanvas view, @Nullable ReadableArray imageToPreload) {
+    view.setImagesToPreload(imageToPreload);
+  }
 
   @Override
   public String getName() {
@@ -22,32 +67,7 @@ public class GLCanvasManager extends SimpleViewManager<GLSurfaceView> {
   }
 
   @Override
-  public GLSurfaceView createViewInstance(ThemedReactContext context) {
-    GLSurfaceView view = new GLSurfaceView(context);
-    view.setRenderer(new GLSurfaceView.Renderer() {
-      @Override
-      public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-
-      }
-
-      @Override
-      public void onSurfaceChanged(GL10 gl, int width, int height) {
-        gl.glViewport(0, 0, width, height);
-      }
-
-      @Override
-      public void onDrawFrame(GL10 gl) {
-        gl.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-        gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-      }
-    });
-    return view;
-  }
-
-  @Override
-  public void updateView(final GLSurfaceView view, final CatalystStylesDiffMap props) {
-    super.updateView(view, props);
-    // TODO... call setters with props
-    // view.requestRender();
+  public GLCanvas createViewInstance(ThemedReactContext context) {
+    return new GLCanvas(context);
   }
 }
