@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer {
+public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, RunInGLThread {
 
     private static final Logger logger = Logger.getLogger(GLCanvas.class.getName());
 
@@ -57,6 +57,9 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     private Map<String, GLImage> images = new HashMap<>();
     private List<GLTexture> contentTextures = new ArrayList<>();
+
+    private Map<Integer, GLShader> shaders = new HashMap<>();
+    private Map<Integer, GLFBO> fbos = new HashMap<>();
 
     public GLCanvas(ThemedReactContext context) {
         super(context);
@@ -113,8 +116,8 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer {
     }
 
     public void setNbContentTextures(int nbContentTextures) {
+        resizeUniformContentTextures(nbContentTextures);
         this.nbContentTextures = nbContentTextures;
-        // TODO: resize uniform content textures
     }
 
     public void setRenderId(int renderId) {
@@ -195,7 +198,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer {
     // Sync methods
 
     private final Queue<Runnable> mRunOnDraw = new LinkedList<>();
-    protected void runOnDraw (final Runnable runnable) {
+    public void runInGLThread (final Runnable runnable) {
         synchronized (mRunOnDraw) {
             mRunOnDraw.add(runnable);
             requestRender();
@@ -210,7 +213,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer {
     }
 
     public void requestSyncData () {
-        runOnDraw(new Runnable() {
+        runInGLThread(new Runnable() {
             public void run() {
                 if (ensureCompiledShader(data))
                     syncData();
@@ -349,16 +352,11 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer {
                                 images.put(src, image);
                         }
                         if (image == null) {
-                            image = new GLImage(reactContext.getApplicationContext(), new Runnable() {
+                            image = new GLImage(reactContext.getApplicationContext(), this, new Runnable() {
                                 public void run() {
                                     onImageLoad(src);
                                 }
-                            }); // TODO bind on load
-                            /*
-                            [[GLImage alloc] initWithBridge:_bridge withOnLoad:^{
-                                if (weakSelf) [weakSelf onImageLoad:src];
-                            }];
-                            */
+                            });
                             image.setSrc(src);
                             images.put(src, image);
                         }
@@ -576,6 +574,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer {
 
     public void syncEventsThrough () {
         // TODO: figure out how to do this (Obj C code below)
+        // FIXME: probably we should just define {style} on JS side. check if there is support for touchEvents:"none"
         //self.userInteractionEnabled = !(_eventsThrough);
         //self.superview.userInteractionEnabled = !(_eventsThrough && !_visibleContent);
     }

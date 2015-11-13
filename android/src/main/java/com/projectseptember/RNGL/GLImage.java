@@ -37,10 +37,12 @@ public class GLImage {
     private boolean isDirty;
     private AsyncTask<Void, Void, Bitmap> task;
     private Runnable onload;
+    private RunInGLThread glScheduler;
 
-    public GLImage (Context context, Runnable onload) {
+    public GLImage (Context context, RunInGLThread glScheduler, Runnable onload) {
         this.context = context;
         this.onload = onload;
+        this.glScheduler = glScheduler;
         this.texture = new GLTexture();
     }
 
@@ -72,9 +74,13 @@ public class GLImage {
         isDirty = true;
     }
 
-    public void onLoad (Bitmap bitmap) {
-        texture.setPixels(bitmap);
-        this.onload.run();
+    public void onLoad (final Bitmap bitmap) {
+        glScheduler.runInGLThread(new Runnable() {
+            public void run() {
+                texture.setPixels(bitmap);
+                onload.run();
+            }
+        });
     }
 
     public GLTexture getTexture() {

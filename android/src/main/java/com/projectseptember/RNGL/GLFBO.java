@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import static android.opengl.GLES20.*;
 
-public class GLFBO {// TODO
+public class GLFBO {
     private static final Logger logger = Logger.getLogger(GLFBO.class.getName());
 
     public final List<GLTexture> color = new ArrayList<>();

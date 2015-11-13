@@ -27,7 +27,6 @@ public class GLShader {
         this.name = name;
         this.vert = vert;
         this.frag = frag;
-        makeProgram();
     }
 
     @Override
