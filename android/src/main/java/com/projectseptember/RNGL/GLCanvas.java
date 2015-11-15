@@ -2,10 +2,11 @@ package com.projectseptember.RNGL;
 
 import static android.opengl.GLES20.*;
 
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.DisplayMetrics;
-import android.view.View;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.facebook.react.bridge.Arguments;
@@ -27,21 +28,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.logging.Logger;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, RunInGLThread {
 
-    private static final Logger logger = Logger.getLogger(GLCanvas.class.getName());
-
     private ReactContext reactContext;
     private RNGLContext rnglContext;
     private boolean preloadingDone = false;
     private boolean deferredRendering = false;
     private GLRenderData renderData;
-    private int[] defaultFBO;
+    private int defaultFBO;
 
     private int nbContentTextures;
     private int renderId;
@@ -57,6 +55,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
 
     private Map<String, GLImage> images = new HashMap<>();
     private List<GLTexture> contentTextures = new ArrayList<>();
+    private List<Bitmap> contentBitmaps = new ArrayList<>();
 
     private Map<Integer, GLShader> shaders = new HashMap<>();
     private Map<Integer, GLFBO> fbos = new HashMap<>();
@@ -64,14 +63,21 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     public GLCanvas(ThemedReactContext context) {
         super(context);
         reactContext = context;
-        this.rnglContext = context.getNativeModule(RNGLContext.class);
-        this.setEGLContextClientVersion(2);
-        this.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-        this.getHolder().setFormat(PixelFormat.RGBA_8888);
-        this.setRenderer(this);
-        this.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-        this.requestRender();
+        rnglContext = context.getNativeModule(RNGLContext.class);
+        setEGLContextClientVersion(2);
+        setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        getHolder().setFormat(PixelFormat.RGBA_8888);
+        setRenderer(this);
+        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        Log.i("GLCanvas", "created");
+    }
 
+    @Override
+    protected void onAttachedToWindow() {
+        Log.i("GLCanvas", "onAttachedToWindow");
+        super.onAttachedToWindow();
+        syncContentBitmaps();
+        requestRender();
         preloadingDone = true; // TODO
     }
 
@@ -87,6 +93,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
 
     @Override
     public void onDrawFrame(GL10 gl) {
+        Log.i("GLCanvas", "onDrawFrame");
         runAll(mRunOnDraw);
 
         syncEventsThrough(); // FIXME, really need to do this ?
@@ -97,33 +104,42 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
             return;
         }
 
-        boolean needsDeferredRendering = nbContentTextures > 0 && !autoRedraw;
-        if (needsDeferredRendering && !deferredRendering) {
-            deferredRendering = true;
-            this.requestRender(); // FIXME is this working correctly?
-            /*
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (!weakSelf) return;
-                deferredRendering = true;
-                [weakSelf setNeedsDisplay];
+        final boolean shouldRenderNow = deferredRendering || autoRedraw || nbContentTextures == 0;
+        if (nbContentTextures > 0) {
+            reactContext.runOnUiQueueThread(new Runnable() {
+                public void run() {
+                    syncContentBitmaps();
+                    if (!deferredRendering) {
+                        deferredRendering = true;
+                        requestRender();
+                    }
+                }
             });
-            */
         }
-        else {
+
+        if (shouldRenderNow) {
             this.render();
             deferredRendering = false;
         }
     }
 
-    public void setNbContentTextures(int nbContentTextures) {
-        resizeUniformContentTextures(nbContentTextures);
-        this.nbContentTextures = nbContentTextures;
+    public void setNbContentTextures(int n) {
+        this.nbContentTextures = n;
+        runInGLThread(new Runnable() {
+            @Override
+            public void run() {
+                resizeUniformContentTextures(nbContentTextures);
+                if (preloadingDone) syncContentBitmaps();
+            }
+        });
     }
 
     public void setRenderId(int renderId) {
         this.renderId = renderId;
-        if (nbContentTextures > 0)
-            this.requestRender();
+        if (nbContentTextures > 0) {
+            if (preloadingDone) syncContentBitmaps();
+            requestRender();
+        }
     }
 
     public void setOpaque(boolean opaque) {
@@ -162,27 +178,30 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
 
     private boolean ensureCompiledShader (List<GLData> data) {
         for (GLData d: data) {
-            if (!ensureCompiledShader(d));
+            if (!ensureCompiledShader(d)) {
                 return false;
+            }
         }
         return true;
     }
 
     private boolean ensureCompiledShader (GLData data) {
         GLShader shader = rnglContext.getShader(data.shader);
-        if (shader == null) return false;
-        shader.ensureCompile();
-        return ensureCompiledShader(data.children) && ensureCompiledShader(data.contextChildren);
+        return shader != null &&
+                shader.ensureCompile() &&
+                ensureCompiledShader(data.children) &&
+                ensureCompiledShader(data.contextChildren);
     }
 
     public void setData (GLData data) {
         this.data = data;
-        this.requestSyncData();
+        if (preloadingDone) syncContentBitmaps();
+        requestSyncData();
     }
 
 
     public void setImagesToPreload(ReadableArray imagesToPreload) {
-        logger.info("setImageToPreload, working correctly?"); // TODO
+        // FIXME setImageToPreload, working correctly?
         if (preloadingDone) return;
         if (imagesToPreload.size() == 0) {
             dispatchOnLoad();
@@ -215,6 +234,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     public void requestSyncData () {
         runInGLThread(new Runnable() {
             public void run() {
+                Log.i("GLCanvas", "requestSyncData");
                 if (ensureCompiledShader(data))
                     syncData();
                 else
@@ -223,16 +243,35 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
         });
     }
 
-    public void syncContextTextures () {
-        int i = 0;
-        for (GLTexture texture: contentTextures) {
-            View view = ((ViewGroup) this.getParent()).getChildAt(i);
-            texture.setPixelsWithView(view);
-            i ++;
+    /**
+     * Snapshot the content views and save to contentBitmaps (must run in UI Thread)
+     */
+    public int syncContentBitmaps() {
+        List<Bitmap> bitmaps = new ArrayList<>();
+        ViewGroup parent = (ViewGroup) this.getParent();
+        int count = parent == null ? 0 : parent.getChildCount() - 1;
+        for (int i = 0; i < count; i++) {
+            bitmaps.add(GLTexture.captureView(parent.getChildAt(i)));
         }
+        contentBitmaps = bitmaps;
+
+        //Log.i("GLCanvas", "syncContentBitmaps "+count+" "+parent);
+        return count;
+    }
+
+    /**
+     * Draw contentBitmaps to contentTextures (must run in GL Thread)
+     */
+    public int syncContentTextures() {
+        int size = Math.min(contentTextures.size(), contentBitmaps.size());
+        for (int i=0; i<size; i++)
+            contentTextures.get(i).setPixels(contentBitmaps.get(i));
+        //Log.i("GLCanvas", "syncContentTextures "+size);
+        return size;
     }
 
     public void resizeUniformContentTextures (int n) {
+        //Log.i("GLCanvas", "reiszeUniformContentTextures "+n);
         int length = contentTextures.size();
         if (length == n) return;
         if (n < length) {
@@ -296,8 +335,6 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
         List<GLRenderData> contextChildren = new ArrayList<>();
         List<GLRenderData> children = new ArrayList<>();
 
-        shader.bind();
-
         for (GLData child: data.contextChildren) {
             contextChildren.add(recSyncData(child, images));
         }
@@ -325,13 +362,12 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
                     textures.put(uniformName, emptyTexture);
                 }
                 else {
+                    // FIXME: in case of require() it's now a number...
+                    // TODO: need to support this. as well as on iOS side
                     ReadableMap value = dataUniforms.getMap(uniformName);
                     String t = value.getString("type");
                     if (t.equals("content")) {
                         int id = value.getInt("id");
-                        if (id >= contentTextures.size()) {
-                            this.resizeUniformContentTextures(id + 1);
-                        }
                         textures.put(uniformName, contentTextures.get(id));
                     }
                     else if (t.equals("fbo")) {
@@ -342,7 +378,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
                     else if (t.equals("uri")) {
                         final String src = srcResource(value);
                         if (src==null || src.equals("")) {
-                            logger.severe("Shader '"+shader.getName()+": texture uniform '"+uniformName+"': Invalid uri format '"+value+"'");
+                            shader.runtimeException("texture uniform '"+uniformName+"': Invalid uri format '"+value+"'");
                         }
 
                         GLImage image = images.get(src);
@@ -363,7 +399,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
                         textures.put(uniformName, image.getTexture());
                     }
                     else {
-                        logger.severe("Shader '"+shader.getName()+": texture uniform '"+uniformName+"': Unexpected type '"+type+"'");
+                        shader.runtimeException("texture uniform '" + uniformName + "': Unexpected type '" + type + "'");
                     }
                 }
             }
@@ -389,8 +425,8 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
                     case GL_FLOAT_MAT4:
                         ReadableArray arr = dataUniforms.getArray(uniformName);
                         if (arraySizeForType(type) != arr.size()) {
-                            throw new Error("Shader '"+shader.getName()+
-                                    "' uniform '"+uniformName+
+                            shader.runtimeException(
+                                    "uniform '"+uniformName+
                                     "': Invalid array size: "+arr.size()+
                                     ". Expected: "+arraySizeForType(type));
                         }
@@ -405,8 +441,8 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
                     case GL_BOOL_VEC4:
                         ReadableArray arr2 = dataUniforms.getArray(uniformName);
                         if (arraySizeForType(type) != arr2.size()) {
-                            throw new Error("Shader '"+shader.getName()+
-                                    "' uniform '"+uniformName+
+                            shader.runtimeException(
+                                    "uniform '"+uniformName+
                                     "': Invalid array size: "+arr2.size()+
                                     ". Expected: "+arraySizeForType(type));
                         }
@@ -414,8 +450,8 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
                         break;
 
                     default:
-                        throw new Error("Shader '"+shader.getName()+
-                                "' uniform '"+uniformName+
+                        shader.runtimeException(
+                                "uniform '"+uniformName+
                                 "': type not supported: "+type);
                 }
 
@@ -425,7 +461,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
         int[] maxTextureUnits = new int[1];
         glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, maxTextureUnits, 0);
         if (units > maxTextureUnits[0]) {
-            logger.severe("Shader '"+shader.getName()+": Maximum number of texture reach. got "+units+" >= max "+maxTextureUnits);
+            shader.runtimeException("Maximum number of texture reach. got " + units + " >= max " + maxTextureUnits);
         }
 
         for (String uniformName: uniformTypes.keySet()) {
@@ -433,7 +469,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
                 !uniformsInteger.containsKey(uniformName) &&
                 !uniformsFloatBuffer.containsKey(uniformName) &&
                 !uniformsIntBuffer.containsKey(uniformName)) {
-                logger.severe("Shader '"+shader.getName()+": All defined uniforms must be provided. Missing '"+uniformName+"'");
+                shader.runtimeException("All defined uniforms must be provided. Missing '"+uniformName+"'");
             }
         }
 
@@ -503,6 +539,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     }
 
     public void syncData () {
+        Log.i("GLCanvas", "syncData "+data);
         if (data == null) return;
         HashMap<String, GLImage> images = new HashMap<>();
         renderData = recSyncData(data, images);
@@ -511,10 +548,11 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     }
 
     public void recRender (GLRenderData renderData) {
+        Log.i("GLCanvas", "recRender "+renderData.fboId);
         DisplayMetrics dm = reactContext.getResources().getDisplayMetrics();
 
-        int w = new Float(renderData.width.floatValue() * dm.density).intValue();
-        int h = new Float(renderData.height.floatValue() * dm.density).intValue();
+        int w = Float.valueOf(renderData.width.floatValue() * dm.density).intValue();
+        int h = Float.valueOf(renderData.height.floatValue() * dm.density).intValue();
 
         for (GLRenderData child: renderData.contextChildren)
             recRender(child);
@@ -523,7 +561,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
             recRender(child);
 
         if (renderData.fboId == -1) {
-            glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO[0]);
+            glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
             glViewport(0, 0, w, h);
         }
         else {
@@ -538,6 +576,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
             GLTexture texture = renderData.textures.get(uniformName);
             int unit = renderData.uniformsInteger.get(uniformName);
             texture.bind(unit);
+            Log.i("GLCanvas", uniformName+" "+unit);
         }
 
         Map<String, Integer> uniformTypes = renderData.shader.getUniformTypes();
@@ -562,14 +601,16 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
 
     public void render () {
         if (renderData == null) return;
-        syncContextTextures();
+        syncContentTextures();
+        Log.i("GLCanvas", "render");
 
-        defaultFBO = new int[1];
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, defaultFBO, 0);
+        int[] defaultFBOArr = new int[1];
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, defaultFBOArr, 0);
+        defaultFBO = defaultFBOArr[0];
         glEnable(GL_BLEND);
         recRender(renderData);
         glDisable(GL_BLEND);
-        glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO[0]);
+        glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
     }
 
     public void syncEventsThrough () {

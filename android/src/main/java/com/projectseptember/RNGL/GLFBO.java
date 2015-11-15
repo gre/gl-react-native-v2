@@ -1,14 +1,13 @@
 package com.projectseptember.RNGL;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static android.opengl.GLES20.*;
 
 public class GLFBO {
-    private static final Logger logger = Logger.getLogger(GLFBO.class.getName());
-
     public final List<GLTexture> color = new ArrayList<>();
     private int handle;
     private int width = 0;
@@ -18,10 +17,11 @@ public class GLFBO {
         GLTexture texture = new GLTexture();
         texture.bind();
         texture.setShape(width, height);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.handle, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.getHandle(), 0);
         return texture;
     }
 
+    /*
     int initRenderBuffer (int width, int height, int component, int attachment)
     {
         int[] handleArr = new int[1];
@@ -32,7 +32,9 @@ public class GLFBO {
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, handle);
         return handle;
     }
+    */
 
+    /*
     class FBOState {
 
         private int fbo;
@@ -55,9 +57,11 @@ public class GLFBO {
             glBindTexture(GL_FRAMEBUFFER, tex);
         }
     }
+    */
 
     public GLFBO() {
-        FBOState state = new FBOState();
+        Log.i("GLFBO", "new");
+        //FBOState state = new FBOState();
 
         int[] handleArr = new int[1];
         glGenFramebuffers(1, handleArr, 0);
@@ -70,12 +74,12 @@ public class GLFBO {
         for(int i=0; i<numColors; ++i) {
             color.add(initTexture(width, height, GL_COLOR_ATTACHMENT0 + i));
         }
-
-        state.restore();
+        // state.restore();
     }
 
     @Override
     protected void finalize() throws Throwable {
+        Log.i("GLFBO", "finalize");
         super.finalize();
         int[] handleArr = new int[] { handle };
         glDeleteFramebuffers(1, handleArr, 0);
@@ -87,40 +91,37 @@ public class GLFBO {
         if(status != GL_FRAMEBUFFER_COMPLETE) {
             switch (status) {
                 case GL_FRAMEBUFFER_UNSUPPORTED:
-                    logger.severe("Framebuffer unsupported");
-                    break;
+                    throw new RuntimeException("Framebuffer unsupported");
                 case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                    logger.severe("Framebuffer incomplete attachment");
-                    break;
+                    throw new RuntimeException("Framebuffer incomplete attachment");
                 case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-                    logger.severe("Framebuffer incomplete dimensions");
-                    break;
+                    throw new RuntimeException("Framebuffer incomplete dimensions");
                 case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                    logger.severe("Framebuffer incomplete missing attachment");
-                    break;
+                    throw new RuntimeException("Framebuffer incomplete missing attachment");
                 default:
-                    logger.severe("Failed to create framebuffer: " + status);
+                    throw new RuntimeException("Failed to create framebuffer: " + status);
             }
         }
     }
 
     public void bind () {
+        Log.i("GLFBO", "bind");
         glBindFramebuffer(GL_FRAMEBUFFER, handle);
         glViewport(0, 0, width, height);
     }
 
     public void setShape(int w, int h) {
+        Log.i("GLFBO", "setShape "+w+" "+h);
         if (w == width && h == height) return;
         int[] maxFBOSize = new int[1];
         glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, maxFBOSize, 0);
         if( w < 0 || w > maxFBOSize[0] || h < 0 || h > maxFBOSize[0]) {
-            logger.severe("Can't resize framebuffer. Invalid dimensions");
-            return;
+            throw new IllegalArgumentException("Can't resize framebuffer. Invalid dimensions");
         }
         width = w;
         height = h;
 
-        FBOState state = new FBOState();
+        //FBOState state = new FBOState();
 
         for (GLTexture clr: color) {
             clr.setShape(w, h);
@@ -129,6 +130,6 @@ public class GLFBO {
         glBindFramebuffer(GL_FRAMEBUFFER, handle);
         checkStatus();
 
-        state.restore();
+        //state.restore();
     }
 }

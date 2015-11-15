@@ -1,5 +1,6 @@
 package com.projectseptember.RNGL;
 
+
 import static android.opengl.GLES20.*;
 
 import java.nio.ByteBuffer;
@@ -8,11 +9,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class GLShader {
-
-    private static final Logger logger = Logger.getLogger(GLShader.class.getName());
 
     private final String name;
     private final String vert;
@@ -38,10 +36,15 @@ public class GLShader {
         }
     }
 
+    public void runtimeException (String msg) {
+        throw new RuntimeException("Shader '"+name+"': "+msg);
+    }
+
     public void bind () {
+        ensureCompile();
+
         if (!glIsProgram(program)) {
-            logger.severe("Shader '"+name+"': not a program!");
-            return;
+            runtimeException("not a program");
         }
         glUseProgram(program);
         glBindBuffer(GL_ARRAY_BUFFER, buffer[0]);
@@ -55,7 +58,7 @@ public class GLShader {
         glGetProgramiv(program, GL_VALIDATE_STATUS, validSuccess, 0);
         if (validSuccess[0] == GL_FALSE) {
             glGetProgramInfoLog(program);
-            logger.severe("Shader '" + name + "': Validation failed " + glGetProgramInfoLog(program));
+            runtimeException("Validation failed " + glGetProgramInfoLog(program));
         }
     }
 
@@ -86,7 +89,7 @@ public class GLShader {
                 glUniformMatrix4fv(uniformLocations.get(name), 1, false, buf);
                 break;
             default:
-                throw new Error("Unsupported case: uniform '" + name + "' type: " + type);
+                runtimeException("Unsupported case: uniform '" + name + "' type: " + type);
         }
     }
     public void setUniform (String name, IntBuffer buf, int type) {
@@ -104,7 +107,7 @@ public class GLShader {
                 glUniform4iv(uniformLocations.get(name), 1, buf);
                 break;
             default:
-                throw new Error("Unsupported case: uniform '"+name+"' type: "+type);
+                runtimeException("Unsupported case: uniform '"+name+"' type: "+type);
         }
     }
 
@@ -117,14 +120,14 @@ public class GLShader {
     }
 
 
-    private static int compileShader (String name, String code, int shaderType) {
+    private int compileShader (String code, int shaderType) {
         int shaderHandle = glCreateShader(shaderType);
         glShaderSource(shaderHandle, code);
         glCompileShader(shaderHandle);
         int compileSuccess[] = new int[1];
         glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, compileSuccess, 0);
         if (compileSuccess[0] == GL_FALSE) {
-            logger.severe("Shader '"+name+"' failed to compile: "+glGetShaderInfoLog(shaderHandle));
+            runtimeException("failed to compile: " + glGetShaderInfoLog(shaderHandle));
             return -1;
         }
         return shaderHandle;
@@ -149,10 +152,10 @@ public class GLShader {
     }
 
     private void makeProgram () {
-        int vertex = compileShader(name, vert, GL_VERTEX_SHADER);
+        int vertex = compileShader(vert, GL_VERTEX_SHADER);
         if (vertex == -1) return;
 
-        int fragment = compileShader(name, frag, GL_FRAGMENT_SHADER);
+        int fragment = compileShader(frag, GL_FRAGMENT_SHADER);
         if (fragment == -1) return;
 
         program = glCreateProgram();
@@ -163,11 +166,12 @@ public class GLShader {
         int[] linkSuccess = new int[1];
         glGetProgramiv(program, GL_LINK_STATUS, linkSuccess, 0);
         if (linkSuccess[0] == GL_FALSE) {
-            logger.severe("Shader '"+name+"': Linking failed "+glGetProgramInfoLog(program));
-            return;
+            runtimeException("Linking failed "+glGetProgramInfoLog(program));
         }
 
         glUseProgram(program);
+
+        validate();
 
         computeMeta();
 

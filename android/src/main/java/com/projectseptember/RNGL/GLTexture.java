@@ -3,16 +3,23 @@ package com.projectseptember.RNGL;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.opengl.GLUtils;
 import android.view.View;
 
 import static android.opengl.GLES20.*;
 
 public class GLTexture {
-    public int handle;
-    public Bitmap bitmapCurrentlyUploaded = null;
+    private int handle;
+    private Bitmap bitmapCurrentlyUploaded = null;
 
-    private void dealloc () {
+    public GLTexture () {
+        makeTexture();
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
         int[] handleArr = new int[] { handle };
         glDeleteTextures(1, handleArr, 0);
         bitmapCurrentlyUploaded = null;
@@ -66,16 +73,27 @@ public class GLTexture {
         setPixels(bitmap);
     }
 
-    public void setPixelsWithView (View view) {
-        Bitmap bitmap = Bitmap.createBitmap( view.getLayoutParams().width, view.getLayoutParams().height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        view.layout(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
-        view.draw(canvas);
-        setPixels(bitmap);
-    }
-
     public void setShape (int width, int height) {
         bind();
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
+    }
+
+    public static Bitmap captureView (View view) {
+        int w = view.getWidth();
+        int h = view.getHeight();
+        if (w <= 0 || h <= 0) return Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.layout(0, 0, view.getWidth(), view.getHeight());
+        view.draw(canvas);
+        Matrix matrix = new Matrix();
+        matrix.postScale(1, -1);
+        Bitmap transformedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        bitmap.recycle();
+        return transformedBitmap;
+    }
+
+    public int getHandle() {
+        return handle;
     }
 }

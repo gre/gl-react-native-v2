@@ -5,18 +5,13 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 
 import com.facebook.common.util.UriUtil;
-import com.facebook.drawee.interfaces.DraweeController;
-import com.facebook.imagepipeline.request.ImageRequest;
-import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -216,29 +211,25 @@ public class GLImage {
             if (bitmap == null) {
                 return null;
             }
-            bitmap = rotateImage(bitmap);
-            return bitmap;
-        }
 
+            Bitmap transformedBitmap;
+            Matrix matrix = new Matrix();
 
-        private Bitmap rotateImage(final Bitmap bitmap) {
-            if (bitmap == null) {
-                return null;
-            }
-            Bitmap rotatedBitmap = bitmap;
             try {
                 int orientation = getImageOrientation();
                 if (orientation != 0) {
-                    Matrix matrix = new Matrix();
                     matrix.postRotate(orientation);
-                    rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                            bitmap.getHeight(), matrix, true);
-                    bitmap.recycle();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return rotatedBitmap;
+
+            matrix.postScale(1, -1);
+
+            transformedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            bitmap.recycle();
+
+            return transformedBitmap;
         }
 
         protected abstract int getImageOrientation() throws IOException;
