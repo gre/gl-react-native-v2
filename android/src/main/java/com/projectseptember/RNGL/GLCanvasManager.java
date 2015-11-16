@@ -1,7 +1,6 @@
 package com.projectseptember.RNGL;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -65,7 +64,6 @@ public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
 
     @Override
     public GLCanvas createViewInstance (ThemedReactContext context) {
-        Log.i("GLCanvas", "createViewInstance...");
         return new GLCanvas(context);
     }
 }

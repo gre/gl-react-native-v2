@@ -4,6 +4,7 @@ import static android.opengl.GLES20.*;
 
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -49,11 +50,10 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     private boolean visibleContent;
     private int captureNextFrameId;
     private GLData data;
-    private ReadableArray imagesToPreload; // TODO we need to make a List<Uri> I guess? probably Uri should be resolved in advance. not in GLImage
+    private List<Uri> imagesToPreload;
+    private List<Uri> preloaded;
 
-    List<String> preloaded; // TODO List<Uri>
-
-    private Map<String, GLImage> images = new HashMap<>();
+    private Map<Uri, GLImage> images = new HashMap<>();
     private List<GLTexture> contentTextures = new ArrayList<>();
     private List<Bitmap> contentBitmaps = new ArrayList<>();
 
@@ -69,16 +69,13 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
         getHolder().setFormat(PixelFormat.RGBA_8888);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-        Log.i("GLCanvas", "created");
     }
 
     @Override
     protected void onAttachedToWindow() {
-        Log.i("GLCanvas", "onAttachedToWindow");
         super.onAttachedToWindow();
         syncContentBitmaps();
         requestRender();
-        preloadingDone = true; // TODO
     }
 
     @Override
@@ -93,7 +90,6 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        Log.i("GLCanvas", "onDrawFrame");
         runAll(mRunOnDraw);
 
         syncEventsThrough(); // FIXME, really need to do this ?
@@ -200,9 +196,12 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     }
 
 
-    public void setImagesToPreload(ReadableArray imagesToPreload) {
-        // FIXME setImageToPreload, working correctly?
+    public void setImagesToPreload (ReadableArray imagesToPreloadRA) {
         if (preloadingDone) return;
+        List<Uri> imagesToPreload = new ArrayList<>();
+        for (int i=0; i<imagesToPreloadRA.size(); i++) {
+            imagesToPreload.add(resolveSrc(imagesToPreloadRA.getString(i)));
+        }
         if (imagesToPreload.size() == 0) {
             dispatchOnLoad();
             preloadingDone = true;
@@ -210,7 +209,6 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
         else {
             preloadingDone = false;
         }
-
         this.imagesToPreload = imagesToPreload;
     }
 
@@ -234,7 +232,6 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     public void requestSyncData () {
         runInGLThread(new Runnable() {
             public void run() {
-                Log.i("GLCanvas", "requestSyncData");
                 if (ensureCompiledShader(data))
                     syncData();
                 else
@@ -287,15 +284,15 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
 
     private int countPreloaded () {
         int nb = 0;
-        for (int i=0; i<imagesToPreload.size(); i++) {/*
-            if ([_preloaded containsObject:srcResource(toload)]) // TODO
-            nb++;
-            */
+        for (Uri toload: imagesToPreload) {
+            if (preloaded.contains(toload)) {
+                nb++;
+            }
         }
         return nb;
     }
 
-    private void onImageLoad (String loaded) {
+    private void onImageLoad (Uri loaded) {
         if (!preloadingDone) {
             preloaded.add(loaded);
             int count = countPreloaded();
@@ -314,17 +311,35 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
         }
     }
 
+    public Uri resolveSrc (String src) {
+        Uri uri = null;
+        if (src != null) {
+            try {
+                uri = Uri.parse(src);
+                // Verify scheme is set, so that relative uri (used by static resources) are not handled.
+                if (uri.getScheme() == null) {
+                    uri = null;
+                }
+            } catch (Exception e) {
+                // ignore malformed uri, then attempt to extract resource ID.
+            }
+            if (uri == null) {
+                uri = GLImage.getResourceDrawableUri(reactContext, src);
+            }
+        }
+        return uri;
+    }
 
-    public String srcResource (ReadableMap res) {
+    public Uri srcResource (ReadableMap res) {
         String src = null;
         boolean isStatic = res.hasKey("isStatic") && res.getBoolean("isStatic");
         if (res.hasKey("path")) src = res.getString("path");
         if (src==null || isStatic) src = res.getString("uri");
-        return src;
+        return resolveSrc(src);
     }
 
-    public GLRenderData recSyncData (GLData data, HashMap<String, GLImage> images) {
-        Map<String, GLImage> prevImages = this.images;
+    public GLRenderData recSyncData (GLData data, HashMap<Uri, GLImage> images) {
+        Map<Uri, GLImage> prevImages = this.images;
 
         GLShader shader = rnglContext.getShader(data.shader);
         Map<String, Integer> uniformsInteger = new HashMap<>();
@@ -368,6 +383,9 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
                     String t = value.getString("type");
                     if (t.equals("content")) {
                         int id = value.getInt("id");
+                        if (id >= contentTextures.size()) {
+                            resizeUniformContentTextures(id+1);
+                        }
                         textures.put(uniformName, contentTextures.get(id));
                     }
                     else if (t.equals("fbo")) {
@@ -376,8 +394,8 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
                         textures.put(uniformName, fbo.color.get(0));
                     }
                     else if (t.equals("uri")) {
-                        final String src = srcResource(value);
-                        if (src==null || src.equals("")) {
+                        final Uri src = srcResource(value);
+                        if (src == null) {
                             shader.runtimeException("texture uniform '"+uniformName+"': Invalid uri format '"+value+"'");
                         }
 
@@ -539,16 +557,13 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     }
 
     public void syncData () {
-        Log.i("GLCanvas", "syncData "+data);
         if (data == null) return;
-        HashMap<String, GLImage> images = new HashMap<>();
+        HashMap<Uri, GLImage> images = new HashMap<>();
         renderData = recSyncData(data, images);
         this.images = images;
-        this.requestRender(); // FIXME don't do it here since syncData is called in render phase
     }
 
     public void recRender (GLRenderData renderData) {
-        Log.i("GLCanvas", "recRender "+renderData.fboId);
         DisplayMetrics dm = reactContext.getResources().getDisplayMetrics();
 
         int w = Float.valueOf(renderData.width.floatValue() * dm.density).intValue();
@@ -576,7 +591,6 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
             GLTexture texture = renderData.textures.get(uniformName);
             int unit = renderData.uniformsInteger.get(uniformName);
             texture.bind(unit);
-            Log.i("GLCanvas", uniformName+" "+unit);
         }
 
         Map<String, Integer> uniformTypes = renderData.shader.getUniformTypes();
@@ -601,8 +615,8 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
 
     public void render () {
         if (renderData == null) return;
-        syncContentTextures();
         Log.i("GLCanvas", "render");
+        syncContentTextures();
 
         int[] defaultFBOArr = new int[1];
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, defaultFBOArr, 0);

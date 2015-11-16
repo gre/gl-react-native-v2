@@ -24,11 +24,9 @@ https://github.com/CyberAgent/android-gpuimage/blob/master/library/src/jp/co/cyb
  */
 public class GLImage {
     private final Context context;
-    private String src;
+    private Uri src;
     private GLTexture texture;
 
-    private Uri uri;
-    private boolean isLocalImage;
     private boolean isDirty;
     private AsyncTask<Void, Void, Bitmap> task;
     private Runnable onload;
@@ -41,31 +39,13 @@ public class GLImage {
         this.texture = new GLTexture();
     }
 
-    public void setSrc(String src) {
+    public void setSrc(Uri src) {
         if (this.src == src) return;
         this.src = src;
         reloadImage();
     }
 
     private void reloadImage () {
-        uri = null;
-        if (src != null) {
-            try {
-                uri = Uri.parse(src);
-                // Verify scheme is set, so that relative uri (used by static resources) are not handled.
-                if (uri.getScheme() == null) {
-                    uri = null;
-                }
-            } catch (Exception e) {
-                // ignore malformed uri, then attempt to extract resource ID.
-            }
-            if (uri == null) {
-                uri = getResourceDrawableUri(context, src);
-                isLocalImage = true;
-            } else {
-                isLocalImage = false;
-            }
-        }
         isDirty = true;
     }
 
@@ -81,13 +61,13 @@ public class GLImage {
     public GLTexture getTexture() {
         if (isDirty) {
             if (task != null) task.cancel(true);
-            task = new LoadImageUriTask(this, uri).execute();
+            task = new LoadImageUriTask(this, src).execute();
             isDirty = false;
         }
         return texture;
     }
 
-    private static @Nullable Uri getResourceDrawableUri(Context context, @Nullable String name) {
+    public static @Nullable Uri getResourceDrawableUri(Context context, @Nullable String name) {
         if (name == null || name.isEmpty()) {
             return null;
         }
