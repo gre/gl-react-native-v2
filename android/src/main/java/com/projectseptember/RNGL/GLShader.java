@@ -27,6 +27,12 @@ public class GLShader {
         this.frag = frag;
     }
 
+    public GLShader(GLShaderData data) {
+        this.name = data.name;
+        this.vert = data.vert;
+        this.frag = data.frag;
+    }
+
     @Override
     protected void finalize() throws Throwable {
         super.finalize();

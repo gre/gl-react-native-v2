@@ -51,14 +51,14 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     private int captureNextFrameId;
     private GLData data;
     private List<Uri> imagesToPreload;
-    private List<Uri> preloaded;
+    private List<Uri> preloaded = new ArrayList<>(); // FIXME double check that this works
 
     private Map<Uri, GLImage> images = new HashMap<>();
     private List<GLTexture> contentTextures = new ArrayList<>();
     private List<Bitmap> contentBitmaps = new ArrayList<>();
 
-    private Map<Integer, GLShader> shaders = new HashMap<>();
-    private Map<Integer, GLFBO> fbos = new HashMap<>();
+    private Map<Integer, GLShader> shaders;
+    private Map<Integer, GLFBO> fbos;
 
     public GLCanvas(ThemedReactContext context) {
         super(context);
@@ -78,9 +78,27 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
         requestRender();
     }
 
+    public GLFBO getFBO (Integer id) {
+        if (!fbos.containsKey(id)) {
+            fbos.put(id, new GLFBO());
+        }
+        return fbos.get(id);
+    }
+
+    public GLShader getShader (Integer id) {
+        if (!shaders.containsKey(id)) {
+            GLShaderData shaderData = rnglContext.getShader(id);
+            if (shaderData == null) return null;
+            shaders.put(id, new GLShader(shaderData));
+        }
+        return shaders.get(id);
+    }
+
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        // FIXME anything to do here?
+        fbos = new HashMap<>();
+        shaders = new HashMap<>();
+        // TODO : need to reset GLImage and GLTexture. in a smart way (images if already loaded just need to re-set the bitmap)
     }
 
     @Override
@@ -182,7 +200,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     }
 
     private boolean ensureCompiledShader (GLData data) {
-        GLShader shader = rnglContext.getShader(data.shader);
+        GLShader shader = getShader(data.shader);
         return shader != null &&
                 shader.ensureCompile() &&
                 ensureCompiledShader(data.children) &&
@@ -341,7 +359,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     public GLRenderData recSyncData (GLData data, HashMap<Uri, GLImage> images) {
         Map<Uri, GLImage> prevImages = this.images;
 
-        GLShader shader = rnglContext.getShader(data.shader);
+        GLShader shader = getShader(data.shader);
         Map<String, Integer> uniformsInteger = new HashMap<>();
         Map<String, Float> uniformsFloat = new HashMap<>();
         Map<String, IntBuffer> uniformsIntBuffer = new HashMap<>();
@@ -390,7 +408,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
                     }
                     else if (t.equals("fbo")) {
                         int id = value.getInt("id");
-                        GLFBO fbo = rnglContext.getFBO(id);
+                        GLFBO fbo = getFBO(id);
                         textures.put(uniformName, fbo.color.get(0));
                     }
                     else if (t.equals("uri")) {
@@ -580,7 +598,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
             glViewport(0, 0, w, h);
         }
         else {
-            GLFBO fbo = rnglContext.getFBO(renderData.fboId);
+            GLFBO fbo = getFBO(renderData.fboId);
             fbo.setShape(w, h);
             fbo.bind();
         }

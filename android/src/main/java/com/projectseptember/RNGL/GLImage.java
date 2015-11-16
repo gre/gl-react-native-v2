@@ -22,7 +22,7 @@ https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/
 also inspired from
 https://github.com/CyberAgent/android-gpuimage/blob/master/library/src/jp/co/cyberagent/android/gpuimage/GPUImage.java
  */
-public class GLImage {
+public class GLImage { // TODO : we need to check support for local images
     private final Context context;
     private Uri src;
     private GLTexture texture;
