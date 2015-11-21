@@ -49,6 +49,8 @@ NSString* srcResource (id res)
   NSTimer *animationTimer;
   
   int _lastCaptureId;
+    
+    BOOL _needSync;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -153,7 +155,8 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)requestSyncData
 {
-  [self syncData];
+    _needSync = true;
+    [self setNeedsDisplay];
 }
 
 - (void)syncData
@@ -191,6 +194,7 @@ RCT_NOT_IMPLEMENTED(-init)
         id value = [data.uniforms objectForKey:uniformName];
         GLenum type = [uniformTypes[uniformName] intValue];
         
+          
         if (type == GL_SAMPLER_2D || type == GL_SAMPLER_CUBE) {
           uniforms[uniformName] = [NSNumber numberWithInt:units++];
           if ([value isEqual:[NSNull null]]) {
@@ -269,8 +273,6 @@ RCT_NOT_IMPLEMENTED(-init)
     
     _renderData = traverseTree(_data);
     _images = images;
-    
-    [self setNeedsDisplay];
   }
 }
 
@@ -296,6 +298,10 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)drawRect:(CGRect)rect
 {
+    if (_needSync) {
+        _needSync = false;
+        [self syncData];
+    }
   self.layer.opaque = _opaque;
   [self syncEventsThrough];
   __weak GLCanvas *weakSelf = self;
