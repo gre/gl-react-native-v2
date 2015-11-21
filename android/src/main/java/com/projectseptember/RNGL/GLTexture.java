@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.opengl.GLUtils;
+import android.util.Log;
 import android.view.View;
 
 import static android.opengl.GLES20.*;
@@ -82,14 +83,13 @@ public class GLTexture {
         int w = view.getWidth();
         int h = view.getHeight();
         if (w <= 0 || h <= 0) return Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888);
-        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        view.layout(0, 0, view.getWidth(), view.getHeight());
-        view.draw(canvas);
+        Bitmap bitmap = view.getDrawingCache();
+        if (bitmap == null)
+            view.setDrawingCacheEnabled(true);
+        bitmap = view.getDrawingCache();
         Matrix matrix = new Matrix();
         matrix.postScale(1, -1);
         Bitmap transformedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        bitmap.recycle();
         return transformedBitmap;
     }
 

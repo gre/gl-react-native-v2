@@ -6,8 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
+import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import com.facebook.react.bridge.Arguments;
@@ -16,6 +18,10 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.touch.CatalystInterceptingViewGroup;
+import com.facebook.react.touch.OnInterceptTouchEventListener;
+import com.facebook.react.uimanager.PointerEvents;
+import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
@@ -33,7 +39,9 @@ import java.util.Queue;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, RunInGLThread {
+public class GLCanvas
+        extends GLSurfaceView
+        implements GLSurfaceView.Renderer, RunInGLThread {
 
     private ReactContext reactContext;
     private RNGLContext rnglContext;
@@ -43,12 +51,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     private int defaultFBO;
 
     private int nbContentTextures;
-    private int renderId;
-    private boolean opaque;
     private boolean autoRedraw;
-    private boolean eventsThrough;
-    private boolean visibleContent;
-    private int captureNextFrameId;
     private GLData data;
     private List<Uri> imagesToPreload;
     private List<Uri> preloaded = new ArrayList<>(); // FIXME double check that this works
@@ -65,8 +68,11 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
         reactContext = context;
         rnglContext = context.getNativeModule(RNGLContext.class);
         setEGLContextClientVersion(2);
+
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-        getHolder().setFormat(PixelFormat.RGBA_8888);
+        getHolder().setFormat(PixelFormat.RGB_888);
+        setZOrderOnTop(true);
+
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
@@ -102,13 +108,14 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     }
 
     @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
-        // FIXME anything to do here?
-    }
+    public void onSurfaceChanged(GL10 gl, int width, int height) {}
 
     @Override
     public void onDrawFrame(GL10 gl) {
         runAll(mRunOnDraw);
+
+        if (contentTextures.size() != this.nbContentTextures)
+            resizeUniformContentTextures(nbContentTextures);
 
         syncEventsThrough(); // FIXME, really need to do this ?
 
@@ -139,17 +146,10 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
 
     public void setNbContentTextures(int n) {
         this.nbContentTextures = n;
-        runInGLThread(new Runnable() {
-            @Override
-            public void run() {
-                resizeUniformContentTextures(nbContentTextures);
-                if (preloadingDone) syncContentBitmaps();
-            }
-        });
+        requestRender();
     }
 
     public void setRenderId(int renderId) {
-        this.renderId = renderId;
         if (nbContentTextures > 0) {
             if (preloadingDone) syncContentBitmaps();
             requestRender();
@@ -157,16 +157,13 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     }
 
     public void setOpaque(boolean opaque) {
-        this.opaque = opaque;
-        /* // FIXME: how to do ?
         if (opaque) {
-            this.getHolder().setFormat(PixelFormat.RGB_565);
+            this.getHolder().setFormat(PixelFormat.RGB_888);
         }
         else {
             this.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         }
-        */
-        this.requestRender(); // FIXME is this required?
+        this.requestRender();
     }
 
     public void setAutoRedraw(boolean autoRedraw) {
@@ -175,18 +172,15 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
     }
 
     public void setEventsThrough(boolean eventsThrough) {
-        this.eventsThrough = eventsThrough;
         syncEventsThrough();
     }
 
     public void setVisibleContent(boolean visibleContent) {
-        this.visibleContent = visibleContent;
         syncEventsThrough();
     }
 
     public void setCaptureNextFrameId(int captureNextFrameId) {
         // FIXME move away from this pattern. just use a method, same to ObjC impl
-        this.captureNextFrameId = captureNextFrameId;
         this.requestRender();
     }
 
@@ -633,7 +627,6 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
 
     public void render () {
         if (renderData == null) return;
-        Log.i("GLCanvas", "render");
         syncContentTextures();
 
         int[] defaultFBOArr = new int[1];
@@ -673,5 +666,4 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, R
                 "load",
                 event);
     }
-
 }
