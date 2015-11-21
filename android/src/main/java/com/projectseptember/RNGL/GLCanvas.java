@@ -205,7 +205,7 @@ public class GLCanvas
         if (preloadingDone) return;
         List<Uri> imagesToPreload = new ArrayList<>();
         for (int i=0; i<imagesToPreloadRA.size(); i++) {
-            imagesToPreload.add(resolveSrc(imagesToPreloadRA.getString(i)));
+            imagesToPreload.add(resolveSrc(imagesToPreloadRA.getMap(i).getString("uri")));
         }
         if (imagesToPreload.size() == 0) {
             dispatchOnLoad();

@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.facebook.common.util.UriUtil;
 
@@ -52,6 +53,7 @@ public class GLImage { // TODO : we need to check support for local images
     public void onLoad (final Bitmap bitmap) {
         glScheduler.runInGLThread(new Runnable() {
             public void run() {
+                Log.i("GLImage", "loaded="+src.getPath());
                 texture.setPixels(bitmap);
                 onload.run();
             }
@@ -83,7 +85,7 @@ public class GLImage { // TODO : we need to check support for local images
     }
 
 
-    private class LoadImageUriTask extends LoadImageTask {
+    private static class LoadImageUriTask extends LoadImageTask {
 
         private final Uri mUri;
 
@@ -94,12 +96,14 @@ public class GLImage { // TODO : we need to check support for local images
 
         @Override
         protected Bitmap decode(BitmapFactory.Options options) {
+            Log.i("GLImage", "loading...="+mUri.getPath());
+            // FIXME: image loading is very long (probably decoding)... possible to re-use some React Native work ?
             try {
                 InputStream inputStream;
                 if (mUri.getScheme().startsWith("http") || mUri.getScheme().startsWith("https")) {
                     inputStream = new URL(mUri.toString()).openStream();
                 } else {
-                    inputStream = context.getContentResolver().openInputStream(mUri);
+                    inputStream = glImage.context.getContentResolver().openInputStream(mUri);
                 }
                 return BitmapFactory.decodeStream(inputStream, null, options);
             } catch (Exception e) {
@@ -110,7 +114,7 @@ public class GLImage { // TODO : we need to check support for local images
 
         @Override
         protected int getImageOrientation() throws IOException {
-            Cursor cursor = context.getContentResolver().query(mUri,
+            Cursor cursor = glImage.context.getContentResolver().query(mUri,
                     new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
 
             if (cursor == null || cursor.getCount() != 1) {
@@ -124,44 +128,9 @@ public class GLImage { // TODO : we need to check support for local images
         }
     }
 
-    /*
-    private class LoadImageFileTask extends LoadImageTask {
+    private static abstract class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
 
-        private final File mImageFile;
-
-        public LoadImageFileTask(GLImage gpuImage, File file) {
-            super(gpuImage);
-            mImageFile = file;
-        }
-
-        @Override
-        protected Bitmap decode(BitmapFactory.Options options) {
-            return BitmapFactory.decodeFile(mImageFile.getAbsolutePath(), options);
-        }
-
-        @Override
-        protected int getImageOrientation() throws IOException {
-            ExifInterface exif = new ExifInterface(mImageFile.getAbsolutePath());
-            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_NORMAL:
-                    return 0;
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    return 90;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    return 180;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    return 270;
-                default:
-                    return 0;
-            }
-        }
-    }
-    */
-
-    private abstract class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
-
-        private GLImage glImage;
+        protected GLImage glImage;
 
         public LoadImageTask (GLImage glImage) {
             this.glImage = glImage;
