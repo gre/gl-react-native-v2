@@ -1,7 +1,5 @@
 package com.projectseptember.RNGL;
 
-import android.opengl.GLES20;
-
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -10,14 +8,7 @@ import com.facebook.react.bridge.ReadableMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.microedition.khronos.egl.EGLContext;
-
 public class RNGLContext extends ReactContextBaseJavaModule {
-
-    // Share GL Context ?
-    // http://developer.android.com/training/graphics/opengl/environment.html
-    // http://stackoverflow.com/questions/8845491/sharing-the-egl2-0-context-between-2-glsurfaceviews-caused-egl-bad-access-on-and
-    // http://stackoverflow.com/questions/5675355/sharing-the-gles20-context-and-textures-between-different-glsurfaceviews
 
     private static String STATIC_VERT =
     "attribute vec2 position;"+

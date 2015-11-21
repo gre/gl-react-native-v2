@@ -6,10 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
-import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import com.facebook.react.bridge.Arguments;
@@ -18,10 +15,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.touch.CatalystInterceptingViewGroup;
-import com.facebook.react.touch.OnInterceptTouchEventListener;
-import com.facebook.react.uimanager.PointerEvents;
-import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
@@ -639,10 +632,8 @@ public class GLCanvas
     }
 
     public void syncEventsThrough () {
-        // TODO: figure out how to do this (Obj C code below)
-        // FIXME: probably we should just define {style} on JS side. check if there is support for touchEvents:"none"
-        //self.userInteractionEnabled = !(_eventsThrough);
-        //self.superview.userInteractionEnabled = !(_eventsThrough && !_visibleContent);
+        // TODO: figure out how to do this...
+        // For some reason, the click through is half working
     }
 
 

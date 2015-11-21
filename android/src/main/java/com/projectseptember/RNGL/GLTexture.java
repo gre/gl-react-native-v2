@@ -1,11 +1,9 @@
 package com.projectseptember.RNGL;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.opengl.GLUtils;
-import android.util.Log;
 import android.view.View;
 
 import static android.opengl.GLES20.*;
