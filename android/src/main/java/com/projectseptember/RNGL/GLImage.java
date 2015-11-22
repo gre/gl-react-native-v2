@@ -1,75 +1,90 @@
 package com.projectseptember.RNGL;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.facebook.common.references.CloseableReference;
 import com.facebook.common.util.UriUtil;
+import com.facebook.datasource.DataSource;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.util.concurrent.Executor;
 
 /*
 This class is maintained and inspired from
 https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/views/image/ReactImageView.java
-also inspired from
-https://github.com/CyberAgent/android-gpuimage/blob/master/library/src/jp/co/cyberagent/android/gpuimage/GPUImage.java
  */
-public class GLImage { // TODO : we need to check support for local images
-    private final Context context;
+public class GLImage {
+
     private Uri src;
     private GLTexture texture;
+    private Runnable onLoad;
+    private Executor glExecutor;
+    private Executor decodeExecutor;
+    private DataSource<CloseableReference<CloseableImage>> pending;
 
-    private boolean isDirty;
-    private AsyncTask<Void, Void, Bitmap> task;
-    private Runnable onload;
-    private RunInGLThread glScheduler;
-
-    public GLImage (Context context, RunInGLThread glScheduler, Runnable onload) {
-        this.context = context;
-        this.onload = onload;
-        this.glScheduler = glScheduler;
+    public GLImage (Executor glExecutor, Executor decodeExecutor, Runnable onLoad) {
+        this.onLoad = onLoad;
+        this.glExecutor = glExecutor;
+        this.decodeExecutor = decodeExecutor;
         this.texture = new GLTexture();
     }
 
-    public void setSrc(Uri src) {
-        if (this.src == src) return;
+    public void setSrc (Uri src) {
+        if (this.src == src || this.src!=null && this.src.equals(src)) return;
         this.src = src;
         reloadImage();
     }
 
     private void reloadImage () {
-        isDirty = true;
+        if (pending != null && !pending.isFinished())
+            pending.close();
+
+        final Uri uri = src;
+        ImageRequest imageRequest = ImageRequestBuilder
+                .newBuilderWithSource(uri)
+                .build();
+
+        pending = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, null);
+
+        pending.subscribe(new BaseBitmapDataSubscriber() {
+            @Override
+            protected void onNewResultImpl(@Nullable Bitmap bitmap) {
+                onLoad(bitmap);
+            }
+            @Override
+            protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+                Log.e("GLImage", "Failed to load '" + uri.getPath() + "'", dataSource.getFailureCause());
+            }
+        }, decodeExecutor);
     }
 
-    public void onLoad (final Bitmap bitmap) {
-        glScheduler.runInGLThread(new Runnable() {
+    public void onLoad (final Bitmap source) {
+        Matrix matrix = new Matrix();
+        matrix.postScale(1, -1);
+        final Bitmap bitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+        glExecutor.execute(new Runnable() {
             public void run() {
-                Log.i("GLImage", "loaded="+src.getPath());
                 texture.setPixels(bitmap);
-                onload.run();
+                bitmap.recycle();
+                onLoad.run();
             }
         });
     }
 
     public GLTexture getTexture() {
-        if (isDirty) {
-            if (task != null) task.cancel(true);
-            task = new LoadImageUriTask(this, src).execute();
-            isDirty = false;
-        }
         return texture;
     }
 
-    public static @Nullable Uri getResourceDrawableUri(Context context, @Nullable String name) {
+    public static @Nullable Uri getResourceDrawableUri (Context context, @Nullable String name) {
         if (name == null || name.isEmpty()) {
             return null;
         }
@@ -82,105 +97,5 @@ public class GLImage { // TODO : we need to check support for local images
                 .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
                 .path(String.valueOf(resId))
                 .build();
-    }
-
-
-    private static class LoadImageUriTask extends LoadImageTask {
-
-        private final Uri mUri;
-
-        public LoadImageUriTask(GLImage gpuImage, Uri uri) {
-            super(gpuImage);
-            mUri = uri;
-        }
-
-        @Override
-        protected Bitmap decode(BitmapFactory.Options options) {
-            Log.i("GLImage", "loading...="+mUri.getPath());
-            // FIXME: image loading is very long (probably decoding)... possible to re-use some React Native work ?
-            try {
-                InputStream inputStream;
-                if (mUri.getScheme().startsWith("http") || mUri.getScheme().startsWith("https")) {
-                    inputStream = new URL(mUri.toString()).openStream();
-                } else {
-                    inputStream = glImage.context.getContentResolver().openInputStream(mUri);
-                }
-                return BitmapFactory.decodeStream(inputStream, null, options);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected int getImageOrientation() throws IOException {
-            Cursor cursor = glImage.context.getContentResolver().query(mUri,
-                    new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
-
-            if (cursor == null || cursor.getCount() != 1) {
-                return 0;
-            }
-
-            cursor.moveToFirst();
-            int orientation = cursor.getInt(0);
-            cursor.close();
-            return orientation;
-        }
-    }
-
-    private static abstract class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
-
-        protected GLImage glImage;
-
-        public LoadImageTask (GLImage glImage) {
-            this.glImage = glImage;
-        }
-
-        @Override
-        protected Bitmap doInBackground(Void... params) {
-            return loadResizedImage();
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            glImage.onLoad(bitmap);
-        }
-
-        protected abstract Bitmap decode(BitmapFactory.Options options);
-
-        private Bitmap loadResizedImage() {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            decode(options);
-            options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.RGB_565;
-            options.inTempStorage = new byte[32 * 1024];
-            Bitmap bitmap = decode(options);
-            if (bitmap == null) {
-                return null;
-            }
-
-            Bitmap transformedBitmap;
-            Matrix matrix = new Matrix();
-
-            try {
-                int orientation = getImageOrientation();
-                if (orientation != 0) {
-                    matrix.postRotate(orientation);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            matrix.postScale(1, -1);
-
-            transformedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            bitmap.recycle();
-
-            return transformedBitmap;
-        }
-
-        protected abstract int getImageOrientation() throws IOException;
     }
 }

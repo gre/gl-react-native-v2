@@ -9,6 +9,7 @@ import android.opengl.GLSurfaceView;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 
+import com.facebook.imagepipeline.core.ExecutorSupplier;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -28,13 +29,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.Executor;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class GLCanvas
-        extends GLSurfaceView
-        implements GLSurfaceView.Renderer, RunInGLThread {
+public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, Executor {
 
     private ReactContext reactContext;
     private RNGLContext rnglContext;
@@ -55,10 +55,13 @@ public class GLCanvas
 
     private Map<Integer, GLShader> shaders;
     private Map<Integer, GLFBO> fbos;
+    private ExecutorSupplier executorSupplier;
+    private final Queue<Runnable> mRunOnDraw = new LinkedList<>();
 
-    public GLCanvas(ThemedReactContext context) {
+    public GLCanvas(ThemedReactContext context, ExecutorSupplier executorSupplier) {
         super(context);
         reactContext = context;
+        this.executorSupplier = executorSupplier;
         rnglContext = context.getNativeModule(RNGLContext.class);
         setEGLContextClientVersion(2);
 
@@ -110,7 +113,7 @@ public class GLCanvas
         if (contentTextures.size() != this.nbContentTextures)
             resizeUniformContentTextures(nbContentTextures);
 
-        syncEventsThrough(); // FIXME, really need to do this ?
+        syncEventsThrough(); // FIXME: need to do this here?
 
         if (!preloadingDone) {
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -219,8 +222,8 @@ public class GLCanvas
 
     // Sync methods
 
-    private final Queue<Runnable> mRunOnDraw = new LinkedList<>();
-    public void runInGLThread (final Runnable runnable) {
+    @Override
+    public void execute (final Runnable runnable) {
         synchronized (mRunOnDraw) {
             mRunOnDraw.add(runnable);
             requestRender();
@@ -235,7 +238,7 @@ public class GLCanvas
     }
 
     public void requestSyncData () {
-        runInGLThread(new Runnable() {
+        execute(new Runnable() {
             public void run() {
                 if (ensureCompiledShader(data))
                     syncData();
@@ -343,7 +346,7 @@ public class GLCanvas
         return resolveSrc(src);
     }
 
-    public GLRenderData recSyncData (GLData data, HashMap<Uri, GLImage> images) {
+    private GLRenderData recSyncData (GLData data, HashMap<Uri, GLImage> images) {
         Map<Uri, GLImage> prevImages = this.images;
 
         GLShader shader = getShader(data.shader);
@@ -411,7 +414,7 @@ public class GLCanvas
                                 images.put(src, image);
                         }
                         if (image == null) {
-                            image = new GLImage(reactContext.getApplicationContext(), this, new Runnable() {
+                            image = new GLImage(this, executorSupplier.forDecode(), new Runnable() {
                                 public void run() {
                                     onImageLoad(src);
                                 }
@@ -561,14 +564,14 @@ public class GLCanvas
         }
     }
 
-    public void syncData () {
+    private void syncData () {
         if (data == null) return;
         HashMap<Uri, GLImage> images = new HashMap<>();
         renderData = recSyncData(data, images);
         this.images = images;
     }
 
-    public void recRender (GLRenderData renderData) {
+    private void recRender (GLRenderData renderData) {
         DisplayMetrics dm = reactContext.getResources().getDisplayMetrics();
 
         int w = Float.valueOf(renderData.width.floatValue() * dm.density).intValue();
@@ -618,7 +621,7 @@ public class GLCanvas
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
-    public void render () {
+    private void render () {
         if (renderData == null) return;
         syncContentTextures();
 
@@ -631,13 +634,13 @@ public class GLCanvas
         glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
     }
 
-    public void syncEventsThrough () {
+    private void syncEventsThrough () {
         // TODO: figure out how to do this...
         // For some reason, the click through is half working
     }
 
 
-    private void dispatchOnProgress(double progress, int count, int total) {
+    private void dispatchOnProgress (double progress, int count, int total) {
         WritableMap event = Arguments.createMap();
         event.putDouble("progress", progress);
         event.putInt("count", count);
@@ -649,7 +652,7 @@ public class GLCanvas
                 event);
     }
 
-    public void dispatchOnLoad () {
+    private void dispatchOnLoad () {
         WritableMap event = Arguments.createMap();
         ReactContext reactContext = (ReactContext)getContext();
         reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(

@@ -2,18 +2,22 @@ package com.projectseptember.RNGL;
 
 import android.support.annotation.Nullable;
 
+import com.facebook.imagepipeline.core.DefaultExecutorSupplier;
+import com.facebook.imagepipeline.core.ExecutorSupplier;
+import com.facebook.imagepipeline.memory.PoolConfig;
+import com.facebook.imagepipeline.memory.PoolFactory;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ReactProp;
 
-import java.util.Locale;
-
 
 public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
 
     public static final String REACT_CLASS = "GLCanvas";
+
+    private ExecutorSupplier executorSupplier;
 
     @ReactProp(name="nbContentTextures")
     public void setNbContentTextures (GLCanvas view, int nbContentTextures) {
@@ -66,6 +70,11 @@ public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
 
     @Override
     public GLCanvas createViewInstance (ThemedReactContext context) {
-        return new GLCanvas(context);
+        if (executorSupplier == null) {
+            PoolFactory poolFactory = new PoolFactory(PoolConfig.newBuilder().build());
+            int numCpuBoundThreads = poolFactory.getFlexByteArrayPoolMaxNumThreads();
+            executorSupplier = new DefaultExecutorSupplier(numCpuBoundThreads);
+        }
+        return new GLCanvas(context, executorSupplier);
     }
 }
