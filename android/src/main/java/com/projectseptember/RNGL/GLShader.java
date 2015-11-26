@@ -37,7 +37,7 @@ public class GLShader {
     protected void finalize() throws Throwable {
         super.finalize();
         if (buffer != null) {
-            glDeleteProgram(program); // FIXME: will this ever work? gl calls must be done in GL Thread...
+            glDeleteProgram(program);
             glDeleteBuffers(1, buffer, 0);
         }
     }

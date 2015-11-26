@@ -2,6 +2,7 @@ package com.projectseptember.RNGL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import static android.opengl.GLES20.*;
 
@@ -10,31 +11,14 @@ public class GLFBO {
     private int handle;
     private int width = 0;
     private int height = 0;
+    private Executor glExecutor;
 
-    private static GLTexture initTexture (int width, int height, int attachment) {
-        GLTexture texture = new GLTexture();
-        texture.bind();
-        texture.setShape(width, height);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.getHandle(), 0);
-        return texture;
-    }
-
-    class FBOState {
-
-        private int fbo;
-
-        public FBOState() {
-            int[] fbo = new int[1];
-            glGetIntegerv(GL_FRAMEBUFFER_BINDING, fbo, 0);
-            this.fbo = fbo[0];
-        }
-
-        private void restore() {
-            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        }
-    }
-
-    public GLFBO() {
+    /**
+     * GLFBO constructor as well as all methods must be called in GL Thread
+     * @param glExecutor is only required for finalize()
+     */
+    public GLFBO (Executor glExecutor) {
+        this.glExecutor = glExecutor;
         FBOState state = new FBOState();
 
         int[] handleArr = new int[1];
@@ -51,11 +35,49 @@ public class GLFBO {
         state.restore();
     }
 
+    private GLTexture initTexture (int width, int height, int attachment) {
+        GLTexture texture = new GLTexture(glExecutor);
+        texture.bind();
+        texture.setShape(width, height);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.getHandle(), 0);
+        return texture;
+    }
+
+    class FBOState {
+
+        private int fbo;
+        private int rbo;
+        private int tex;
+
+        public FBOState() {
+            int[] fbo = new int[1];
+            int[] rbo = new int[1];
+            int[] tex = new int[1];
+            glGetIntegerv(GL_FRAMEBUFFER_BINDING, fbo, 0);
+            glGetIntegerv(GL_RENDERBUFFER_BINDING, rbo, 0);
+            glGetIntegerv(GL_TEXTURE_BINDING_2D, tex, 0);
+            this.fbo = fbo[0];
+            this.rbo = rbo[0];
+            this.tex = tex[0];
+        }
+
+        private void restore() {
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+            glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+            glBindTexture(GL_TEXTURE_2D, tex);
+        }
+    }
+
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        int[] handleArr = new int[] { handle };
-        glDeleteFramebuffers(1, handleArr, 0);
+        glExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                int[] handleArr = new int[]{handle};
+                glDeleteFramebuffers(1, handleArr, 0);
+            }
+        });
     }
 
 

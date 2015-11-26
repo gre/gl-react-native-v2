@@ -8,9 +8,12 @@ import com.facebook.imagepipeline.memory.PoolConfig;
 import com.facebook.imagepipeline.memory.PoolFactory;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ReactProp;
+
+import java.util.Map;
 
 
 public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
@@ -76,5 +79,15 @@ public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
             executorSupplier = new DefaultExecutorSupplier(numCpuBoundThreads);
         }
         return new GLCanvas(context, executorSupplier);
+    }
+
+    @Override
+    public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+        return MapBuilder.of(
+                "load",
+                MapBuilder.of("registrationName", "onLoad"),
+                "progress",
+                MapBuilder.of("registrationName", "onProgress")
+        );
     }
 }

@@ -3,10 +3,13 @@ package com.projectseptember.RNGL;
 import static android.opengl.GLES20.*;
 
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.imagepipeline.core.ExecutorSupplier;
@@ -47,7 +50,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
     private boolean autoRedraw;
     private GLData data;
     private List<Uri> imagesToPreload;
-    private List<Uri> preloaded = new ArrayList<>(); // FIXME double check that this works
+    private List<Uri> preloaded = new ArrayList<>();
 
     private Map<Uri, GLImage> images = new HashMap<>();
     private List<GLTexture> contentTextures = new ArrayList<>();
@@ -82,7 +85,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
 
     public GLFBO getFBO (Integer id) {
         if (!fbos.containsKey(id)) {
-            fbos.put(id, new GLFBO());
+            fbos.put(id, new GLFBO(this));
         }
         return fbos.get(id);
     }
@@ -100,7 +103,11 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         fbos = new HashMap<>();
         shaders = new HashMap<>();
-        // TODO : need to reset GLImage and GLTexture. in a smart way (images if already loaded just need to re-set the bitmap)
+        images = new HashMap<>();
+        contentTextures = new ArrayList<>();
+        contentBitmaps = new ArrayList<>();
+        renderData = null;
+        requestSyncData();
     }
 
     @Override
@@ -248,6 +255,25 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
         });
     }
 
+    public static Bitmap captureView (View view) {
+        int w = view.getWidth();
+        int h = view.getHeight();
+        if (w <= 0 || h <= 0)
+            return Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = view.getDrawingCache();
+        if (bitmap == null)
+            view.setDrawingCacheEnabled(true);
+        bitmap = view.getDrawingCache();
+        if (bitmap == null) {
+            Log.e("GLCanvas", "view.getDrawingCache() is null. view="+view);
+            return Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888);
+        }
+        Matrix matrix = new Matrix();
+        matrix.postScale(1, -1);
+        Bitmap reversed = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        return reversed;
+    }
+
     /**
      * Snapshot the content views and save to contentBitmaps (must run in UI Thread)
      */
@@ -256,11 +282,19 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
         ViewGroup parent = (ViewGroup) this.getParent();
         int count = parent == null ? 0 : parent.getChildCount() - 1;
         for (int i = 0; i < count; i++) {
-            bitmaps.add(GLTexture.captureView(parent.getChildAt(i)));
+            View view = parent.getChildAt(i);
+            if (view instanceof ViewGroup) {
+                ViewGroup group = (ViewGroup) view;
+                if (group.getChildCount() == 1) {
+                    // If the content container only contain one other container,
+                    // we will use it for rasterization. That way we screenshot without cropping.
+                    view = group.getChildAt(0);
+                }
+            }
+            bitmaps.add(captureView(view));
         }
         contentBitmaps = bitmaps;
 
-        //Log.i("GLCanvas", "syncContentBitmaps "+count+" "+parent);
         return count;
     }
 
@@ -271,12 +305,10 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
         int size = Math.min(contentTextures.size(), contentBitmaps.size());
         for (int i=0; i<size; i++)
             contentTextures.get(i).setPixels(contentBitmaps.get(i));
-        //Log.i("GLCanvas", "syncContentTextures "+size);
         return size;
     }
 
     public void resizeUniformContentTextures (int n) {
-        //Log.i("GLCanvas", "reiszeUniformContentTextures "+n);
         int length = contentTextures.size();
         if (length == n) return;
         if (n < length) {
@@ -284,7 +316,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
         }
         else {
             for (int i = contentTextures.size(); i < n; i++) {
-                contentTextures.add(new GLTexture());
+                contentTextures.add(new GLTexture(this));
             }
         }
     }
@@ -293,6 +325,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
     private int countPreloaded () {
         int nb = 0;
         for (Uri toload: imagesToPreload) {
+            Log.i("GLCanvas", "toload: "+toload.getPath()+" = "+preloaded.contains(toload));
             if (preloaded.contains(toload)) {
                 nb++;
             }
@@ -380,13 +413,11 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
                 uniformsInteger.put(uniformName, units++);
 
                 if (dataUniforms.isNull(uniformName)) {
-                    GLTexture emptyTexture = new GLTexture();
+                    GLTexture emptyTexture = new GLTexture(this);
                     emptyTexture.setPixelsEmpty();
                     textures.put(uniformName, emptyTexture);
                 }
                 else {
-                    // FIXME: in case of require() it's now a number...
-                    // TODO: need to support this. as well as on iOS side
                     ReadableMap value = dataUniforms.getMap(uniformName);
                     String t = value.getString("type");
                     if (t.equals("content")) {
@@ -640,10 +671,10 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
     }
 
 
-    private void dispatchOnProgress (double progress, int count, int total) {
+    private void dispatchOnProgress (double progress, int loaded, int total) {
         WritableMap event = Arguments.createMap();
         event.putDouble("progress", progress);
-        event.putInt("count", count);
+        event.putInt("loaded", loaded);
         event.putInt("total", total);
         ReactContext reactContext = (ReactContext)getContext();
         reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(

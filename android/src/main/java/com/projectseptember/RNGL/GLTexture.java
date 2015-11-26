@@ -6,22 +6,35 @@ import android.graphics.Matrix;
 import android.opengl.GLUtils;
 import android.view.View;
 
+import java.util.concurrent.Executor;
+
 import static android.opengl.GLES20.*;
 
 public class GLTexture {
     private int handle;
     private Bitmap bitmapCurrentlyUploaded = null;
+    private Executor glExecutor;
 
-    public GLTexture () {
+    /**
+     * GLTexture constructor as well as all methods must be called in GL Thread
+     * @param glExecutor is only required for finalize()
+     */
+    public GLTexture (Executor glExecutor) {
+        this.glExecutor = glExecutor;
         makeTexture();
     }
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        int[] handleArr = new int[] { handle };
-        glDeleteTextures(1, handleArr, 0);
         bitmapCurrentlyUploaded = null;
+        glExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                int[] handleArr = new int[] { handle };
+                glDeleteTextures(1, handleArr, 0);
+            }
+        });
     }
 
     private void makeTexture () {
@@ -75,20 +88,6 @@ public class GLTexture {
     public void setShape (int width, int height) {
         bind();
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
-    }
-
-    public static Bitmap captureView (View view) {
-        int w = view.getWidth();
-        int h = view.getHeight();
-        if (w <= 0 || h <= 0) return Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888);
-        Bitmap bitmap = view.getDrawingCache();
-        if (bitmap == null)
-            view.setDrawingCacheEnabled(true);
-        bitmap = view.getDrawingCache();
-        Matrix matrix = new Matrix();
-        matrix.postScale(1, -1);
-        Bitmap transformedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        return transformedBitmap;
     }
 
     public int getHandle() {

@@ -35,7 +35,7 @@ public class GLImage {
         this.onLoad = onLoad;
         this.glExecutor = glExecutor;
         this.decodeExecutor = decodeExecutor;
-        this.texture = new GLTexture();
+        this.texture = new GLTexture(glExecutor);
     }
 
     public void setSrc (Uri src) {
@@ -71,6 +71,7 @@ public class GLImage {
         Matrix matrix = new Matrix();
         matrix.postScale(1, -1);
         final Bitmap bitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+        bitmap.setHasAlpha(true);
         glExecutor.execute(new Runnable() {
             public void run() {
                 texture.setPixels(bitmap);
