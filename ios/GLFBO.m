@@ -32,8 +32,8 @@
 - (void)restore
 {
   glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
-  glBindRenderbuffer(GL_FRAMEBUFFER, _rbo);
-  glBindTexture(GL_FRAMEBUFFER, _tex);
+  glBindRenderbuffer(GL_RENDERBUFFER, _rbo);
+  glBindTexture(GL_TEXTURE_2D, _tex);
 }
 
 @end
@@ -128,8 +128,8 @@ GLuint initRenderBuffer (float width, float height, GLuint component, GLuint att
   if (width == _width && height == _height) return;
   GLint maxFBOSize;
   glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxFBOSize);
-  if( _width < 0 || _width > maxFBOSize ||
-      _height < 0 || _height > maxFBOSize) {
+  if( width < 0 || width > maxFBOSize ||
+      height < 0 || height > maxFBOSize) {
     RCTLogError(@"Can't resize framebuffer. Invalid dimensions");
     return;
   }

@@ -29,6 +29,23 @@ RCT_EXPORT_VIEW_PROPERTY(onLoad, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onProgress, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onChange, BOOL);
 
+/* TODO
+
+ RCT_EXPORT_METHOD(capture:
+ (nonnull NSNumber *)reactTag
+ callback:(RCTResponseSenderBlock)callback)
+ {
+ 
+ UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
+ if ([view isKindOfClass:[GLCanvas class]]) {
+ [((GLCanvas*)view) capture: callback];
+ }
+ else {
+ callback(@[@"view is not a GLCanvas"]);
+ }
+ }
+ */
+
 - (UIView *)view
 {
   GLCanvas * v;
