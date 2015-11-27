@@ -1,3 +1,5 @@
-const { AppRegistry } = require("react-native");
+const { AppRegistry, StatusBarIOS } = require("react-native");
 const AdvancedEffects = require("./src");
+
+StatusBarIOS.setHidden(true);
 AppRegistry.registerComponent("AdvancedEffects", () => AdvancedEffects);

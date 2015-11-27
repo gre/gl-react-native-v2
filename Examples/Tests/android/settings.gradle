@@ -1,0 +1,6 @@
+rootProject.name = 'Tests'
+
+include ':app'
+
+include ':rngl', ':app'
+project(':rngl').projectDir = new File(rootProject.projectDir, '../../../android')

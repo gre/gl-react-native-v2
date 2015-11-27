@@ -3,10 +3,13 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node_modules/react-native/packager/packager.sh"
+    "start": "react-native start"
   },
   "dependencies": {
     "gl-react-native": "file:../..",
-    "react-native": "^0.13.0-rc"
+    "react-native": "^0.15.0"
+  },
+  "devDependencies": {
+    "react-native-cli": "^0.1.7"
   }
 }

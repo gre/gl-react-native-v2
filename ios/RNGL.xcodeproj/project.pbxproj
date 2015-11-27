@@ -1,0 +1,313 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		346089D01BEFD0A500C90DB5 /* GLCanvas.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089BB1BEFD0A500C90DB5 /* GLCanvas.m */; };
+		346089D11BEFD0A500C90DB5 /* GLCanvasManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089BD1BEFD0A500C90DB5 /* GLCanvasManager.m */; };
+		346089D21BEFD0A500C90DB5 /* GLData.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089BF1BEFD0A500C90DB5 /* GLData.m */; };
+		346089D31BEFD0A500C90DB5 /* GLFBO.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089C11BEFD0A500C90DB5 /* GLFBO.m */; };
+		346089D41BEFD0A500C90DB5 /* GLImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089C31BEFD0A500C90DB5 /* GLImage.m */; };
+		346089D51BEFD0A500C90DB5 /* GLImageData.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089C51BEFD0A500C90DB5 /* GLImageData.m */; };
+		346089D61BEFD0A500C90DB5 /* GLRenderData.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089C71BEFD0A500C90DB5 /* GLRenderData.m */; };
+		346089D71BEFD0A500C90DB5 /* GLShader.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089C91BEFD0A500C90DB5 /* GLShader.m */; };
+		346089D81BEFD0A500C90DB5 /* GLTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089CB1BEFD0A500C90DB5 /* GLTexture.m */; };
+		346089D91BEFD0A500C90DB5 /* RCTConvert+GLData.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089CD1BEFD0A500C90DB5 /* RCTConvert+GLData.m */; };
+		346089DA1BEFD0A500C90DB5 /* RNGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089CF1BEFD0A500C90DB5 /* RNGLContext.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4107012D1ACB723B00C6AA39 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		346089BA1BEFD0A500C90DB5 /* GLCanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLCanvas.h; sourceTree = "<group>"; };
+		346089BB1BEFD0A500C90DB5 /* GLCanvas.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLCanvas.m; sourceTree = "<group>"; };
+		346089BC1BEFD0A500C90DB5 /* GLCanvasManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLCanvasManager.h; sourceTree = "<group>"; };
+		346089BD1BEFD0A500C90DB5 /* GLCanvasManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLCanvasManager.m; sourceTree = "<group>"; };
+		346089BE1BEFD0A500C90DB5 /* GLData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLData.h; sourceTree = "<group>"; };
+		346089BF1BEFD0A500C90DB5 /* GLData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLData.m; sourceTree = "<group>"; };
+		346089C01BEFD0A500C90DB5 /* GLFBO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLFBO.h; sourceTree = "<group>"; };
+		346089C11BEFD0A500C90DB5 /* GLFBO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLFBO.m; sourceTree = "<group>"; };
+		346089C21BEFD0A500C90DB5 /* GLImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLImage.h; sourceTree = "<group>"; };
+		346089C31BEFD0A500C90DB5 /* GLImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLImage.m; sourceTree = "<group>"; };
+		346089C41BEFD0A500C90DB5 /* GLImageData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLImageData.h; sourceTree = "<group>"; };
+		346089C51BEFD0A500C90DB5 /* GLImageData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLImageData.m; sourceTree = "<group>"; };
+		346089C61BEFD0A500C90DB5 /* GLRenderData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLRenderData.h; sourceTree = "<group>"; };
+		346089C71BEFD0A500C90DB5 /* GLRenderData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLRenderData.m; sourceTree = "<group>"; };
+		346089C81BEFD0A500C90DB5 /* GLShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLShader.h; sourceTree = "<group>"; };
+		346089C91BEFD0A500C90DB5 /* GLShader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLShader.m; sourceTree = "<group>"; };
+		346089CA1BEFD0A500C90DB5 /* GLTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLTexture.h; sourceTree = "<group>"; };
+		346089CB1BEFD0A500C90DB5 /* GLTexture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLTexture.m; sourceTree = "<group>"; };
+		346089CC1BEFD0A500C90DB5 /* RCTConvert+GLData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+GLData.h"; sourceTree = "<group>"; };
+		346089CD1BEFD0A500C90DB5 /* RCTConvert+GLData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+GLData.m"; sourceTree = "<group>"; };
+		346089CE1BEFD0A500C90DB5 /* RNGLContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGLContext.h; sourceTree = "<group>"; };
+		346089CF1BEFD0A500C90DB5 /* RNGLContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGLContext.m; sourceTree = "<group>"; };
+		4107012F1ACB723B00C6AA39 /* libRNGL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNGL.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4107012C1ACB723B00C6AA39 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		410701241ACB719800C6AA39 = {
+			isa = PBXGroup;
+			children = (
+				346089BA1BEFD0A500C90DB5 /* GLCanvas.h */,
+				346089BB1BEFD0A500C90DB5 /* GLCanvas.m */,
+				346089BC1BEFD0A500C90DB5 /* GLCanvasManager.h */,
+				346089BD1BEFD0A500C90DB5 /* GLCanvasManager.m */,
+				346089BE1BEFD0A500C90DB5 /* GLData.h */,
+				346089BF1BEFD0A500C90DB5 /* GLData.m */,
+				346089C01BEFD0A500C90DB5 /* GLFBO.h */,
+				346089C11BEFD0A500C90DB5 /* GLFBO.m */,
+				346089C21BEFD0A500C90DB5 /* GLImage.h */,
+				346089C31BEFD0A500C90DB5 /* GLImage.m */,
+				346089C41BEFD0A500C90DB5 /* GLImageData.h */,
+				346089C51BEFD0A500C90DB5 /* GLImageData.m */,
+				346089C61BEFD0A500C90DB5 /* GLRenderData.h */,
+				346089C71BEFD0A500C90DB5 /* GLRenderData.m */,
+				346089C81BEFD0A500C90DB5 /* GLShader.h */,
+				346089C91BEFD0A500C90DB5 /* GLShader.m */,
+				346089CA1BEFD0A500C90DB5 /* GLTexture.h */,
+				346089CB1BEFD0A500C90DB5 /* GLTexture.m */,
+				346089CC1BEFD0A500C90DB5 /* RCTConvert+GLData.h */,
+				346089CD1BEFD0A500C90DB5 /* RCTConvert+GLData.m */,
+				346089CE1BEFD0A500C90DB5 /* RNGLContext.h */,
+				346089CF1BEFD0A500C90DB5 /* RNGLContext.m */,
+				410701301ACB723B00C6AA39 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		410701301ACB723B00C6AA39 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4107012F1ACB723B00C6AA39 /* libRNGL.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4107012E1ACB723B00C6AA39 /* RNGL */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 410701411ACB723B00C6AA39 /* Build configuration list for PBXNativeTarget "RNGL" */;
+			buildPhases = (
+				4107012B1ACB723B00C6AA39 /* Sources */,
+				4107012C1ACB723B00C6AA39 /* Frameworks */,
+				4107012D1ACB723B00C6AA39 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RNGL;
+			productName = RNGL;
+			productReference = 4107012F1ACB723B00C6AA39 /* libRNGL.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		410701251ACB719800C6AA39 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0620;
+				TargetAttributes = {
+					4107012E1ACB723B00C6AA39 = {
+						CreatedOnToolsVersion = 6.2;
+					};
+				};
+			};
+			buildConfigurationList = 410701281ACB719800C6AA39 /* Build configuration list for PBXProject "RNGL" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 410701241ACB719800C6AA39;
+			productRefGroup = 410701301ACB723B00C6AA39 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4107012E1ACB723B00C6AA39 /* RNGL */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4107012B1ACB723B00C6AA39 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				346089D31BEFD0A500C90DB5 /* GLFBO.m in Sources */,
+				346089DA1BEFD0A500C90DB5 /* RNGLContext.m in Sources */,
+				346089D21BEFD0A500C90DB5 /* GLData.m in Sources */,
+				346089D91BEFD0A500C90DB5 /* RCTConvert+GLData.m in Sources */,
+				346089D51BEFD0A500C90DB5 /* GLImageData.m in Sources */,
+				346089D41BEFD0A500C90DB5 /* GLImage.m in Sources */,
+				346089D61BEFD0A500C90DB5 /* GLRenderData.m in Sources */,
+				346089D11BEFD0A500C90DB5 /* GLCanvasManager.m in Sources */,
+				346089D01BEFD0A500C90DB5 /* GLCanvas.m in Sources */,
+				346089D71BEFD0A500C90DB5 /* GLShader.m in Sources */,
+				346089D81BEFD0A500C90DB5 /* GLTexture.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		410701291ACB719800C6AA39 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		4107012A1ACB719800C6AA39 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		410701421ACB723B00C6AA39 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../react-native/React/**",
+					"$(SRCROOT)/../../react-native/Libraries/Image",
+					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native/Libraries/Image",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		410701431ACB723B00C6AA39 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../react-native/React/**",
+					"$(SRCROOT)/../../react-native/Libraries/Image",
+					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native/Libraries/Image",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		410701281ACB719800C6AA39 /* Build configuration list for PBXProject "RNGL" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				410701291ACB719800C6AA39 /* Debug */,
+				4107012A1ACB719800C6AA39 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		410701411ACB723B00C6AA39 /* Build configuration list for PBXNativeTarget "RNGL" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				410701421ACB723B00C6AA39 /* Debug */,
+				410701431ACB723B00C6AA39 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 410701251ACB719800C6AA39 /* Project object */;
+}
