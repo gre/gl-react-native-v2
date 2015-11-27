@@ -50,20 +50,17 @@ class AdvancedEffects extends React.Component {
 
     return (
       <View style={styles.root}>
-{/*
         <Banner
           time={time}
           width={viewportW}
           height={viewportH - introH - imgH - transitionH}
         />
-*/}
         <Intro
           time={time}
           fps={frames/time}
           width={viewportW}
           height={introH}
         />
-{/*
         <Vignette
           time={time}
           width={imgW}
@@ -79,8 +76,6 @@ class AdvancedEffects extends React.Component {
           pauseDuration={0.5}
           transitionDuration={1.5}
         />
-*/}
-
       </View>
     );
   }
