@@ -33,6 +33,8 @@ NSString* srcResource (id res)
   RCTBridge *_bridge;
   
   GLRenderData *_renderData;
+    
+  NSMutableArray *_captureListeners;
   
   NSArray *_contentTextures;
   NSDictionary *_images; // This caches the currently used images (imageSrc -> GLReactImage)
@@ -47,9 +49,7 @@ NSString* srcResource (id res)
   BOOL _preloadingDone;
   
   NSTimer *animationTimer;
-  
-  int _lastCaptureId;
-    
+      
     BOOL _needSync;
 }
 
@@ -59,8 +59,8 @@ NSString* srcResource (id res)
     _bridge = bridge;
     _images = @{};
     _preloaded = [[NSMutableArray alloc] init];
+    _captureListeners = [[NSMutableArray alloc] init];
     _preloadingDone = false;
-    _lastCaptureId = 0;
     self.context = [bridge.rnglContext getContext];
     self.contentScaleFactor = RCTScreenScale();
   }
@@ -70,6 +70,12 @@ NSString* srcResource (id res)
 RCT_NOT_IMPLEMENTED(-init)
 
 //// Props Setters
+
+- (void) capture:(RCTResponseSenderBlock)callback
+{
+  [_captureListeners addObject:callback];
+  [self setNeedsDisplay];
+}
 
 -(void)setImagesToPreload:(NSArray *)imagesToPreload
 {
@@ -137,12 +143,6 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   [self resizeUniformContentTextures:[nbContentTextures intValue]];
   _nbContentTextures = nbContentTextures;
-}
-
-- (void)setCaptureNextFrameId:(int)captureNextFrameId
-{
-  _captureNextFrameId = captureNextFrameId;
-  [self setNeedsDisplay];
 }
 
 //// Sync methods (called from props setters)
@@ -322,9 +322,12 @@ RCT_NOT_IMPLEMENTED(-init)
   else {
     [self render];
     _deferredRendering = false;
-    if (_captureNextFrameId > _lastCaptureId) {
-      _lastCaptureId ++;
-      int id = _lastCaptureId;
+    
+    unsigned long nbCaptureListeners = [_captureListeners count];
+    if (nbCaptureListeners > 0) {
+      NSArray *listeners = _captureListeners;
+      _captureListeners = [[NSMutableArray alloc] init];
+      
       dispatch_async(dispatch_get_main_queue(), ^{ // snapshot not allowed in render tick. defer it.
         if (!weakSelf) return;
         UIImage *frameImage = [weakSelf snapshot];
@@ -332,7 +335,10 @@ RCT_NOT_IMPLEMENTED(-init)
         NSString *frame =
         [NSString stringWithFormat:@"data:image/png;base64,%@",
          [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];
-        [weakSelf dispatchOnCapture:frame withId:id];
+        for (int i = 0; i < nbCaptureListeners; i++) {
+          RCTResponseSenderBlock listener = listeners[i];
+          listener(@[[NSNull null], frame]);
+        }
       });
     }
   }

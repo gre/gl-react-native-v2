@@ -7,7 +7,6 @@
 @property (nonatomic) BOOL opaque;
 @property (nonatomic) BOOL autoRedraw;
 @property (nonatomic) BOOL eventsThrough;
-@property (nonatomic) int captureNextFrameId;
 @property (nonatomic) BOOL visibleContent;
 @property (nonatomic) NSNumber *nbContentTextures;
 @property (nonatomic) NSNumber *renderId;
@@ -17,5 +16,7 @@
 @property (nonatomic, assign) BOOL onChange;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
+
+- (void) capture:(RCTResponseSenderBlock)callback;
 
 @end

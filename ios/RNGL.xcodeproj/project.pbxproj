@@ -34,9 +34,9 @@
 
 /* Begin PBXFileReference section */
 		346089BA1BEFD0A500C90DB5 /* GLCanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLCanvas.h; sourceTree = "<group>"; };
-		346089BB1BEFD0A500C90DB5 /* GLCanvas.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLCanvas.m; sourceTree = "<group>"; };
+		346089BB1BEFD0A500C90DB5 /* GLCanvas.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = GLCanvas.m; sourceTree = "<group>"; tabWidth = 2; };
 		346089BC1BEFD0A500C90DB5 /* GLCanvasManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLCanvasManager.h; sourceTree = "<group>"; };
-		346089BD1BEFD0A500C90DB5 /* GLCanvasManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLCanvasManager.m; sourceTree = "<group>"; };
+		346089BD1BEFD0A500C90DB5 /* GLCanvasManager.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = GLCanvasManager.m; sourceTree = "<group>"; tabWidth = 2; };
 		346089BE1BEFD0A500C90DB5 /* GLData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLData.h; sourceTree = "<group>"; };
 		346089BF1BEFD0A500C90DB5 /* GLData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLData.m; sourceTree = "<group>"; };
 		346089C01BEFD0A500C90DB5 /* GLFBO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLFBO.h; sourceTree = "<group>"; };
