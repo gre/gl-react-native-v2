@@ -3,7 +3,7 @@ const React = require("react-native");
 const {
   Component,
   requireNativeComponent,
-  NativeModules: { GLCanvasManager }
+  NativeModules: { RNGLContext }
 } = React;
 
 const GLCanvasNative = requireNativeComponent("GLCanvas", GLCanvas);
@@ -13,12 +13,12 @@ class GLCanvas extends Component {
     super(props);
   }
   captureFrame (cb) {
-    GLCanvasManager.capture(
-      React.findNodeHandle(this.refs.native),
-      (error, frame) => {
-        if (error) console.error(error); // eslint-disable-line no-console
-        else cb(frame);
-      });
+    RNGLContext.capture(
+      React.findNodeHandle(this.refs.native)
+    ).then(
+      frame => cb(frame),
+      error => console.error(error) // eslint-disable-line no-console
+    );
   }
   render () {
     const { width, height, ...restProps } = this.props;

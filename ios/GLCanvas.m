@@ -71,9 +71,9 @@ RCT_NOT_IMPLEMENTED(-init)
 
 //// Props Setters
 
-- (void) capture:(RCTResponseSenderBlock)callback
+- (void) capture:(RCTPromiseResolveBlock)onSuccess withOnFailure:(RCTPromiseRejectBlock)onFailure
 {
-  [_captureListeners addObject:callback];
+  [_captureListeners addObject:@[onSuccess, onFailure]];
   [self setNeedsDisplay];
 }
 
@@ -336,8 +336,9 @@ RCT_NOT_IMPLEMENTED(-init)
         [NSString stringWithFormat:@"data:image/png;base64,%@",
          [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];
         for (int i = 0; i < nbCaptureListeners; i++) {
-          RCTResponseSenderBlock listener = listeners[i];
-          listener(@[[NSNull null], frame]);
+          NSArray *p = listeners[i];
+          RCTPromiseResolveBlock resolve = p[0];
+          resolve(frame);
         }
       });
     }

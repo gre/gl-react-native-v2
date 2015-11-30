@@ -6,7 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.net.Uri;
+import android.opengl.GLException;
 import android.opengl.GLSurfaceView;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +16,9 @@ import android.view.ViewGroup;
 
 import com.facebook.imagepipeline.core.ExecutorSupplier;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.PromiseImpl;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -22,6 +27,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -45,6 +51,7 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
     private boolean deferredRendering = false;
     private GLRenderData renderData;
     private int defaultFBO;
+    private List<Promise> captureListeners = new ArrayList<>();
 
     private int nbContentTextures;
     private boolean autoRedraw;
@@ -144,7 +151,25 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
         if (shouldRenderNow) {
             this.render();
             deferredRendering = false;
+
+            int nbCaptureListeners = captureListeners.size();
+            if (nbCaptureListeners > 0) {
+                List<Promise> listeners = captureListeners;
+                captureListeners = new ArrayList<>();
+                Bitmap capture = createSnapshot();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                capture.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                String frame = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+                Log.i("GLCanvas", "captured "+frame.length()+" bytes");
+                for (Promise p: listeners)
+                    p.resolve(frame);
+            }
         }
+    }
+
+    public void capture(Promise promise) {
+        captureListeners.add(promise);
+        requestRender();
     }
 
     public void setNbContentTextures(int n) {
@@ -690,5 +715,36 @@ public class GLCanvas extends GLSurfaceView implements GLSurfaceView.Renderer, E
                 getId(),
                 "load",
                 event);
+    }
+
+    private Bitmap createSnapshot () {
+        return createSnapshot(0, 0, getWidth(), getHeight());
+    }
+
+    private Bitmap createSnapshot (int x, int y, int w, int h) {
+        int bitmapBuffer[] = new int[w * h];
+        int bitmapSource[] = new int[w * h];
+        IntBuffer intBuffer = IntBuffer.wrap(bitmapBuffer);
+        intBuffer.position(0);
+
+        try {
+            glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, intBuffer);
+            int offset1, offset2;
+            for (int i = 0; i < h; i++) {
+                offset1 = i * w;
+                offset2 = (h - i - 1) * w;
+                for (int j = 0; j < w; j++) {
+                    int texturePixel = bitmapBuffer[offset1 + j];
+                    int blue = (texturePixel >> 16) & 0xff;
+                    int red = (texturePixel << 16) & 0x00ff0000;
+                    int pixel = (texturePixel & 0xff00ff00) | red | blue;
+                    bitmapSource[offset2 + j] = pixel;
+                }
+            }
+        } catch (GLException e) {
+            return null;
+        }
+
+        return Bitmap.createBitmap(bitmapSource, w, h, Bitmap.Config.ARGB_8888);
     }
 }

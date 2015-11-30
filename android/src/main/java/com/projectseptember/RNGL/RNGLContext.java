@@ -1,9 +1,16 @@
 package com.projectseptember.RNGL;
 
+import android.telecom.Call;
+import android.view.View;
+
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.PromiseImpl;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.UIManagerModule;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +39,21 @@ public class RNGLContext extends ReactContextBaseJavaModule {
 
     public GLShaderData getShader (Integer id) {
         return shaders.get(id);
+    }
+
+    @ReactMethod
+    public void capture (int tag, Promise promise) {
+        throw new Error("GLCanvas#captureFrame is not yet implemented on Android");
+        /*
+        UIManagerModule uiManager = getReactApplicationContext().getNativeModule(UIManagerModule.class);
+        View view = uiManager.getViewByTag(tag);
+        if (view != null && view instanceof GLCanvas) {
+            ((GLCanvas)view).capture(promise);
+        }
+        else {
+            throw new Error("Expecting a GLCanvas, got: "+view);
+        }
+        */
     }
 
     @ReactMethod

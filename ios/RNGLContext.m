@@ -1,5 +1,8 @@
 
 #import "RNGLContext.h"
+#import "GLCanvas.h"
+#import "RCTSparseArray.h"
+#import "RCTUIManager.h"
 
 #import "RCTConvert.h"
 #import "RCTLog.h"
@@ -57,6 +60,22 @@ RCT_EXPORT_METHOD(addShader:(nonnull NSNumber *)id withConfig:(NSDictionary *)co
   }
   GLShader *shader = [[GLShader alloc] initWithContext:_context withName:name withVert:fullViewportVert withFrag:frag];
   _shaders[id] = shader;
+}
+
+RCT_EXPORT_METHOD(capture: (nonnull NSNumber *)reactTag
+                  onSuccess:(RCTPromiseResolveBlock)onSuccess
+                  onFailure:(RCTPromiseRejectBlock)onFailure)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+    GLCanvas *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[GLCanvas class]]) {
+      RCTLog(@"expecting UIView, got: %@", view);
+      callback(@[@"view is not a GLCanvas"]);
+    }
+    else {
+      [view capture:onSuccess withOnFailure:onFailure];
+    }
+  }];
 }
 
 @end

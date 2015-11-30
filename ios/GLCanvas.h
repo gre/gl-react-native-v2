@@ -17,6 +17,6 @@
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
-- (void) capture:(RCTResponseSenderBlock)callback;
+- (void) capture:(RCTPromiseResolveBlock)onSuccess withOnFailure:(RCTPromiseRejectBlock)onFailure;
 
 @end

@@ -54,7 +54,7 @@
 		346089CC1BEFD0A500C90DB5 /* RCTConvert+GLData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+GLData.h"; sourceTree = "<group>"; };
 		346089CD1BEFD0A500C90DB5 /* RCTConvert+GLData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+GLData.m"; sourceTree = "<group>"; };
 		346089CE1BEFD0A500C90DB5 /* RNGLContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGLContext.h; sourceTree = "<group>"; };
-		346089CF1BEFD0A500C90DB5 /* RNGLContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGLContext.m; sourceTree = "<group>"; };
+		346089CF1BEFD0A500C90DB5 /* RNGLContext.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = RNGLContext.m; sourceTree = "<group>"; tabWidth = 2; };
 		4107012F1ACB723B00C6AA39 /* libRNGL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNGL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
