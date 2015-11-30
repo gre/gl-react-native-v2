@@ -16,9 +16,7 @@ import android.view.ViewGroup;
 
 import com.facebook.imagepipeline.core.ExecutorSupplier;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.PromiseImpl;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
