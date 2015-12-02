@@ -1,4 +1,4 @@
-const { Shaders } = require("gl-react-core");
+const { Shaders } = require("gl-react");
 const Surface = require("./Surface");
 const { NativeModules: { RNGLContext } } = require("react-native");
 

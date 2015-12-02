@@ -1,5 +1,5 @@
 const React = require("react-native");
-const GL = require("gl-react-core");
+const GL = require("gl-react");
 const {Surface} = require("gl-react-native");
 
 const shaders = GL.Shaders.create({

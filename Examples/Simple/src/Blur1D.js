@@ -1,5 +1,5 @@
-const React = require("react-native");
-const GL = require("gl-react-core");
+const GL = require("gl-react");
+const React = GL.React;
 
 const shaders = GL.Shaders.create({
   blur1D: {

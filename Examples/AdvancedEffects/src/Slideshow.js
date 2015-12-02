@@ -1,6 +1,6 @@
 const React = require("react-native");
 const { View, Text, StyleSheet } = React;
-const GL = require("gl-react-core");
+const GL = require("gl-react");
 const {Surface} = require("gl-react-native");
 const TransitionGenerator = require("./TransitionGenerator");
 const Transition = require("./Transition");

@@ -1,4 +1,4 @@
-require("gl-react-core/react-native");
+require("gl-react/react-native");
 
 const React = require("react-native");
 const {

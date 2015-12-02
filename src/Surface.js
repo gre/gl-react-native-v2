@@ -1,4 +1,4 @@
-const {createSurface} = require("gl-react-core");
+const {createSurface} = require("gl-react");
 const React = require("react-native");
 const GLCanvas = require("./GLCanvas");
 

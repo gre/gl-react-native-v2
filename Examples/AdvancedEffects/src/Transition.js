@@ -1,5 +1,5 @@
 const React = require("react-native");
-const GL = require("gl-react-core");
+const GL = require("gl-react");
 
 module.exports = GL.createComponent(
   ({ width, height, shader, progress, from, to, uniforms }) => {
