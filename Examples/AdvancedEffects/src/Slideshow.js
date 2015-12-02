@@ -1,6 +1,7 @@
 const React = require("react-native");
 const { View, Text, StyleSheet } = React;
-const GL = require("gl-react-native");
+const GL = require("gl-react-core");
+const {Surface} = require("gl-react-native");
 const TransitionGenerator = require("./TransitionGenerator");
 const Transition = require("./Transition");
 
@@ -33,15 +34,15 @@ class Slideshow extends React.Component {
     const transitionUniforms = this._uniforms;
 
     return <View style={styles.root}>
-      <Transition
-        width={width}
-        height={height}
-        progress={transitionProgress}
-        from={transitionFrom}
-        to={transitionTo}
-        shader={transitionShader}
-        uniforms={transitionUniforms}
-      />
+      <Surface  width={width} height={height}>
+        <Transition
+          progress={transitionProgress}
+          from={transitionFrom}
+          to={transitionTo}
+          shader={transitionShader}
+          uniforms={transitionUniforms}
+        />
+      </Surface>
     <View style={styles.legend}>
         <Text style={styles.textName}>{transitionName}</Text>
         <Text style={styles.textInfo}>(GLSL.io)</Text>

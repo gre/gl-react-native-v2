@@ -1,5 +1,5 @@
 const React = require("react-native");
-const GL = require("gl-react-native");
+const GL = require("gl-react-core");
 const {
   PropTypes
 } = React;

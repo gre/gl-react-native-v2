@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "gl-react-native": "file:../..",
+    "gl-react-core": "file:../../../gl-react-core",
     "react-native": "^0.14.2",
     "react-native-material-kit": "^0.2.2"
   }

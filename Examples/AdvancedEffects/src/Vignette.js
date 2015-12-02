@@ -1,5 +1,6 @@
 const React = require("react-native");
-const GL = require("gl-react-native");
+const GL = require("gl-react-core");
+const {Surface} = require("gl-react-native");
 
 const shaders = GL.Shaders.create({
   imageVignette: {
@@ -55,24 +56,26 @@ class Vignette extends React.Component {
   render () {
     const { width, height, time, source } = this.props;
     const { finger } = this.state;
-    return <GL.View
-      preload
-      onStartShouldSetResponder={() => true}
-      onMoveShouldSetResponder={() => true}
-      onResponderMove={this.onResponderMove}
-      shader={shaders.imageVignette}
+    return <Surface
       width={width}
       height={height}
       opaque={false}
-      uniforms={{
-        time: time,
-        freq: 10 + 2 * Math.sin(0.7*time),
-        texture: source,
-        amp: 0.05 + Math.max(0, 0.03*Math.cos(time)),
-        moving: 0,
-        finger: finger
-      }}
-    />;
+      preload
+      onStartShouldSetResponder={() => true}
+      onMoveShouldSetResponder={() => true}
+      onResponderMove={this.onResponderMove}>
+      <GL.Node
+        shader={shaders.imageVignette}
+        uniforms={{
+          time: time,
+          freq: 10 + 2 * Math.sin(0.7*time),
+          texture: source,
+          amp: 0.05 + Math.max(0, 0.03*Math.cos(time)),
+          moving: 0,
+          finger: finger
+        }}
+      />
+    </Surface>;
   }
 }
 

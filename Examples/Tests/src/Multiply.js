@@ -1,5 +1,5 @@
 const React = require("react-native");
-const GL = require("gl-react-native");
+const GL = require("gl-react-core");
 
 const shaders = GL.Shaders.create({
   multiply: {
@@ -23,7 +23,7 @@ module.exports = GL.createComponent(
   ({ width, height, children }) => {
     if (!children || children.length !== 2) throw new Error("You must provide 2 children to Multiply");
     const [t1, t2] = children;
-    return <GL.View
+    return <GL.Node
       shader={shaders.multiply}
       width={width}
       height={height}

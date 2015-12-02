@@ -1,3 +1,4 @@
+require("gl-react-core/react-native");
 const React = require("react-native");
 const {
   StyleSheet,
@@ -61,6 +62,7 @@ class AdvancedEffects extends React.Component {
           width={viewportW}
           height={introH}
         />
+
         <Vignette
           time={time}
           width={imgW}

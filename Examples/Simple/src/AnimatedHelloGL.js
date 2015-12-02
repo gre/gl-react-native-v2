@@ -1,5 +1,6 @@
 const React = require("react-native");
-const GL = require("gl-react-native");
+const GL = require("gl-react-core");
+const {Surface} = require("gl-react-native");
 
 const shaders = GL.Shaders.create({
   helloGL: {
@@ -38,12 +39,12 @@ class HelloGL extends React.Component {
   render () {
     const { width, height } = this.props;
     const { value } = this.state;
-    return <GL.View
-      shader={shaders.helloGL}
-      width={width}
-      height={height}
-      uniforms={{ value }}
-    />;
+    return <Surface width={width} height={height}>
+      <GL.Node
+        shader={shaders.helloGL}
+        uniforms={{ value }}
+      />
+    </Surface>;
   }
 }
 

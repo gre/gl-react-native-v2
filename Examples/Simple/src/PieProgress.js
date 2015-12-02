@@ -1,5 +1,5 @@
 const React = require("react-native");
-const GL = require("gl-react-native");
+const GL = require("gl-react-core");
 
 const shaders = GL.Shaders.create({
   pieProgress: {
@@ -41,11 +41,8 @@ module.exports = GL.createComponent(
     colorOutside,
     radius
   }) =>
-  <GL.View
-    width={width}
-    height={height}
+  <GL.Node
     shader={shaders.pieProgress}
-    opaque={false}
     uniforms={{
       dim: [ width, height ],
       progress,

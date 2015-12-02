@@ -1,5 +1,6 @@
 const React = require("react-native");
-const GL = require("gl-react-native");
+const GL = require("gl-react-core");
+const {Surface} = require("gl-react-native");
 
 const shaders = GL.Shaders.create({
   oneFingerResponse: {
@@ -55,7 +56,7 @@ class OneFingerResponse extends React.Component {
   render () {
     const { width, height } = this.props;
     const { pressed, position } = this.state;
-    return <GL.View
+    return <Surface
       onStartShouldSetResponderCapture={() => true}
       onMoveShouldSetResponderCapture={() => true}
       onResponderTerminationRequest={() => false}
@@ -64,10 +65,12 @@ class OneFingerResponse extends React.Component {
       onResponderRelease={this.onTouchEnd}
       onResponderTerminate={this.onTouchEnd}
       width={width}
-      height={height}
-      shader={shaders.oneFingerResponse}
-      uniforms={{ pressed, position }}
-    />;
+      height={height}>
+      <GL.Node
+        shader={shaders.oneFingerResponse}
+        uniforms={{ pressed, position }}
+      />
+    </Surface>;
   }
 }
 

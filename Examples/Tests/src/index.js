@@ -1,12 +1,12 @@
+require("gl-react-core/react-native");
 const React = require("react-native");
 const {
-  AppRegistry,
   Text,
   View,
   ScrollView,
   Image,
 } = React;
-
+const { Surface } = require("gl-react-native");
 const Blur = require("./Blur");
 const Add = require("./Add");
 const Multiply = require("./Multiply");
@@ -54,7 +54,7 @@ class Tests extends React.Component {
         </Text>)}
       </View>;
 
-    const img = "http://i.imgur.com/zJIxPEo.jpg?t="+Date.now();
+    const img = "http://i.imgur.com/zJIxPEo.jpg";
 
     const blurredImage =
       <Blur factor={4} passes={6} width={200} height={200}>
@@ -68,22 +68,23 @@ class Tests extends React.Component {
       </Layer>;
 
     return <ScrollView style={{ backgroundColor: "#000" }}>
-      <Display2 width={viewportW} height={viewportW} preload onLoad={this.onLoad} onProgress={this.onProgress}>
-        <Add width={viewportW/2} height={viewportH/2}>
-          {txt}
-          {helloGL}
-        </Add>
-        <Display2 width={viewportW/2} height={viewportH/2} vertical>
-          <Blur factor={1} passes={4} width={viewportW/2} height={viewportH/4}>
-            <Multiply>
-              {blurredImageOverText}
-              {helloGL}
-            </Multiply>
-          </Blur>
-          {blurredImage}
+      <Surface width={viewportW} height={viewportW} preload onLoad={this.onLoad} onProgress={this.onProgress}>
+        <Display2>
+          <Add width={viewportW/2} height={viewportH/2}>
+            {txt}
+            {helloGL}
+          </Add>
+          <Display2 width={viewportW/2} height={viewportH/2} vertical>
+            <Blur factor={1} passes={4} width={viewportW/2} height={viewportH/4}>
+              <Multiply>
+                {blurredImageOverText}
+                {helloGL}
+              </Multiply>
+            </Blur>
+            {blurredImage}
+          </Display2>
         </Display2>
-      </Display2>
-
+      </Surface>
 
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
 
@@ -94,47 +95,40 @@ class Tests extends React.Component {
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Copy width={debugSize} height={debugSize} opaque={false} last>
-            http://i.imgur.com/mp79p5T.png
-          </Copy>
-        </NativeLayer>
-
-        <NativeLayer width={debugSize} height={debugSize}>
-          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Copy width={debugSize} height={debugSize} opaque={false} last>
-            <Copy>
+          <Surface width={debugSize} height={debugSize} opaque={false}>
+            <Copy last>
               http://i.imgur.com/mp79p5T.png
             </Copy>
-          </Copy>
+          </Surface>
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Copy width={debugSize} height={debugSize} opaque={false} last>
-            <Copy>
+          <Surface width={debugSize} height={debugSize} opaque={false}>
+            <Copy last>
               <Copy>
                 http://i.imgur.com/mp79p5T.png
               </Copy>
             </Copy>
-          </Copy>
+          </Surface>
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Copy width={debugSize} height={debugSize} opaque={false} last>
-            <Copy>
+          <Surface width={debugSize} height={debugSize} opaque={false}>
+            <Copy last>
               <Copy>
                 <Copy>
                   http://i.imgur.com/mp79p5T.png
                 </Copy>
               </Copy>
             </Copy>
-          </Copy>
+          </Surface>
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Copy width={debugSize} height={debugSize} opaque={false}>
+          <Surface width={debugSize} height={debugSize} opaque={false}>
             <Copy last>
               <Copy>
                 <Copy>
@@ -144,28 +138,35 @@ class Tests extends React.Component {
                 </Copy>
               </Copy>
             </Copy>
-          </Copy>
+          </Surface>
+        </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Surface width={debugSize} height={debugSize} opaque={false}>
+            <Copy last>
+              <Copy>
+                <Copy>
+                  <Copy>
+                    <Copy>
+                      http://i.imgur.com/mp79p5T.png
+                    </Copy>
+                  </Copy>
+                </Copy>
+              </Copy>
+            </Copy>
+          </Surface>
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
           <NativeLayer>
             <Image source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
-            <TransparentNonPremultiplied width={debugSize} height={debugSize} premultipliedAlpha>
-              <HelloGL />
-            </TransparentNonPremultiplied>
-          </NativeLayer>
-        </NativeLayer>
-
-        <NativeLayer width={debugSize} height={debugSize}>
-          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <NativeLayer>
-            <Image source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
-            <TransparentNonPremultiplied width={debugSize} height={debugSize} premultipliedAlpha>
+            <Surface width={debugSize} height={debugSize}>
               <TransparentNonPremultiplied>
                 <HelloGL />
               </TransparentNonPremultiplied>
-            </TransparentNonPremultiplied>
+            </Surface>
           </NativeLayer>
         </NativeLayer>
 
@@ -173,42 +174,62 @@ class Tests extends React.Component {
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
           <NativeLayer>
             <Image source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
-            <TransparentNonPremultiplied width={debugSize} height={debugSize} premultipliedAlpha>
-              <Copy>
+            <Surface width={debugSize} height={debugSize}>
+              <TransparentNonPremultiplied>
                 <TransparentNonPremultiplied>
-                  <Copy>
-                    http://i.imgur.com/S22HNaU.png
-                  </Copy>
+                  <HelloGL />
                 </TransparentNonPremultiplied>
-              </Copy>
-            </TransparentNonPremultiplied>
+              </TransparentNonPremultiplied>
+            </Surface>
           </NativeLayer>
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Layer width={debugSize} height={debugSize} opaque={false} premultipliedAlpha debug>
-            http://i.imgur.com/mp79p5T.png
-            <TransparentNonPremultiplied>
-              <HelloGL />
-            </TransparentNonPremultiplied>
-          </Layer>
+          <NativeLayer>
+            <Image source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
+            <Surface width={debugSize} height={debugSize}>
+              <TransparentNonPremultiplied>
+                <Copy>
+                  <TransparentNonPremultiplied>
+                    <Copy>
+                      http://i.imgur.com/S22HNaU.png
+                    </Copy>
+                  </TransparentNonPremultiplied>
+                </Copy>
+              </TransparentNonPremultiplied>
+            </Surface>
+          </NativeLayer>
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Layer width={debugSize} height={debugSize} opaque={false}>
-            http://i.imgur.com/mp79p5T.png
-            <TransparentNonPremultiplied>
-              <Copy>
-                <TransparentNonPremultiplied>
-                  <Copy>
-                    http://i.imgur.com/S22HNaU.png
-                  </Copy>
-                </TransparentNonPremultiplied>
-              </Copy>
-            </TransparentNonPremultiplied>
-          </Layer>
+          <Surface width={debugSize} height={debugSize} opaque={false}>
+            <Layer>
+              http://i.imgur.com/mp79p5T.png
+              <TransparentNonPremultiplied>
+                <HelloGL />
+              </TransparentNonPremultiplied>
+            </Layer>
+          </Surface>
+        </NativeLayer>
+
+        <NativeLayer width={debugSize} height={debugSize}>
+          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Surface width={debugSize} height={debugSize} opaque={false}>
+            <Layer>
+              http://i.imgur.com/mp79p5T.png
+              <TransparentNonPremultiplied>
+                <Copy>
+                  <TransparentNonPremultiplied>
+                    <Copy>
+                      http://i.imgur.com/S22HNaU.png
+                    </Copy>
+                  </TransparentNonPremultiplied>
+                </Copy>
+              </TransparentNonPremultiplied>
+            </Layer>
+          </Surface>
         </NativeLayer>
 
       </View>
