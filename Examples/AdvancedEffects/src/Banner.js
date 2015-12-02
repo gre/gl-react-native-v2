@@ -1,6 +1,6 @@
 const React = require("react-native");
-
-const GL = require("gl-react-native");
+const GL = require("gl-react");
+const {Surface} = require("gl-react-native");
 const shaders = GL.Shaders.create({
   banner: {
     frag: `
@@ -27,13 +27,9 @@ void main( void ) {
 class Banner extends React.Component {
   render () {
     const { width, height, time } = this.props;
-    return <GL.View
-      shader={shaders.banner}
-      width={width}
-      height={height}
-      uniforms={{ time: time }}
-      opaque={false}
-    />;
+    return <Surface width={width} height={height} opaque={false}>
+      <GL.Node shader={shaders.banner} uniforms={{ time: time }} />
+    </Surface>;
   }
 }
 

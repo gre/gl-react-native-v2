@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-// Data format of gl-react-core
+// Data format of gl-react
 
 @interface GLData: NSObject
 

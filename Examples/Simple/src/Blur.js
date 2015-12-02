@@ -1,5 +1,5 @@
-const React = require("react-native");
-const GL = require("gl-react-native");
+const GL = require("gl-react");
+const React = GL.React;
 const Blur1D = require("./Blur1D");
 
 module.exports = GL.createComponent(({ width, height, factor, children }) =>

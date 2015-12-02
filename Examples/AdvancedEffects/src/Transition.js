@@ -1,10 +1,10 @@
 const React = require("react-native");
-const GL = require("gl-react-native");
+const GL = require("gl-react");
 
 module.exports = GL.createComponent(
   ({ width, height, shader, progress, from, to, uniforms }) => {
     const scale = React.PixelRatio.get();
-    return <GL.View
+    return <GL.Node
       preload
       shader={shader}
       width={width}

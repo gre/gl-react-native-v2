@@ -1,5 +1,5 @@
-const React = require("react-native");
-const GL = require("gl-react-native");
+const GL = require("gl-react");
+const React = GL.React;
 
 const shaders = GL.Shaders.create({
   helloGL: {
@@ -16,7 +16,7 @@ void main () { // This function is called FOR EACH PIXEL
 
 module.exports = GL.createComponent(
   ({ width, height }) =>
-  <GL.View
+  <GL.Node
     shader={shaders.helloGL}
     width={width}
     height={height}

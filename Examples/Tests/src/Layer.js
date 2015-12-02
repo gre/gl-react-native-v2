@@ -1,5 +1,5 @@
-const React = require("react-native");
-const GL = require("gl-react-native");
+const GL = require("gl-react");
+const React = GL.React;
 
 const shaders = GL.Shaders.create({
   layer: {
@@ -23,7 +23,7 @@ module.exports = GL.createComponent(
   ({ children, ...rest }) => {
     if (!children || children.length !== 2) throw new Error("You must provide 2 children to Layer");
     const [t1, t2] = children;
-    return <GL.View
+    return <GL.Node
       {...rest}
       shader={shaders.layer}
       uniforms={{ t1, t2 }}

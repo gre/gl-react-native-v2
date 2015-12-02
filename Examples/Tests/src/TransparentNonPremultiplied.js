@@ -1,5 +1,5 @@
-const React = require("react-native");
-const GL = require("gl-react-native");
+const GL = require("gl-react");
+const React = GL.React;
 
 const shaders = GL.Shaders.create({
   TransparentNonPremultiplied: {
@@ -18,7 +18,7 @@ void main () {
 
 module.exports = GL.createComponent(
   ({ children: t, ...rest }) =>
-  <GL.View
+  <GL.Node
     {...rest}
     opaque={false}
     shader={shaders.TransparentNonPremultiplied}
