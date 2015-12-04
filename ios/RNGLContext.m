@@ -1,6 +1,5 @@
 
 #import "RNGLContext.h"
-
 #import "RCTConvert.h"
 #import "RCTLog.h"
 
