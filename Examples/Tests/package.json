@@ -8,9 +8,6 @@
   "dependencies": {
     "gl-react-native": "file:../..",
     "gl-react": "file:../../../gl-react",
-    "react-native": "^0.14.2"
-  },
-  "devDependencies": {
-    "react-native-cli": "^0.1.7"
+    "react-native": "^0.16.0"
   }
 }
