@@ -19,8 +19,8 @@
   "author": "Project September <tech@projectseptember.com>",
   "license": "MIT",
   "peerDependencies": {
-    "react-native": ">=0.13.0 <0.16.0",
-    "gl-react": ">= 2.0.0"
+    "react-native": ">= 0.16.0",
+    "gl-react": ">= 2.0.2"
   },
   "dependencies": {
     "invariant": "2.2.0"

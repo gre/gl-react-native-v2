@@ -6,9 +6,9 @@
     "start": "react-native start"
   },
   "dependencies": {
+    "gl-react": "^2.0.2",
     "gl-react-native": "file:../..",
-    "gl-react": "file:../../../gl-react",
     "glsl-transitions": "^2015.11.8",
-    "react-native": "^0.14.2"
+    "react-native": "^0.16.0"
   }
 }

@@ -34,13 +34,15 @@ class Slideshow extends React.Component {
     const transitionUniforms = this._uniforms;
 
     return <View style={styles.root}>
-      <Surface  width={width} height={height}>
+      <Surface width={width} height={height}>
         <Transition
           progress={transitionProgress}
           from={transitionFrom}
           to={transitionTo}
           shader={transitionShader}
           uniforms={transitionUniforms}
+          width={width}
+          height={height}
         />
       </Surface>
     <View style={styles.legend}>
