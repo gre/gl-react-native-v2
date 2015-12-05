@@ -1,10 +1,10 @@
 **[Gitbook documentation](http://projectseptemberinc.gitbooks.io/gl-react/content/) / [Github](https://github.com/ProjectSeptemberInc/gl-react-native/) / [gl-react](https://github.com/ProjectSeptemberInc/gl-react/)** / [#gl-react on reactiflux](https://discordapp.com/channels/102860784329052160/106102146109325312)
 
-# <img width="32" alt="icon" src="https://cloud.githubusercontent.com/assets/211411/9813786/eacfcc24-5888-11e5-8f9b-5a907a2cbb21.png"> gl-react-native
+# <img width="32" alt="icon" src="https://cloud.githubusercontent.com/assets/211411/9813786/eacfcc24-5888-11e5-8f9b-5a907a2cbb21.png"> gl-react-native ![](https://img.shields.io/badge/react--native-%3E=%200.16.0-05F561.svg)
 
-OpenGL bindings for react-native to implement complex effects over images and components, in the descriptive VDOM paradigm.
+OpenGL bindings for React Native to implement complex effects over images and components, in the descriptive VDOM paradigm.
 
-**`gl-react-native` is an implementation of `gl-react` for React Native. Please [read the main gl-react README](https://github.com/ProjectSeptemberInc/gl-react/) for more information.**
+**`gl-react-native` is an implementation of `gl-react` for `react-native`. Please [read the main gl-react README](https://github.com/ProjectSeptemberInc/gl-react/) for more information.**
 
 [![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/docs/simple.gif)](./Examples/Simple)[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/docs/advancedeffects.gif)](./Examples/AdvancedEffects)
 
