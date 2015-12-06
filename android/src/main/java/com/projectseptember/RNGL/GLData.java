@@ -37,8 +37,8 @@ public class GLData {
     public static GLData fromMap (ReadableMap map) {
         Integer shader = map.getInt("shader");
         ReadableMap uniforms = map.getMap("uniforms");
-        Integer width = map.getInt("width");
-        Integer height = map.getInt("height");
+        Integer width = (int) map.getDouble("width");
+        Integer height = (int) map.getDouble("height");
         Integer fboId = map.getInt("fboId");
         List<GLData> children = fromArray(map.getArray("children"));
         List<GLData> contextChildren = fromArray(map.getArray("contextChildren"));
