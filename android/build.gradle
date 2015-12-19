@@ -30,6 +30,5 @@ repositories {
 }
 
 dependencies {
-  // FIXME: version shouldn't be hardcoded? how do to peerDep ?
-  compile 'com.facebook.react:react-native:0.14.+'
+  compile 'com.facebook.react:react-native:0.16.+'
 }
