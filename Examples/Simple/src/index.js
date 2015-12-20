@@ -8,6 +8,7 @@ const {
   Image,
   TextInput,
   Component,
+  TouchableOpacity
 } = React;
 
 const { Surface } = require("gl-react-native");
@@ -84,10 +85,19 @@ class Simple extends Component {
       captured: null
     };
     this.onCapture1 = this.onCapture1.bind(this);
+
+    /*
+    // Crazy stress mode
+    const self = this;
+    setTimeout(function loop () {
+      setTimeout(loop, 100 * Math.random());
+      self.setState({ current: Math.floor(8 * Math.random()) });
+    }, 100);
+    */
   }
 
   onCapture1 () {
-    this.refs.helloGL.captureFrame(data64 => {
+    this.refs.helloGL.captureFrame().then(data64 => {
       this.setState({ captured: data64 });
     });
   }
@@ -108,21 +118,22 @@ class Simple extends Component {
 
     return <View style={styles.container}>
       <Text style={styles.title}>
-        Welcome to GL React Native!
+        gl-react-native > Simple
       </Text>
 
       <Demos onChange={current => this.setState({ current })} value={current}>
-        <Demo title="1. Hello GL">
+        <Demo id={1} title="1. Hello GL">
           <Surface width={256} height={171} ref="helloGL">
             <HelloGL />
           </Surface>
           <View style={{ paddingTop: 20, alignItems: "center", flexDirection: "row" }}>
             <Button onPress={this.onCapture1}>captureFrame()</Button>
-            {captured && <Image source={{ uri:captured }} style={{ marginLeft: 20, width: 51, height: 34 }} />}
+            {captured && <Image source={{ uri: captured }} style={{ marginLeft: 20, width: 51, height: 34 }} />}
           </View>
+          {captured && <Text style={{ marginTop: 10, fontSize: 10, fontFamily: "Cochin" }} numberOfLines={1}>{captured.slice(0, 100)}</Text>}
         </Demo>
 
-        <Demo title="2. Saturate an Image">
+        <Demo id={2} title="2. Saturate an Image">
           <Surface width={256} height={171}>
             <Saturation
               factor={saturationFactor}
@@ -156,16 +167,19 @@ class Simple extends Component {
 
         <Demo id={4} current={current} title="4. Progress Indicator">
           <View style={{ position: "relative", width: 256, height: 180 }}>
-            <Image style={{
-              width: 256,
-              height: 180,
-              position: "absolute",
-              top: 0,
-              left: 0
-            }}
-            source={{ uri: "http://i.imgur.com/qM9BHCy.jpg" }}/>
-            <View style={{ position: "absolute", top: 0, left: 0 }}>
-              <Surface width={256} height={180} opaque={false}>
+            <TouchableOpacity>
+              <Image source={{ uri: "http://i.imgur.com/qM9BHCy.jpg" }}
+                style={{
+                  width: 256,
+                  height: 180,
+                  position: "absolute",
+                  top: 0,
+                  left: 0
+                }}
+              />
+            </TouchableOpacity>
+            <View pointerEvents="box-none" style={{ position: "absolute", top: 0, left: 0, backgroundColor: "transparent" }}>
+              <Surface width={256} height={180} opaque={false} eventsThrough>
                 <PieProgress progress={progress} width={256} height={180} />
               </Surface>
             </View>
@@ -217,7 +231,7 @@ class Simple extends Component {
                   width={256}
                   height={160}
                   factor={factor/2}>
-                  <View style={{ width: 256, height: 160, padding: 10, backgroundColor: "#F9F9F9" }}>
+                  <View style={{ width: 256, height: 160, padding: 10, backgroundColor: "#f9f9f9" }}>
                     <Slider
                       style={{ height: 80 }}
                       max={2}
@@ -235,6 +249,7 @@ class Simple extends Component {
               </Blur>
             </HueRotate>
           </Surface>
+          <Text>Note: This is highly experimental and not yet performant enough.</Text>
         </Demo>
 
         <Demo id={9} current={current} title="9. Texture from array">

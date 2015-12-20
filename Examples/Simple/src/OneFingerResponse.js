@@ -2,6 +2,8 @@ const React = require("react-native");
 const GL = require("gl-react");
 const {Surface} = require("gl-react-native");
 
+const {PanResponder, UIManager} = React;
+
 const shaders = GL.Shaders.create({
   oneFingerResponse: {
     frag: `
@@ -26,44 +28,57 @@ class OneFingerResponse extends React.Component {
     super(props);
     this.state = {
       pressed: 0,
-      position: [ 0, 0 ]
+      position: [ 0, 0 ],
+      surfaceBound: [ 0, 0, 1, 1 ] // x, y, w, h
     };
-    this.onTouchStart = this.onTouchStart.bind(this);
-    this.onTouchEnd = this.onTouchEnd.bind(this);
-    this.onTouchMove = this.onTouchMove.bind(this);
-  }
-  onTouchStart (evt) {
-    this.setState({
-      pressed: 1
+
+    this._panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: (evt, gestureState) => true,
+      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+      onMoveShouldSetPanResponder: (evt, gestureState) => true,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+
+      onPanResponderGrant: (evt, gestureState) =>
+        UIManager.measure(
+          React.findNodeHandle(this.refs.surface),
+          (a, b, w, h, x, y) =>
+            this.setState({
+              pressed: 1,
+              surfaceBound: [x,y,w,h],
+              position: [ gestureState.x0, gestureState.y0 ]
+            })),
+
+      onPanResponderMove: (evt, gestureState) =>
+        this.setState({
+          position: [ gestureState.x0 + gestureState.dx, gestureState.y0 + gestureState.dy ]
+        }),
+
+      onPanResponderTerminationRequest: (evt, gestureState) => true,
+
+      onPanResponderRelease: (evt, gestureState) =>
+        this.setState({
+          pressed: 0
+        }),
+
+      onPanResponderTerminate: (evt, gestureState) =>
+        this.setState({
+          pressed: 0
+        }),
+
+      onShouldBlockNativeResponder: (evt, gestureState) => true
     });
-    this.onTouchMove(evt);
-  }
-  onTouchMove (evt) {
-    const { width, height } = this.props;
-    const { locationX, locationY } = evt.nativeEvent;
-    this.setState({
-      position: [
-        Math.max(0, Math.min(locationX/width, 1)),
-        Math.max(0, Math.min(1-locationY/height, 1))
-      ]
-    });
-  }
-  onTouchEnd () {
-    this.setState({
-      pressed: 0
-    });
+
   }
   render () {
     const { width, height } = this.props;
-    const { pressed, position } = this.state;
+    const { pressed, position:[x,y], surfaceBound: [sx,sy,sw,sh] } = this.state;
+    const position = [
+      (x - sx) / sw,
+      1 - (y - sy) / sh
+    ];
     return <Surface
-      onStartShouldSetResponderCapture={() => true}
-      onMoveShouldSetResponderCapture={() => true}
-      onResponderTerminationRequest={() => false}
-      onResponderGrant={this.onTouchStart}
-      onResponderMove={this.onTouchMove}
-      onResponderRelease={this.onTouchEnd}
-      onResponderTerminate={this.onTouchEnd}
+      ref="surface"
+      {...this._panResponder.panHandlers}
       width={width}
       height={height}>
       <GL.Node

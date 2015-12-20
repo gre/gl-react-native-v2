@@ -2,8 +2,6 @@
 #import "RCTBridge.h"
 #import "GLImageData.h"
 
-GLImageData* genPixelsWithImage (UIImage *image);
-
 @interface GLTexture: NSObject
 
 @property EAGLContext *context;
@@ -16,9 +14,5 @@ GLImageData* genPixelsWithImage (UIImage *image);
 - (void)setShapeWithWidth:(float)width withHeight:(float)height;
 
 - (void)setPixels: (GLImageData *)data;
-- (void)setPixelsEmpty;
-- (void)setPixelsRandom: (int)width withHeight:(int)height;
-- (void)setPixelsWithImage: (UIImage *)image;
-- (void)setPixelsWithView: (UIView *)view;
 
 @end

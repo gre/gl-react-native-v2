@@ -34,7 +34,9 @@ class Slideshow extends React.Component {
     const transitionUniforms = this._uniforms;
 
     return <View style={styles.root}>
-      <Surface width={width} height={height}>
+      <Surface width={width} height={height}
+        onLoad={() => console.log("Slideshow onLoad")}
+        onProgress={e => console.log("Slideshow onProgress", e.nativeEvent)}>
         <Transition
           progress={transitionProgress}
           from={transitionFrom}

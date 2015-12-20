@@ -63,6 +63,7 @@ class Vignette extends React.Component {
       preload
       onStartShouldSetResponder={() => true}
       onMoveShouldSetResponder={() => true}
+      onLoad={() => console.log("Vignette onLoad")}
       onResponderMove={this.onResponderMove}>
       <GL.Node
         shader={shaders.imageVignette}

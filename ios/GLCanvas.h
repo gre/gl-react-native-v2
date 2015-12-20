@@ -1,5 +1,6 @@
 #import <GLKit/GLKit.h>
 #import "GLData.h"
+#import "RCTComponent.h"
 
 @interface GLCanvas: GLKView
 
@@ -11,12 +12,12 @@
 @property (nonatomic) NSNumber *nbContentTextures;
 @property (nonatomic) NSNumber *renderId;
 @property (nonatomic) NSArray *imagesToPreload;
-@property (nonatomic, assign) BOOL onProgress;
-@property (nonatomic, assign) BOOL onLoad;
-@property (nonatomic, assign) BOOL onChange;
+@property (nonatomic, copy) RCTBubblingEventBlock onGLProgress;
+@property (nonatomic, copy) RCTBubblingEventBlock onGLLoad;
+@property (nonatomic, copy) RCTBubblingEventBlock onGLCaptureFrame;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
-- (void) capture:(RCTResponseSenderBlock)callback;
+- (void) requestCaptureFrame;
 
 @end

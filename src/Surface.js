@@ -1,4 +1,6 @@
+const invariant = require("invariant");
 const {createSurface} = require("gl-react");
+invariant(typeof createSurface === "function", "gl-react createSurface is not a function. Check your gl-react dependency");
 const React = require("react-native");
 const GLCanvas = require("./GLCanvas");
 
@@ -13,7 +15,7 @@ function renderVcontent (width, height, id, children, { visibleContent }) {
     left: 0,
     width: width,
     height: height,
-    overflow: "hidden"
+    overflow: "hidden",
   };
   return <View key={id} style={childrenStyle}>{children}</View>;
 }
@@ -22,15 +24,17 @@ function renderVGL (props) {
   return <GLCanvas ref="canvas" {...props} />;
 }
 
-function renderVcontainer ({ style, width, height }, contents, renderer) {
+function renderVcontainer ({ style, width, height, visibleContent, eventsThrough }, contents, renderer) {
   const parentStyle = {
     position: "relative",
     ...style,
     width: width,
     height: height,
-    overflow: "hidden"
+    overflow: "hidden",
   };
-  return <View style={parentStyle}>
+  return <View
+    pointerEvents={!visibleContent && eventsThrough ? "none" : "auto"}
+    style={parentStyle}>
     {contents}
     {renderer}
   </View>;

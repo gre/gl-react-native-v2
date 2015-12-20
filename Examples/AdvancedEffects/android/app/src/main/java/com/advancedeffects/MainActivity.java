@@ -3,6 +3,7 @@ package com.advancedeffects;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
 
 import com.facebook.react.LifecycleState;
 import com.facebook.react.ReactInstanceManager;
@@ -34,6 +35,8 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
         mReactRootView.startReactApplication(mReactInstanceManager, "AdvancedEffects", null);
 
         setContentView(mReactRootView);
+
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
     @Override
