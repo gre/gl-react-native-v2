@@ -50,12 +50,12 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if (_image) {
     if (!_data) {
-      _data = genPixelsWithImage(_image);
+        _data = [GLImageData genPixelsWithImage:_image];
     }
     [_texture setPixels:_data];
   }
   else {
-    [_texture setPixelsEmpty];
+      [_texture setPixels:nil];
   }
   return _texture;
 }

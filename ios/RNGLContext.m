@@ -64,7 +64,7 @@ RCT_EXPORT_METHOD(addShader:(nonnull NSNumber *)id withConfig:(NSDictionary *)co
 
 - (RNGLContext *)rnglContext
 {
-  return self.modules[RCTBridgeModuleNameForClass([RNGLContext class])];
+  return [self moduleForClass:[RNGLContext class]];
 }
 
 @end

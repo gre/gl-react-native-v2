@@ -19,13 +19,14 @@
   "author": "Project September <tech@projectseptember.com>",
   "license": "MIT",
   "peerDependencies": {
-    "react-native": ">= 0.16.0",
-    "gl-react": ">= 2.0.2"
+    "react-native": ">= 0.17.0 <0.18.0",
+    "gl-react": ">= 2.0.3 <2.1.0"
   },
   "dependencies": {
     "invariant": "2.2.0"
   },
   "devDependencies": {
+    "babel-eslint": "^4.1.6",
     "eslint": "^1.9.0",
     "eslint-plugin-react": "^3.8.0"
   }

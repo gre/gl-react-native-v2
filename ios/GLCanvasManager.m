@@ -20,26 +20,23 @@ RCT_EXPORT_MODULE();
 RCT_EXPORT_VIEW_PROPERTY(nbContentTextures, NSNumber);
 RCT_EXPORT_VIEW_PROPERTY(opaque, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(autoRedraw, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(eventsThrough, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(visibleContent, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(data, GLData);
 RCT_EXPORT_VIEW_PROPERTY(renderId, NSNumber);
 RCT_EXPORT_VIEW_PROPERTY(imagesToPreload, NSArray);
-RCT_EXPORT_VIEW_PROPERTY(onLoad, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(onProgress, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(onChange, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(onGLLoad, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onGLProgress, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onGLCaptureFrame, RCTBubblingEventBlock);
 
-RCT_EXPORT_METHOD(capture: (nonnull NSNumber *)reactTag callback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(capture: (nonnull NSNumber *)reactTag)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[GLCanvas class]]) {
       RCTLog(@"expecting UIView, got: %@", view);
-      callback(@[@"view is not a GLCanvas"]);
     }
     else {
       GLCanvas *glCanvas = (GLCanvas *)view;
-      [glCanvas capture:callback];
+      [glCanvas requestCaptureFrame];
     }
   }];
 }

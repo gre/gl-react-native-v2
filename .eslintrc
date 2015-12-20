@@ -1,4 +1,5 @@
 {
+  "parser": "babel-eslint",
   "globals": {
     "requestAnimationFrame": true
   },

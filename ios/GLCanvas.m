@@ -12,7 +12,6 @@
 #import "GLRenderData.h"
 #import "UIView+React.h"
 
-
 NSString* srcResource (id res)
 {
   NSString *src;
@@ -33,9 +32,10 @@ NSString* srcResource (id res)
   RCTBridge *_bridge;
   
   GLRenderData *_renderData;
-    
-  NSMutableArray *_captureListeners;
   
+  BOOL _captureFrameRequested;
+  
+  NSArray *_contentData;
   NSArray *_contentTextures;
   NSDictionary *_images; // This caches the currently used images (imageSrc -> GLReactImage)
   
@@ -49,8 +49,8 @@ NSString* srcResource (id res)
   BOOL _preloadingDone;
   
   NSTimer *animationTimer;
-      
-    BOOL _needSync;
+  
+  BOOL _needSync;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -59,7 +59,7 @@ NSString* srcResource (id res)
     _bridge = bridge;
     _images = @{};
     _preloaded = [[NSMutableArray alloc] init];
-    _captureListeners = [[NSMutableArray alloc] init];
+    _captureFrameRequested = false;
     _preloadingDone = false;
     self.context = [bridge.rnglContext getContext];
     self.contentScaleFactor = RCTScreenScale();
@@ -71,9 +71,9 @@ RCT_NOT_IMPLEMENTED(-init)
 
 //// Props Setters
 
-- (void) capture:(RCTResponseSenderBlock)callback
+- (void) requestCaptureFrame
 {
-  [_captureListeners addObject:callback];
+  _captureFrameRequested = true;
   [self setNeedsDisplay];
 }
 
@@ -121,16 +121,12 @@ RCT_NOT_IMPLEMENTED(-init)
   }
 }
 
-- (void)setEventsThrough:(BOOL)eventsThrough
+- (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
-  _eventsThrough = eventsThrough;
-  [self syncEventsThrough];
-}
-
--(void)setVisibleContent:(BOOL)visibleContent
-{
-  _visibleContent = visibleContent;
-  [self syncEventsThrough];
+  self.userInteractionEnabled = (pointerEvents != RCTPointerEventsNone);
+  if (pointerEvents == RCTPointerEventsBoxNone) {
+    self.accessibilityViewIsModal = NO;
+  }
 }
 
 - (void)setData:(GLData *)data
@@ -141,22 +137,15 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)setNbContentTextures:(NSNumber *)nbContentTextures
 {
-  [self resizeUniformContentTextures:[nbContentTextures intValue]];
   _nbContentTextures = nbContentTextures;
 }
 
 //// Sync methods (called from props setters)
 
-- (void) syncEventsThrough
-{
-  self.userInteractionEnabled = !(_eventsThrough);
-  self.superview.userInteractionEnabled = !(_eventsThrough && !_visibleContent);
-}
-
 - (void)requestSyncData
 {
-    _needSync = true;
-    [self setNeedsDisplay];
+  _needSync = true;
+  [self setNeedsDisplay];
 }
 
 - (void)syncData
@@ -176,15 +165,20 @@ RCT_NOT_IMPLEMENTED(-init)
       
       NSMutableArray *contextChildren = [[NSMutableArray alloc] init];
       for (GLData *child in data.contextChildren) {
-        [contextChildren addObject:weak_traverseTree(child)];
+        GLRenderData *node = weak_traverseTree(child);
+        if (node == nil) return nil;
+        [contextChildren addObject:node];
       }
       
       NSMutableArray *children = [[NSMutableArray alloc] init];
       for (GLData *child in data.children) {
-        [children addObject:weak_traverseTree(child)];
+        GLRenderData *node = weak_traverseTree(child);
+        if (node == nil) return nil;
+        [children addObject:node];
       }
       
       GLShader *shader = [_bridge.rnglContext getShader:data.shader];
+      if (shader == nil) return nil;
       
       NSDictionary *uniformTypes = [shader uniformTypes];
       NSMutableDictionary *uniforms = [[NSMutableDictionary alloc] init];
@@ -194,12 +188,12 @@ RCT_NOT_IMPLEMENTED(-init)
         id value = [data.uniforms objectForKey:uniformName];
         GLenum type = [uniformTypes[uniformName] intValue];
         
-          
+        
         if (type == GL_SAMPLER_2D || type == GL_SAMPLER_CUBE) {
           uniforms[uniformName] = [NSNumber numberWithInt:units++];
           if ([value isEqual:[NSNull null]]) {
             GLTexture *emptyTexture = [[GLTexture alloc] init];
-            [emptyTexture setPixelsEmpty];
+            [emptyTexture setPixels:nil];
             textures[uniformName] = emptyTexture;
           }
           else {
@@ -271,25 +265,40 @@ RCT_NOT_IMPLEMENTED(-init)
               withChildren:children];
     };
     
-    _renderData = traverseTree(_data);
-    _images = images;
+    GLRenderData *res = traverseTree(_data);
+    if (res != nil) {
+      _renderData = traverseTree(_data);
+      _images = images;
+    }
   }
 }
 
+- (void)syncContentData
+{
+  NSMutableArray *contentData = [[NSMutableArray alloc] init];
+  int nb = [_nbContentTextures intValue];
+  for (int i = 0; i < nb; i++) {
+    UIView *view = self.superview.subviews[i]; // We take siblings by index (closely related to the JS code)
+    GLImageData *imgData = nil;
+    if (view) {
+      UIView *v = [view.subviews count] == 1 ?
+      view.subviews[0] :
+      view;
+      imgData = [GLImageData genPixelsWithView:v];
+    } else {
+      imgData = nil;
+    }
+    contentData[i] = imgData;
+  }
+  _contentData = contentData;
+}
+
+
 - (void)syncContentTextures
 {
-  int i = 0;
-  for (GLTexture *texture in _contentTextures) {
-    UIView* view = self.superview.subviews[i]; // We take siblings by index (closely related to the JS code)
-    if (view) {
-      if ([view.subviews count] == 1)
-        [texture setPixelsWithView:view.subviews[0]];
-      else
-        [texture setPixelsWithView:view];
-    } else {
-      [texture setPixelsEmpty];
-    }
-    i ++;
+  unsigned long max = MIN([_contentData count], [_contentTextures count]);
+  for (int i=0; i<max; i++) {
+    [_contentTextures[i] setPixels:_contentData[i]];
   }
 }
 
@@ -298,13 +307,13 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)drawRect:(CGRect)rect
 {
-    if (_needSync) {
-        _needSync = false;
-        [self syncData];
-    }
-  self.layer.opaque = _opaque;
-  [self syncEventsThrough];
   __weak GLCanvas *weakSelf = self;
+  if (_needSync) {
+    _needSync = false;
+    [self syncData];
+  }
+  
+  self.layer.opaque = _opaque;
   
   if (!_preloadingDone) {
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -316,6 +325,7 @@ RCT_NOT_IMPLEMENTED(-init)
     dispatch_async(dispatch_get_main_queue(), ^{
       if (!weakSelf) return;
       _deferredRendering = true;
+      [self syncContentData];
       [weakSelf setNeedsDisplay];
     });
   }
@@ -323,22 +333,16 @@ RCT_NOT_IMPLEMENTED(-init)
     [self render];
     _deferredRendering = false;
     
-    unsigned long nbCaptureListeners = [_captureListeners count];
-    if (nbCaptureListeners > 0) {
-      NSArray *listeners = _captureListeners;
-      _captureListeners = [[NSMutableArray alloc] init];
-      
+    if (_captureFrameRequested) {
+      _captureFrameRequested = false;
       dispatch_async(dispatch_get_main_queue(), ^{ // snapshot not allowed in render tick. defer it.
         if (!weakSelf) return;
         UIImage *frameImage = [weakSelf snapshot];
         NSData *frameData = UIImagePNGRepresentation(frameImage);
         NSString *frame =
         [NSString stringWithFormat:@"data:image/png;base64,%@",
-         [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];
-        for (int i = 0; i < nbCaptureListeners; i++) {
-          RCTResponseSenderBlock listener = listeners[i];
-          listener(@[[NSNull null], frame]);
-        }
+         [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];        
+        if (weakSelf.onGLCaptureFrame) weakSelf.onGLCaptureFrame(@{ @"frame": frame });
       });
     }
   }
@@ -437,7 +441,6 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)resizeUniformContentTextures:(int)n
 {
-  [EAGLContext setCurrentContext:self.context];
   int length = (int) [_contentTextures count];
   if (length == n) return;
   if (n < length) {
@@ -454,25 +457,17 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)dispatchOnLoad
 {
-  [_bridge.eventDispatcher sendInputEventWithName:@"load" body:@{ @"target": self.reactTag }];
+  if (self.onGLLoad) self.onGLLoad(@{});
 }
 
 - (void)dispatchOnProgress: (double)progress withLoaded:(int)loaded withTotal:(int)total
 {
-  NSDictionary *event =
+  if (self.onGLProgress) self.onGLProgress(
   @{
-    @"target": self.reactTag,
-    @"progress": @(progress),
-    @"loaded": @(loaded),
-    @"total": @(total) };
-  [_bridge.eventDispatcher sendInputEventWithName:@"progress" body:event];
-}
-
-- (void)dispatchOnCapture: (NSString *)frame withId:(int)id
-{
-  NSDictionary *event = @{ @"target": self.reactTag, @"frame": frame, @"id":@(id) };
-  // FIXME: using onChange is a hack before we use the new system to directly call callbacks. we will replace with: self.onCaptureNextFrame(...)
-  [_bridge.eventDispatcher sendInputEventWithName:@"change" body:event];
+    @"progress": @(RCTZeroIfNaN(progress)),
+    @"loaded": @(RCTZeroIfNaN(loaded)),
+    @"total": @(RCTZeroIfNaN(total))
+    });
 }
 
 @end
