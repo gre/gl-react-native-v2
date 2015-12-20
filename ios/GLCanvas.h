@@ -11,6 +11,7 @@
 @property (nonatomic) BOOL visibleContent;
 @property (nonatomic) NSNumber *nbContentTextures;
 @property (nonatomic) NSNumber *renderId;
+@property (nonatomic) NSNumber *pixelRatio;
 @property (nonatomic) NSArray *imagesToPreload;
 @property (nonatomic, copy) RCTBubblingEventBlock onGLProgress;
 @property (nonatomic, copy) RCTBubblingEventBlock onGLLoad;

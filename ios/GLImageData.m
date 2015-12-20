@@ -1,6 +1,5 @@
 
 #import "GLImageData.h"
-#import "RCTUtils.h"
 #import "RCTLog.h"
 
 // This structure aims to be used in an immutable way
@@ -55,16 +54,16 @@ GLImageData *EMPTY_PIXELS;
   return [[GLImageData alloc] initWithData:data withWidth:width withHeight:height];
 }
 
-+ (GLImageData *)genPixelsWithView: (UIView *)view
++ (GLImageData *)genPixelsWithView: (UIView *)view withPixelRatio:(float)pixelRatio
 {
-  float width = RCTScreenScale() * view.bounds.size.width;
-  float height = RCTScreenScale() * view.bounds.size.height;
+  float width = pixelRatio * view.bounds.size.width;
+  float height = pixelRatio * view.bounds.size.height;
   GLubyte *data = (GLubyte *)malloc(4 * width * height);
   CGColorSpaceRef colourSpace = CGColorSpaceCreateDeviceRGB();
   CGContextRef ctx = CGBitmapContextCreate(data, width, height, 8, 4 * width, colourSpace, kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
   CGColorSpaceRelease(colourSpace);
   CGContextClearRect(ctx, CGRectMake(0.0, 0.0, width, height));
-  CGContextScaleCTM(ctx, RCTScreenScale(), RCTScreenScale());
+  CGContextScaleCTM(ctx, pixelRatio, pixelRatio);
   [view.layer renderInContext:ctx];
   CGContextRelease(ctx);
   return [[GLImageData alloc] initWithData:data withWidth:width withHeight:height];

@@ -2,11 +2,13 @@ const invariant = require("invariant");
 const {createSurface} = require("gl-react");
 invariant(typeof createSurface === "function", "gl-react createSurface is not a function. Check your gl-react dependency");
 const React = require("react-native");
-const GLCanvas = require("./GLCanvas");
-
 const {
   View,
+  PixelRatio
 } = React;
+const GLCanvas = require("./GLCanvas");
+
+const getPixelRatio = props => props.scale || PixelRatio.get();
 
 function renderVcontent (width, height, id, children, { visibleContent }) {
   const childrenStyle = {
@@ -40,4 +42,4 @@ function renderVcontainer ({ style, width, height, visibleContent, eventsThrough
   </View>;
 }
 
-module.exports = createSurface(renderVcontainer, renderVcontent, renderVGL);
+module.exports = createSurface(renderVcontainer, renderVcontent, renderVGL, getPixelRatio);

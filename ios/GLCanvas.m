@@ -62,7 +62,6 @@ NSString* srcResource (id res)
     _captureFrameRequested = false;
     _preloadingDone = false;
     self.context = [bridge.rnglContext getContext];
-    self.contentScaleFactor = RCTScreenScale();
   }
   return self;
 }
@@ -127,6 +126,12 @@ RCT_NOT_IMPLEMENTED(-init)
   if (pointerEvents == RCTPointerEventsBoxNone) {
     self.accessibilityViewIsModal = NO;
   }
+}
+
+- (void)setPixelRatio:(NSNumber *)pixelRatio
+{
+  self.contentScaleFactor = [pixelRatio floatValue];
+  [self setNeedsDisplay];
 }
 
 - (void)setData:(GLData *)data
@@ -284,7 +289,7 @@ RCT_NOT_IMPLEMENTED(-init)
       UIView *v = [view.subviews count] == 1 ?
       view.subviews[0] :
       view;
-      imgData = [GLImageData genPixelsWithView:v];
+      imgData = [GLImageData genPixelsWithView:v withPixelRatio:self.contentScaleFactor];
     } else {
       imgData = nil;
     }
@@ -352,7 +357,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if (!_renderData) return;
   
-  CGFloat scale = RCTScreenScale();
+  CGFloat scale = self.contentScaleFactor;
   
   @autoreleasepool {
     void (^recDraw) (GLRenderData *renderData);
