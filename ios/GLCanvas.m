@@ -4,6 +4,7 @@
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTProfile.h"
 #import "RNGLContext.h"
 #import "GLCanvas.h"
 #import "GLShader.h"
@@ -330,7 +331,9 @@ RCT_NOT_IMPLEMENTED(-init)
     });
   }
   else {
+    RCTProfileBeginEvent(0, @"GLCanvas render", nil);
     [self render];
+    RCTProfileEndEvent(0, @"gl", nil);
     _deferredRendering = false;
     
     if (_captureFrameRequested) {
