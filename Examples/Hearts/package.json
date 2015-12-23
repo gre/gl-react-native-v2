@@ -1,0 +1,15 @@
+{
+  "name": "Hearts",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "react-native start"
+  },
+  "dependencies": {
+    "crypto": "0.0.3",
+    "gl-react": "^2.0.6",
+    "gl-react-native": "file:../..",
+    "react-native": "^0.17.0",
+    "seedrandom": "gre/seedrandom#released"
+  }
+}
