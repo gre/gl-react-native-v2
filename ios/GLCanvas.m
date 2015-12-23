@@ -331,9 +331,9 @@ RCT_NOT_IMPLEMENTED(-init)
     });
   }
   else {
-    RCTProfileBeginEvent(0, @"GLCanvas render", nil);
+    RCT_PROFILE_BEGIN_EVENT(0, @"GLCanvas render", nil);
     [self render];
-    RCTProfileEndEvent(0, @"gl", nil);
+    RCT_PROFILE_END_EVENT(0, @"gl", nil);
     _deferredRendering = false;
     
     if (_captureFrameRequested) {
