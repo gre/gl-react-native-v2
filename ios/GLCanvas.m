@@ -138,6 +138,7 @@ RCT_NOT_IMPLEMENTED(-init)
 - (void)setData:(GLData *)data
 {
   _data = data;
+  _renderData = nil;
   [self requestSyncData];
 }
 
@@ -366,7 +367,7 @@ RCT_NOT_IMPLEMENTED(-init)
         NSData *frameData = UIImagePNGRepresentation(frameImage);
         NSString *frame =
         [NSString stringWithFormat:@"data:image/png;base64,%@",
-         [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];        
+         [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];
         if (weakSelf.onGLCaptureFrame) weakSelf.onGLCaptureFrame(@{ @"frame": frame });
       });
     }
@@ -375,7 +376,8 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)render
 {
-  if (!_renderData) return;
+  GLRenderData *rd = _renderData;
+  if (!rd) return;
   
   CGFloat scale = RCTScreenScale();
   
@@ -426,9 +428,10 @@ RCT_NOT_IMPLEMENTED(-init)
     
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
     glEnable(GL_BLEND);
-    recDraw(_renderData);
+    recDraw(rd);
     glDisable(GL_BLEND);
     glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     
     if (_dirtyOnLoad && ![self haveRemainingToPreload]) {
       _dirtyOnLoad = false;

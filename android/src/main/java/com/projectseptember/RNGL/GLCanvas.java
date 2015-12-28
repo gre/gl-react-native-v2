@@ -206,6 +206,7 @@ public class GLCanvas extends GLSurfaceView
 
     public void setData (GLData data) {
         this.data = data;
+        renderData = null;
         if (!haveRemainingToPreload()) syncContentBitmaps();
         requestSyncData();
     }
@@ -586,13 +587,13 @@ public class GLCanvas extends GLSurfaceView
 
     private boolean syncData () {
         if (data == null) return true;
-        HashMap<Uri, GLImage> images = new HashMap<>();
-        GLRenderData node = recSyncData(data, images);
+        HashMap<Uri, GLImage> newImages = new HashMap<>();
+        GLRenderData node = recSyncData(data, newImages);
         if (node == null) return false;
         Set<Uri> imagesGone = diff(this.images.keySet(), images.keySet());
+        images = newImages;
+        preloaded.removeAll(imagesGone);
         renderData = node;
-        this.images = images;
-        this.preloaded.removeAll(imagesGone);
         return true;
     }
 
@@ -647,16 +648,18 @@ public class GLCanvas extends GLSurfaceView
     }
 
     private void render () {
-        if (renderData == null) return;
+        GLRenderData rd = renderData;
+        if (rd == null) return;
         syncContentTextures();
 
         int[] defaultFBOArr = new int[1];
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, defaultFBOArr, 0);
         defaultFBO = defaultFBOArr[0];
         glEnable(GL_BLEND);
-        recRender(renderData);
+        recRender(rd);
         glDisable(GL_BLEND);
         glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         if (dirtyOnLoad && !haveRemainingToPreload()) {
             dirtyOnLoad = false;
