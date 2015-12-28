@@ -113,7 +113,6 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if (autoRedraw) {
     if (!animationTimer)
-      animationTimer = // FIXME: can we do better than this?
       [NSTimer scheduledTimerWithTimeInterval:1.0/60.0
                                        target:self
                                      selector:@selector(setNeedsDisplay)
@@ -306,6 +305,7 @@ RCT_NOT_IMPLEMENTED(-init)
     contentData[i] = imgData;
   }
   _contentData = contentData;
+  _deferredRendering = false;
   [self setNeedsDisplay];
   RCT_PROFILE_END_EVENT(0, @"gl", nil);
 }
@@ -335,7 +335,7 @@ RCT_NOT_IMPLEMENTED(-init)
 - (void)drawRect:(CGRect)rect
 {
   self.layer.opaque = _opaque;
-  
+
   if (_neverRendered) {
     _neverRendered = false;
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -350,14 +350,15 @@ RCT_NOT_IMPLEMENTED(-init)
     return;
   }
   
-  BOOL needsDeferredRendering = [_nbContentTextures intValue] > 0 && !_autoRedraw;
-  if (needsDeferredRendering && !_deferredRendering) {
+  bool willRender = !_deferredRendering;
+  
+  if ([_nbContentTextures intValue] > 0) {
     _deferredRendering = true;
     [self performSelectorOnMainThread:@selector(syncContentData) withObject:nil waitUntilDone:NO];
   }
-  else {
+  
+  if (willRender) {
     [self render];
-    _deferredRendering = false;
     if (_captureFrameRequested) {
       _captureFrameRequested = false;
       [self performSelectorOnMainThread:@selector(capture) withObject:nil waitUntilDone:NO];
