@@ -112,7 +112,12 @@ RCT_NOT_IMPLEMENTED(-init)
 - (void)setAutoRedraw:(BOOL)autoRedraw
 {
   _autoRedraw = autoRedraw;
-  if (autoRedraw) {
+  [self performSelectorOnMainThread:@selector(syncAutoRedraw) withObject:nil waitUntilDone:false];
+}
+
+- (void)syncAutoRedraw
+{
+  if (_autoRedraw) {
     if (!animationTimer)
       animationTimer =
       [NSTimer scheduledTimerWithTimeInterval:1.0/60.0
@@ -304,7 +309,7 @@ RCT_NOT_IMPLEMENTED(-init)
     } else {
       imgData = nil;
     }
-    contentData[i] = imgData;
+    if (imgData) contentData[i] = imgData;
   }
   _contentData = contentData;
   _deferredRendering = false;
