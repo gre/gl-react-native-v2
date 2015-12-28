@@ -111,11 +111,13 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)setAutoRedraw:(BOOL)autoRedraw
 {
+  _autoRedraw = autoRedraw;
   if (autoRedraw) {
     if (!animationTimer)
+      animationTimer =
       [NSTimer scheduledTimerWithTimeInterval:1.0/60.0
                                        target:self
-                                     selector:@selector(setNeedsDisplay)
+                                     selector:@selector(autoRedrawUpdate)
                                      userInfo:nil
                                       repeats:YES];
   }
@@ -332,10 +334,21 @@ RCT_NOT_IMPLEMENTED(-init)
 
 //// Draw
 
+- (void) autoRedrawUpdate
+{
+  if ([self haveRemainingToPreload]) {
+    return;
+  }
+  if ([_nbContentTextures intValue] > 0) {
+    [self syncContentData];
+  }
+  [self setNeedsDisplay];
+}
+
 - (void)drawRect:(CGRect)rect
 {
   self.layer.opaque = _opaque;
-
+  
   if (_neverRendered) {
     _neverRendered = false;
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -352,7 +365,7 @@ RCT_NOT_IMPLEMENTED(-init)
   
   bool willRender = !_deferredRendering;
   
-  if ([_nbContentTextures intValue] > 0) {
+  if ([_nbContentTextures intValue] > 0 && !_autoRedraw) {
     _deferredRendering = true;
     [self performSelectorOnMainThread:@selector(syncContentData) withObject:nil waitUntilDone:NO];
   }
