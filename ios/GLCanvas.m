@@ -104,7 +104,7 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)setRenderId:(NSNumber *)renderId
 {
-  if (_nbContentTextures > 0) {
+  if ([_nbContentTextures intValue] > 0) {
     [self setNeedsDisplay];
   }
 }
@@ -273,11 +273,16 @@ RCT_NOT_IMPLEMENTED(-init)
     
     GLRenderData *res = traverseTree(_data);
     if (res != nil) {
+      _needSync = false;
       _renderData = traverseTree(_data);
       _images = images;
       for (NSString *src in diff([prevImages allKeys], [images allKeys])) {
         [_preloaded removeObject:src];
       }
+    }
+    else {
+      // the data is not ready, retry in one tick
+      [self setNeedsDisplay];
     }
   }
 }
@@ -329,25 +334,23 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)drawRect:(CGRect)rect
 {
-  __weak GLCanvas *weakSelf = self;
+  self.layer.opaque = _opaque;
+  
+  if (_neverRendered) {
+    _neverRendered = false;
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+  }
+  
   if (_needSync) {
-    _needSync = false;
     [self syncData];
   }
   
-  self.layer.opaque = _opaque;
-  
   if ([self haveRemainingToPreload]) {
-    if (_neverRendered) {
-      _neverRendered = false;
-      glClearColor(0.0, 0.0, 0.0, 0.0);
-      glClear(GL_COLOR_BUFFER_BIT);
-    }
     return;
   }
-  _neverRendered = false;
   
-  BOOL needsDeferredRendering = _nbContentTextures > 0 && !_autoRedraw;
+  BOOL needsDeferredRendering = [_nbContentTextures intValue] > 0 && !_autoRedraw;
   if (needsDeferredRendering && !_deferredRendering) {
     _deferredRendering = true;
     [self performSelectorOnMainThread:@selector(syncContentData) withObject:nil waitUntilDone:NO];
@@ -355,22 +358,21 @@ RCT_NOT_IMPLEMENTED(-init)
   else {
     [self render];
     _deferredRendering = false;
-    
     if (_captureFrameRequested) {
       _captureFrameRequested = false;
-
-      // FIXME: might use performSelectorOnMainThread as well
-      dispatch_async(dispatch_get_main_queue(), ^{ // snapshot not allowed in render tick. defer it.
-        if (!weakSelf) return;
-        UIImage *frameImage = [weakSelf snapshot];
-        NSData *frameData = UIImagePNGRepresentation(frameImage);
-        NSString *frame =
-        [NSString stringWithFormat:@"data:image/png;base64,%@",
-         [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];
-        if (weakSelf.onGLCaptureFrame) weakSelf.onGLCaptureFrame(@{ @"frame": frame });
-      });
+      [self performSelectorOnMainThread:@selector(capture) withObject:nil waitUntilDone:NO];
     }
   }
+}
+
+-(void)capture
+{
+  UIImage *frameImage = [self snapshot];
+  NSData *frameData = UIImagePNGRepresentation(frameImage);
+  NSString *frame =
+  [NSString stringWithFormat:@"data:image/png;base64,%@",
+   [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];
+  if (self.onGLCaptureFrame) self.onGLCaptureFrame(@{ @"frame": frame });
 }
 
 - (void)render
@@ -489,11 +491,11 @@ RCT_NOT_IMPLEMENTED(-init)
 - (void)dispatchOnProgress: (double)progress withLoaded:(int)loaded withTotal:(int)total
 {
   if (self.onGLProgress) self.onGLProgress(
-  @{
-    @"progress": @(RCTZeroIfNaN(progress)),
-    @"loaded": @(RCTZeroIfNaN(loaded)),
-    @"total": @(RCTZeroIfNaN(total))
-    });
+                                           @{
+                                             @"progress": @(RCTZeroIfNaN(progress)),
+                                             @"loaded": @(RCTZeroIfNaN(loaded)),
+                                             @"total": @(RCTZeroIfNaN(total))
+                                             });
 }
 
 @end
