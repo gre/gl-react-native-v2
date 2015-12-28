@@ -301,7 +301,6 @@ RCT_NOT_IMPLEMENTED(-init)
     contentData[i] = imgData;
   }
   _contentData = contentData;
-  _deferredRendering = true;
   [self setNeedsDisplay];
   RCT_PROFILE_END_EVENT(0, @"gl", nil);
 }
@@ -350,16 +349,17 @@ RCT_NOT_IMPLEMENTED(-init)
   
   BOOL needsDeferredRendering = _nbContentTextures > 0 && !_autoRedraw;
   if (needsDeferredRendering && !_deferredRendering) {
+    _deferredRendering = true;
     [self performSelectorOnMainThread:@selector(syncContentData) withObject:nil waitUntilDone:NO];
   }
   else {
-    RCT_PROFILE_BEGIN_EVENT(0, @"GLCanvas render", nil);
     [self render];
-    RCT_PROFILE_END_EVENT(0, @"gl", nil);
     _deferredRendering = false;
     
     if (_captureFrameRequested) {
       _captureFrameRequested = false;
+
+      // FIXME: might use performSelectorOnMainThread as well
       dispatch_async(dispatch_get_main_queue(), ^{ // snapshot not allowed in render tick. defer it.
         if (!weakSelf) return;
         UIImage *frameImage = [weakSelf snapshot];
@@ -377,10 +377,11 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   GLRenderData *rd = _renderData;
   if (!rd) return;
-  
-  CGFloat scale = RCTScreenScale();
+  RCT_PROFILE_BEGIN_EVENT(0, @"GLCanvas render", nil);
   
   @autoreleasepool {
+    CGFloat scale = RCTScreenScale();
+    
     void (^recDraw) (GLRenderData *renderData);
     __block __weak void (^weak_recDraw) (GLRenderData *renderData);
     weak_recDraw = recDraw = ^void(GLRenderData *renderData) {
@@ -437,6 +438,8 @@ RCT_NOT_IMPLEMENTED(-init)
       [self dispatchOnLoad];
     }
   }
+  
+  RCT_PROFILE_END_EVENT(0, @"gl", nil);
 }
 
 //// utility methods
