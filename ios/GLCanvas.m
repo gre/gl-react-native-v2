@@ -284,6 +284,7 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)syncContentData
 {
+  RCT_PROFILE_BEGIN_EVENT(0, @"GLCanvas syncContentData", nil);
   NSMutableArray *contentData = [[NSMutableArray alloc] init];
   int nb = [_nbContentTextures intValue];
   for (int i = 0; i < nb; i++) {
@@ -300,6 +301,9 @@ RCT_NOT_IMPLEMENTED(-init)
     contentData[i] = imgData;
   }
   _contentData = contentData;
+  _deferredRendering = true;
+  [self setNeedsDisplay];
+  RCT_PROFILE_END_EVENT(0, @"gl", nil);
 }
 
 
@@ -346,12 +350,7 @@ RCT_NOT_IMPLEMENTED(-init)
   
   BOOL needsDeferredRendering = _nbContentTextures > 0 && !_autoRedraw;
   if (needsDeferredRendering && !_deferredRendering) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (!weakSelf) return;
-      _deferredRendering = true;
-      [self syncContentData];
-      [weakSelf setNeedsDisplay];
-    });
+    [self performSelectorOnMainThread:@selector(syncContentData) withObject:nil waitUntilDone:NO];
   }
   else {
     RCT_PROFILE_BEGIN_EVENT(0, @"GLCanvas render", nil);
