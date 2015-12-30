@@ -97,7 +97,9 @@ RCT_NOT_IMPLEMENTED(-init)
                               } else {
                                 // we need to copy the image because it seems the image will be altered.
                                 self.image = [UIImage imageWithCGImage:image.CGImage];
-                                if(_onload) _onload();
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                  if (_onload) _onload();
+                                });
                               }
                             }];
     }

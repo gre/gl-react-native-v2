@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "AdvancedEffects.app"
-               BlueprintName = "AdvancedEffects"
-               ReferencedContainer = "container:AdvancedEffects.xcodeproj">
+               BuildableName = "Hearts.app"
+               BlueprintName = "Hearts"
+               ReferencedContainer = "container:Hearts.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "AdvancedEffectsTests.xctest"
-               BlueprintName = "AdvancedEffectsTests"
-               ReferencedContainer = "container:AdvancedEffects.xcodeproj">
+               BuildableName = "HeartsTests.xctest"
+               BlueprintName = "HeartsTests"
+               ReferencedContainer = "container:Hearts.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,9 +47,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "AdvancedEffectsTests.xctest"
-               BlueprintName = "AdvancedEffectsTests"
-               ReferencedContainer = "container:AdvancedEffects.xcodeproj">
+               BuildableName = "HeartsTests.xctest"
+               BlueprintName = "HeartsTests"
+               ReferencedContainer = "container:Hearts.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -57,9 +57,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "AdvancedEffects.app"
-            BlueprintName = "AdvancedEffects"
-            ReferencedContainer = "container:AdvancedEffects.xcodeproj">
+            BuildableName = "Hearts.app"
+            BlueprintName = "Hearts"
+            ReferencedContainer = "container:Hearts.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -80,11 +80,18 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "AdvancedEffects.app"
-            BlueprintName = "AdvancedEffects"
-            ReferencedContainer = "container:AdvancedEffects.xcodeproj">
+            BuildableName = "Hearts.app"
+            BlueprintName = "Hearts"
+            ReferencedContainer = "container:Hearts.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "NSZombieEnabled"
+            value = "YES"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -99,9 +106,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "AdvancedEffects.app"
-            BlueprintName = "AdvancedEffects"
-            ReferencedContainer = "container:AdvancedEffects.xcodeproj">
+            BuildableName = "Hearts.app"
+            BlueprintName = "Hearts"
+            ReferencedContainer = "container:Hearts.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

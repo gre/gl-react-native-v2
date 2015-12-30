@@ -33,10 +33,12 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -47,7 +49,8 @@ public class GLCanvas extends GLSurfaceView
 
     private ReactContext reactContext;
     private RNGLContext rnglContext;
-    private boolean preloadingDone = false;
+    private boolean dirtyOnLoad = true;
+    private boolean neverRendered = true;
     private boolean deferredRendering = false;
     private GLRenderData renderData;
     private int defaultFBO;
@@ -127,11 +130,15 @@ public class GLCanvas extends GLSurfaceView
         if (contentTextures.size() != this.nbContentTextures)
             resizeUniformContentTextures(nbContentTextures);
 
-        if (!preloadingDone) {
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+        if (haveRemainingToPreload()) {
+            if (neverRendered) {
+                neverRendered = false;
+                glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                glClear(GL_COLOR_BUFFER_BIT);
+            }
             return;
         }
+        neverRendered = false;
 
         final boolean shouldRenderNow = deferredRendering || autoRedraw || nbContentTextures == 0;
         if (nbContentTextures > 0) {
@@ -161,6 +168,15 @@ public class GLCanvas extends GLSurfaceView
         }
     }
 
+    private boolean haveRemainingToPreload() {
+        for (Uri uri: imagesToPreload) {
+            if (!preloaded.contains(uri)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setNbContentTextures(int n) {
         this.nbContentTextures = n;
         requestRender();
@@ -168,7 +184,7 @@ public class GLCanvas extends GLSurfaceView
 
     public void setRenderId(int renderId) {
         if (nbContentTextures > 0) {
-            if (preloadingDone) syncContentBitmaps();
+            if (!haveRemainingToPreload()) syncContentBitmaps();
             requestRender();
         }
     }
@@ -190,25 +206,19 @@ public class GLCanvas extends GLSurfaceView
 
     public void setData (GLData data) {
         this.data = data;
-        if (preloadingDone) syncContentBitmaps();
+        renderData = null;
+        if (!haveRemainingToPreload()) syncContentBitmaps();
         requestSyncData();
     }
 
 
     public void setImagesToPreload (ReadableArray imagesToPreloadRA) {
-        if (preloadingDone) return;
         List<Uri> imagesToPreload = new ArrayList<>();
         for (int i=0; i<imagesToPreloadRA.size(); i++) {
             imagesToPreload.add(resolveSrc(imagesToPreloadRA.getMap(i).getString("uri")));
         }
-        if (imagesToPreload.size() == 0) {
-            dispatchOnLoad();
-            preloadingDone = true;
-        }
-        else {
-            preloadingDone = false;
-        }
         this.imagesToPreload = imagesToPreload;
+        requestSyncData();
     }
 
     // Sync methods
@@ -231,6 +241,7 @@ public class GLCanvas extends GLSurfaceView
     public void requestSyncData () {
         execute(new Runnable() {
             public void run() {
+                // FIXME: maybe should set a flag so we don't do it twice??
                 if (!syncData())
                     requestSyncData();
             }
@@ -315,22 +326,13 @@ public class GLCanvas extends GLSurfaceView
     }
 
     private void onImageLoad (Uri loaded) {
-        if (!preloadingDone) {
-            preloaded.add(loaded);
-            int count = countPreloaded();
-            int total = imagesToPreload.size();
-            double progress = ((double) count) / ((double) total);
-            dispatchOnProgress(progress, count, total);
-            if (count == total) {
-                dispatchOnLoad();
-                preloadingDone = true;
-                requestSyncData();
-            }
-        }
-        else {
-            // Any texture image load will trigger a future re-sync of data (if no preloaded)
-            requestSyncData();
-        }
+        preloaded.add(loaded);
+        int count = countPreloaded();
+        int total = imagesToPreload.size();
+        double progress = ((double) count) / ((double) total);
+        dispatchOnProgress(progress, count, total);
+        dirtyOnLoad = true;
+        requestSyncData();
     }
 
     public Uri resolveSrc (String src) {
@@ -581,13 +583,17 @@ public class GLCanvas extends GLSurfaceView
         }
     }
 
+
+
     private boolean syncData () {
         if (data == null) return true;
-        HashMap<Uri, GLImage> images = new HashMap<>();
-        GLRenderData node = recSyncData(data, images);
+        HashMap<Uri, GLImage> newImages = new HashMap<>();
+        GLRenderData node = recSyncData(data, newImages);
         if (node == null) return false;
+        Set<Uri> imagesGone = diff(this.images.keySet(), images.keySet());
+        images = newImages;
+        preloaded.removeAll(imagesGone);
         renderData = node;
-        this.images = images;
         return true;
     }
 
@@ -642,16 +648,23 @@ public class GLCanvas extends GLSurfaceView
     }
 
     private void render () {
-        if (renderData == null) return;
+        GLRenderData rd = renderData;
+        if (rd == null) return;
         syncContentTextures();
 
         int[] defaultFBOArr = new int[1];
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, defaultFBOArr, 0);
         defaultFBO = defaultFBOArr[0];
         glEnable(GL_BLEND);
-        recRender(renderData);
+        recRender(rd);
         glDisable(GL_BLEND);
         glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        if (dirtyOnLoad && !haveRemainingToPreload()) {
+            dirtyOnLoad = false;
+            dispatchOnLoad();
+        }
     }
 
     private void dispatchOnCaptureFrame (String frame) {
@@ -666,7 +679,7 @@ public class GLCanvas extends GLSurfaceView
 
     private void dispatchOnProgress (double progress, int loaded, int total) {
         WritableMap event = Arguments.createMap();
-        event.putDouble("progress", progress);
+        event.putDouble("progress", Double.isNaN(progress) ? 0.0 : progress);
         event.putInt("loaded", loaded);
         event.putInt("total", total);
         ReactContext reactContext = (ReactContext)getContext();
@@ -732,4 +745,10 @@ public class GLCanvas extends GLSurfaceView
         mPointerEvents = pointerEvents;
     }
 
+    static <A> Set<A> diff(Set<A> a, Set<A> b) {
+        Set<A> d = new HashSet<>();
+        d.addAll(a);
+        d.removeAll(b);
+        return d;
+    }
 }

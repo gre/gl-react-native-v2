@@ -40,7 +40,9 @@ void main() {
 class Intro extends React.Component {
   render () {
     const { time, fps, width, height } = this.props;
-    return <Surface width={width} height={height} opaque={false}>
+    return <Surface width={width} height={height} opaque={false}
+      onLoad={() => console.log("Intro onLoad")}
+      onProgress={e => console.log("Intro onProgress", e.nativeEvent)}>
       <GL.Node
         shader={shaders.drunkEffect}
         uniforms={{

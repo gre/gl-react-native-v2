@@ -42,7 +42,7 @@
 		346089C01BEFD0A500C90DB5 /* GLFBO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLFBO.h; sourceTree = "<group>"; };
 		346089C11BEFD0A500C90DB5 /* GLFBO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLFBO.m; sourceTree = "<group>"; };
 		346089C21BEFD0A500C90DB5 /* GLImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLImage.h; sourceTree = "<group>"; };
-		346089C31BEFD0A500C90DB5 /* GLImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLImage.m; sourceTree = "<group>"; };
+		346089C31BEFD0A500C90DB5 /* GLImage.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = GLImage.m; sourceTree = "<group>"; tabWidth = 2; };
 		346089C41BEFD0A500C90DB5 /* GLImageData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLImageData.h; sourceTree = "<group>"; };
 		346089C51BEFD0A500C90DB5 /* GLImageData.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = GLImageData.m; sourceTree = "<group>"; tabWidth = 2; };
 		346089C61BEFD0A500C90DB5 /* GLRenderData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLRenderData.h; sourceTree = "<group>"; };

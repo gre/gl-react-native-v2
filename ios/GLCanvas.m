@@ -4,6 +4,7 @@
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTProfile.h"
 #import "RNGLContext.h"
 #import "GLCanvas.h"
 #import "GLShader.h"
@@ -25,31 +26,42 @@ NSString* srcResource (id res)
   return src;
 }
 
+NSArray* diff (NSArray* a, NSArray* b) {
+  NSMutableArray *arr = [[NSMutableArray alloc] init];
+  for (NSString* k in a) {
+    if (![b containsObject:k]) {
+      [arr addObject:k];
+    }
+  }
+  return arr;
+}
+
 // For reference, see implementation of gl-shader's GLCanvas
 
 @implementation GLCanvas
 {
   RCTBridge *_bridge;
-  
+
   GLRenderData *_renderData;
-  
+
   BOOL _captureFrameRequested;
-  
+
   NSArray *_contentData;
   NSArray *_contentTextures;
   NSDictionary *_images; // This caches the currently used images (imageSrc -> GLReactImage)
-  
+
   BOOL _opaque; // opaque prop (if false, the GLCanvas will become transparent)
-  
+
   BOOL _deferredRendering; // This flag indicates a render has been deferred to the next frame (when using contents)
-  
+
   GLint defaultFBO;
-  
+
   NSMutableArray *_preloaded;
-  BOOL _preloadingDone;
-  
+  BOOL _dirtyOnLoad;
+  BOOL _neverRendered;
+
   NSTimer *animationTimer;
-  
+
   BOOL _needSync;
 }
 
@@ -60,7 +72,8 @@ NSString* srcResource (id res)
     _images = @{};
     _preloaded = [[NSMutableArray alloc] init];
     _captureFrameRequested = false;
-    _preloadingDone = false;
+    _dirtyOnLoad = true;
+    _neverRendered = true;
     self.context = [bridge.rnglContext getContext];
   }
   return self;
@@ -78,15 +91,8 @@ RCT_NOT_IMPLEMENTED(-init)
 
 -(void)setImagesToPreload:(NSArray *)imagesToPreload
 {
-  if (_preloadingDone) return;
-  if ([imagesToPreload count] == 0) {
-    [self dispatchOnLoad];
-    _preloadingDone = true;
-  }
-  else {
-    _preloadingDone = false;
-  }
   _imagesToPreload = imagesToPreload;
+  [self requestSyncData];
 }
 
 - (void)setOpaque:(BOOL)opaque
@@ -97,19 +103,25 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)setRenderId:(NSNumber *)renderId
 {
-  if (_nbContentTextures > 0) {
+  if ([_nbContentTextures intValue] > 0) {
     [self setNeedsDisplay];
   }
 }
 
 - (void)setAutoRedraw:(BOOL)autoRedraw
 {
-  if (autoRedraw) {
+  _autoRedraw = autoRedraw;
+  [self performSelectorOnMainThread:@selector(syncAutoRedraw) withObject:nil waitUntilDone:false];
+}
+
+- (void)syncAutoRedraw
+{
+  if (_autoRedraw) {
     if (!animationTimer)
-      animationTimer = // FIXME: can we do better than this?
+      animationTimer =
       [NSTimer scheduledTimerWithTimeInterval:1.0/60.0
                                        target:self
-                                     selector:@selector(setNeedsDisplay)
+                                     selector:@selector(autoRedrawUpdate)
                                      userInfo:nil
                                       repeats:YES];
   }
@@ -137,6 +149,7 @@ RCT_NOT_IMPLEMENTED(-init)
 - (void)setData:(GLData *)data
 {
   _data = data;
+  _renderData = nil;
   [self requestSyncData];
 }
 
@@ -155,36 +168,35 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)syncData
 {
-  [EAGLContext setCurrentContext:self.context];
   @autoreleasepool {
-    
+
     NSDictionary *prevImages = _images;
     NSMutableDictionary *images = [[NSMutableDictionary alloc] init];
-    
+
     GLRenderData * (^traverseTree) (GLData *data);
     __block __weak GLRenderData * (^weak_traverseTree)(GLData *data);
     weak_traverseTree = traverseTree = ^GLRenderData *(GLData *data) {
       NSNumber *width = data.width;
       NSNumber *height = data.height;
       int fboId = [data.fboId intValue];
-      
+
       NSMutableArray *contextChildren = [[NSMutableArray alloc] init];
       for (GLData *child in data.contextChildren) {
         GLRenderData *node = weak_traverseTree(child);
         if (node == nil) return nil;
         [contextChildren addObject:node];
       }
-      
+
       NSMutableArray *children = [[NSMutableArray alloc] init];
       for (GLData *child in data.children) {
         GLRenderData *node = weak_traverseTree(child);
         if (node == nil) return nil;
         [children addObject:node];
       }
-      
+
       GLShader *shader = [_bridge.rnglContext getShader:data.shader];
       if (shader == nil) return nil;
-      
+
       NSDictionary *uniformTypes = [shader uniformTypes];
       NSMutableDictionary *uniforms = [[NSMutableDictionary alloc] init];
       NSMutableDictionary *textures = [[NSMutableDictionary alloc] init];
@@ -192,8 +204,8 @@ RCT_NOT_IMPLEMENTED(-init)
       for (NSString *uniformName in data.uniforms) {
         id value = [data.uniforms objectForKey:uniformName];
         GLenum type = [uniformTypes[uniformName] intValue];
-        
-        
+
+
         if (type == GL_SAMPLER_2D || type == GL_SAMPLER_CUBE) {
           uniforms[uniformName] = [NSNumber numberWithInt:units++];
           if ([value isEqual:[NSNull null]]) {
@@ -220,7 +232,7 @@ RCT_NOT_IMPLEMENTED(-init)
               if (!src) {
                 RCTLogError(@"texture uniform '%@': Invalid uri format '%@'", uniformName, value);
               }
-              
+
               GLImage *image = images[src];
               if (image == nil) {
                 image = prevImages[src];
@@ -246,19 +258,19 @@ RCT_NOT_IMPLEMENTED(-init)
           uniforms[uniformName] = value;
         }
       }
-      
+
       int maxTextureUnits;
       glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
       if (units > maxTextureUnits) {
         RCTLogError(@"Maximum number of texture reach. got %i >= max %i", units, maxTextureUnits);
       }
-      
+
       for (NSString *uniformName in shader.uniformTypes) {
         if (uniforms[uniformName] == nil) {
           RCTLogError(@"All defined uniforms must be provided. Missing '%@'", uniformName);
         }
       }
-      
+
       return [[GLRenderData alloc]
               initWithShader:shader
               withUniforms:uniforms
@@ -269,17 +281,26 @@ RCT_NOT_IMPLEMENTED(-init)
               withContextChildren:contextChildren
               withChildren:children];
     };
-    
+
     GLRenderData *res = traverseTree(_data);
     if (res != nil) {
+      _needSync = false;
       _renderData = traverseTree(_data);
       _images = images;
+      for (NSString *src in diff([prevImages allKeys], [images allKeys])) {
+        [_preloaded removeObject:src];
+      }
+    }
+    else {
+      // the data is not ready, retry in one tick
+      [self setNeedsDisplay];
     }
   }
 }
 
 - (void)syncContentData
 {
+  RCT_PROFILE_BEGIN_EVENT(0, @"GLCanvas syncContentData", nil);
   NSMutableArray *contentData = [[NSMutableArray alloc] init];
   int nb = [_nbContentTextures intValue];
   for (int i = 0; i < nb; i++) {
@@ -293,9 +314,12 @@ RCT_NOT_IMPLEMENTED(-init)
     } else {
       imgData = nil;
     }
-    contentData[i] = imgData;
+    if (imgData) contentData[i] = imgData;
   }
   _contentData = contentData;
+  _deferredRendering = false;
+  [self setNeedsDisplay];
+  RCT_PROFILE_END_EVENT(0, @"gl", nil);
 }
 
 
@@ -307,71 +331,96 @@ RCT_NOT_IMPLEMENTED(-init)
   }
 }
 
+- (BOOL)haveRemainingToPreload
+{
+  for (id res in _imagesToPreload) {
+    if (![_preloaded containsObject:srcResource(res)]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 
 //// Draw
 
-- (void)drawRect:(CGRect)rect
+- (void) autoRedrawUpdate
 {
-  __weak GLCanvas *weakSelf = self;
-  if (_needSync) {
-    _needSync = false;
-    [self syncData];
-  }
-  
-  self.layer.opaque = _opaque;
-  
-  if (!_preloadingDone) {
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT);
+  if ([self haveRemainingToPreload]) {
     return;
   }
-  BOOL needsDeferredRendering = _nbContentTextures > 0 && !_autoRedraw;
-  if (needsDeferredRendering && !_deferredRendering) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (!weakSelf) return;
-      _deferredRendering = true;
-      [self syncContentData];
-      [weakSelf setNeedsDisplay];
-    });
+  if ([_nbContentTextures intValue] > 0) {
+    [self syncContentData];
   }
-  else {
+  [self setNeedsDisplay];
+}
+
+- (void)drawRect:(CGRect)rect
+{
+  self.layer.opaque = _opaque;
+
+  if (_neverRendered) {
+    _neverRendered = false;
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+  }
+
+  if (_needSync) {
+    [self syncData];
+  }
+
+  if ([self haveRemainingToPreload]) {
+    return;
+  }
+
+  bool willRender = !_deferredRendering;
+
+  if ([_nbContentTextures intValue] > 0 && !_autoRedraw) {
+    _deferredRendering = true;
+    [self performSelectorOnMainThread:@selector(syncContentData) withObject:nil waitUntilDone:NO];
+  }
+
+  if (willRender) {
     [self render];
-    _deferredRendering = false;
-    
     if (_captureFrameRequested) {
       _captureFrameRequested = false;
-      dispatch_async(dispatch_get_main_queue(), ^{ // snapshot not allowed in render tick. defer it.
-        if (!weakSelf) return;
-        UIImage *frameImage = [weakSelf snapshot];
-        NSData *frameData = UIImagePNGRepresentation(frameImage);
-        NSString *frame =
-        [NSString stringWithFormat:@"data:image/png;base64,%@",
-         [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];        
-        if (weakSelf.onGLCaptureFrame) weakSelf.onGLCaptureFrame(@{ @"frame": frame });
-      });
+      [self performSelectorOnMainThread:@selector(capture) withObject:nil waitUntilDone:NO];
     }
   }
 }
 
+-(void)capture
+{
+  UIImage *frameImage = [self snapshot];
+  NSData *frameData = UIImagePNGRepresentation(frameImage);
+  NSString *frame =
+  [NSString stringWithFormat:@"data:image/png;base64,%@",
+   [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];
+  if (self.onGLCaptureFrame) self.onGLCaptureFrame(@{ @"frame": frame });
+}
+
 - (void)render
 {
-  if (!_renderData) return;
-  
+  GLRenderData *rd = _renderData;
+  if (!rd) return;
+  RCT_PROFILE_BEGIN_EVENT(0, @"GLCanvas render", nil);
   CGFloat scale = self.contentScaleFactor;
-  
+
   @autoreleasepool {
+    CGFloat scale = RCTScreenScale();
+
     void (^recDraw) (GLRenderData *renderData);
     __block __weak void (^weak_recDraw) (GLRenderData *renderData);
     weak_recDraw = recDraw = ^void(GLRenderData *renderData) {
       float w = [renderData.width floatValue] * scale;
       float h = [renderData.height floatValue] * scale;
-      
+
       for (GLRenderData *child in renderData.contextChildren)
         weak_recDraw(child);
-      
+
       for (GLRenderData *child in renderData.children)
         weak_recDraw(child);
-      
+
       if (renderData.fboId == -1) {
         glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
         glViewport(0, 0, w, h);
@@ -381,57 +430,56 @@ RCT_NOT_IMPLEMENTED(-init)
         [fbo setShapeWithWidth:w withHeight:h];
         [fbo bind];
       }
-      
+
       [renderData.shader bind];
-      
+
       for (NSString *uniformName in renderData.textures) {
         GLTexture *texture = renderData.textures[uniformName];
         int unit = [((NSNumber *)renderData.uniforms[uniformName]) intValue];
         [texture bind:unit];
       }
-      
+
       for (NSString *uniformName in renderData.uniforms) {
         [renderData.shader setUniform:uniformName withValue:renderData.uniforms[uniformName]];
       }
-      
+
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glClearColor(0.0, 0.0, 0.0, 0.0);
       glClear(GL_COLOR_BUFFER_BIT);
       glDrawArrays(GL_TRIANGLES, 0, 6);
     };
-    
+
     // DRAWING THE SCENE
-    
+
     [self syncContentTextures];
-    
+
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
     glEnable(GL_BLEND);
-    recDraw(_renderData);
+    recDraw(rd);
     glDisable(GL_BLEND);
     glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    if (_dirtyOnLoad && ![self haveRemainingToPreload]) {
+      _dirtyOnLoad = false;
+      [self dispatchOnLoad];
+    }
   }
+
+  RCT_PROFILE_END_EVENT(0, @"gl", nil);
 }
 
 //// utility methods
 
 - (void)onImageLoad:(NSString *)loaded
 {
-  if (!_preloadingDone) {
-    [_preloaded addObject:loaded];
-    int count = [self countPreloaded];
-    int total = (int) [_imagesToPreload count];
-    double progress = ((double) count) / ((double) total);
-    [self dispatchOnProgress:progress withLoaded:count withTotal:total];
-    if (count == total) {
-      [self dispatchOnLoad];
-      _preloadingDone = true;
-      [self requestSyncData];
-    }
-  }
-  else {
-    // Any texture image load will trigger a future re-sync of data (if no preloaded)
-    [self requestSyncData];
-  }
+  [_preloaded addObject:loaded];
+  int count = [self countPreloaded];
+  int total = (int) [_imagesToPreload count];
+  double progress = ((double) count) / ((double) total);
+  [self dispatchOnProgress:progress withLoaded:count withTotal:total];
+  _dirtyOnLoad = true;
+  [self requestSyncData];
 }
 
 - (int)countPreloaded
@@ -468,11 +516,11 @@ RCT_NOT_IMPLEMENTED(-init)
 - (void)dispatchOnProgress: (double)progress withLoaded:(int)loaded withTotal:(int)total
 {
   if (self.onGLProgress) self.onGLProgress(
-  @{
-    @"progress": @(RCTZeroIfNaN(progress)),
-    @"loaded": @(RCTZeroIfNaN(loaded)),
-    @"total": @(RCTZeroIfNaN(total))
-    });
+                                           @{
+                                             @"progress": @(RCTZeroIfNaN(progress)),
+                                             @"loaded": @(RCTZeroIfNaN(loaded)),
+                                             @"total": @(RCTZeroIfNaN(total))
+                                             });
 }
 
 @end
