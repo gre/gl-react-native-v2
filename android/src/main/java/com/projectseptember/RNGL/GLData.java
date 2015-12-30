@@ -10,17 +10,19 @@ public class GLData {
 
     final Integer shader;
     final ReadableMap uniforms;
-    final Integer width;
-    final Integer height;
+    final Double width;
+    final Double height;
+    final Double pixelRatio;
     final Integer fboId;
     final List<GLData> contextChildren;
     final List<GLData> children;
 
-    public GLData(Integer shader, ReadableMap uniforms, Integer width, Integer height, Integer fboId, List<GLData> contextChildren, List<GLData> children) {
+    public GLData(Integer shader, ReadableMap uniforms, Double width, Double height, Double pixelRatio, Integer fboId, List<GLData> contextChildren, List<GLData> children) {
         this.shader = shader;
         this.uniforms = uniforms;
         this.width = width;
         this.height = height;
+        this.pixelRatio = pixelRatio;
         this.fboId = fboId;
         this.contextChildren = contextChildren;
         this.children = children;
@@ -37,11 +39,12 @@ public class GLData {
     public static GLData fromMap (ReadableMap map) {
         Integer shader = map.getInt("shader");
         ReadableMap uniforms = map.getMap("uniforms");
-        Integer width = (int) map.getDouble("width");
-        Integer height = (int) map.getDouble("height");
+        Double width = map.getDouble("width");
+        Double height = map.getDouble("height");
+        Double pixelRatio = map.getDouble("pixelRatio");
         Integer fboId = map.getInt("fboId");
         List<GLData> children = fromArray(map.getArray("children"));
         List<GLData> contextChildren = fromArray(map.getArray("contextChildren"));
-        return new GLData(shader, uniforms, width, height, fboId, contextChildren, children);
+        return new GLData(shader, uniforms, width, height, pixelRatio, fboId, contextChildren, children);
     }
 }

@@ -70,6 +70,9 @@ public class GLCanvas extends GLSurfaceView
     private ExecutorSupplier executorSupplier;
     private final Queue<Runnable> mRunOnDraw = new LinkedList<>();
     private boolean captureFrameRequested = false;
+    private float pixelRatio;
+
+    private float displayDensity;
 
     public GLCanvas(ThemedReactContext context, ExecutorSupplier executorSupplier) {
         super(context);
@@ -77,6 +80,10 @@ public class GLCanvas extends GLSurfaceView
         this.executorSupplier = executorSupplier;
         rnglContext = context.getNativeModule(RNGLContext.class);
         setEGLContextClientVersion(2);
+
+        DisplayMetrics dm = reactContext.getResources().getDisplayMetrics();
+        displayDensity = dm.density;
+        pixelRatio = dm.density;
 
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         getHolder().setFormat(PixelFormat.RGB_888);
@@ -122,6 +129,12 @@ public class GLCanvas extends GLSurfaceView
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {}
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        syncSize(w, h, pixelRatio);
+    }
 
     @Override
     public void onDrawFrame(GL10 gl) {
@@ -472,8 +485,8 @@ public class GLCanvas extends GLSurfaceView
                         if (arraySizeForType(type) != arr.size()) {
                             shader.runtimeException(
                                     "uniform '"+uniformName+
-                                    "': Invalid array size: "+arr.size()+
-                                    ". Expected: "+arraySizeForType(type));
+                                            "': Invalid array size: "+arr.size()+
+                                            ". Expected: "+arraySizeForType(type));
                         }
                         uniformsFloatBuffer.put(uniformName, parseAsFloatArray(arr));
                         break;
@@ -488,8 +501,8 @@ public class GLCanvas extends GLSurfaceView
                         if (arraySizeForType(type) != arr2.size()) {
                             shader.runtimeException(
                                     "uniform '"+uniformName+
-                                    "': Invalid array size: "+arr2.size()+
-                                    ". Expected: "+arraySizeForType(type));
+                                            "': Invalid array size: "+arr2.size()+
+                                            ". Expected: "+arraySizeForType(type));
                         }
                         uniformsIntBuffer.put(uniformName, parseAsIntArray(arr2));
                         break;
@@ -497,7 +510,7 @@ public class GLCanvas extends GLSurfaceView
                     default:
                         shader.runtimeException(
                                 "uniform '"+uniformName+
-                                "': type not supported: "+type);
+                                        "': type not supported: "+type);
                 }
 
             }
@@ -511,9 +524,9 @@ public class GLCanvas extends GLSurfaceView
 
         for (String uniformName: uniformTypes.keySet()) {
             if (!uniformsFloat.containsKey(uniformName) &&
-                !uniformsInteger.containsKey(uniformName) &&
-                !uniformsFloatBuffer.containsKey(uniformName) &&
-                !uniformsIntBuffer.containsKey(uniformName)) {
+                    !uniformsInteger.containsKey(uniformName) &&
+                    !uniformsFloatBuffer.containsKey(uniformName) &&
+                    !uniformsIntBuffer.containsKey(uniformName)) {
                 shader.runtimeException("All defined uniforms must be provided. Missing '"+uniformName+"'");
             }
         }
@@ -525,8 +538,8 @@ public class GLCanvas extends GLSurfaceView
                 uniformsIntBuffer,
                 uniformsFloatBuffer,
                 textures,
-                data.width,
-                data.height,
+                (int)(data.width * data.pixelRatio),
+                (int)(data.height * data.pixelRatio),
                 data.fboId,
                 contextChildren,
                 children);
@@ -538,7 +551,7 @@ public class GLCanvas extends GLSurfaceView
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer();
         for (int i=0; i<size; i++)
-          buf.put((float) array.getDouble(i));
+            buf.put((float) array.getDouble(i));
         buf.position(0);
         return buf;
     }
@@ -598,11 +611,8 @@ public class GLCanvas extends GLSurfaceView
     }
 
     private void recRender (GLRenderData renderData) {
-        DisplayMetrics dm = reactContext.getResources().getDisplayMetrics();
-
-        int w = Float.valueOf(renderData.width.floatValue() * dm.density).intValue();
-        int h = Float.valueOf(renderData.height.floatValue() * dm.density).intValue();
-
+        int w = renderData.width;
+        int h = renderData.height;
         for (GLRenderData child: renderData.contextChildren)
             recRender(child);
 
@@ -750,5 +760,17 @@ public class GLCanvas extends GLSurfaceView
         d.addAll(a);
         d.removeAll(b);
         return d;
+    }
+
+
+    public void setPixelRatio(float pixelRatio) {
+        this.pixelRatio = pixelRatio;
+        syncSize(this.getWidth(), this.getHeight(), pixelRatio);
+    }
+
+    private void syncSize (int w, int h, float pixelRatio) {
+        int width  = (int) (w * pixelRatio / displayDensity);
+        int height = (int) (h * pixelRatio / displayDensity);
+        getHolder().setFixedSize(width, height);
     }
 }

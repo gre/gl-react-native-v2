@@ -27,6 +27,11 @@ public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
 
     private ExecutorSupplier executorSupplier;
 
+    @ReactProp(name="pixelRatio")
+    public void setPixelRatio (GLCanvas view, float pixelRatio) {
+        view.setPixelRatio(pixelRatio);
+    }
+
     @ReactProp(name="nbContentTextures")
     public void setNbContentTextures (GLCanvas view, int nbContentTextures) {
         view.setNbContentTextures(nbContentTextures);

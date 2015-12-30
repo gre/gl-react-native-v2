@@ -178,6 +178,7 @@ RCT_NOT_IMPLEMENTED(-init)
     weak_traverseTree = traverseTree = ^GLRenderData *(GLData *data) {
       NSNumber *width = data.width;
       NSNumber *height = data.height;
+      NSNumber *pixelRatio = data.pixelRatio;
       int fboId = [data.fboId intValue];
 
       NSMutableArray *contextChildren = [[NSMutableArray alloc] init];
@@ -275,8 +276,8 @@ RCT_NOT_IMPLEMENTED(-init)
               initWithShader:shader
               withUniforms:uniforms
               withTextures:textures
-              withWidth:width
-              withHeight:height
+              withWidth:(int)([width floatValue] * [pixelRatio floatValue])
+              withHeight:(int)([height floatValue] * [pixelRatio floatValue])
               withFboId:fboId
               withContextChildren:contextChildren
               withChildren:children];
@@ -404,16 +405,14 @@ RCT_NOT_IMPLEMENTED(-init)
   GLRenderData *rd = _renderData;
   if (!rd) return;
   RCT_PROFILE_BEGIN_EVENT(0, @"GLCanvas render", nil);
-  CGFloat scale = self.contentScaleFactor;
 
   @autoreleasepool {
-    CGFloat scale = RCTScreenScale();
 
     void (^recDraw) (GLRenderData *renderData);
     __block __weak void (^weak_recDraw) (GLRenderData *renderData);
     weak_recDraw = recDraw = ^void(GLRenderData *renderData) {
-      float w = [renderData.width floatValue] * scale;
-      float h = [renderData.height floatValue] * scale;
+      int w = renderData.width;
+      int h = renderData.height;
 
       for (GLRenderData *child in renderData.contextChildren)
         weak_recDraw(child);

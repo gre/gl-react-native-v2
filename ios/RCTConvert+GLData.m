@@ -10,6 +10,7 @@
   NSDictionary *uniforms = [self NSDictionary:json[@"uniforms"]];
   NSNumber *width = [self NSNumber:json[@"width"]];
   NSNumber *height = [self NSNumber:json[@"height"]];
+  NSNumber *pixelRatio = [self NSNumber:json[@"pixelRatio"]];
   NSNumber *fboId = [self NSNumber:json[@"fboId"]];
   NSArray *contextChildrenJSON = [self NSArray: json[@"contextChildren"]];
   NSArray *childrenJSON = [self NSArray: json[@"children"]];
@@ -30,6 +31,7 @@
                            withUniforms: uniforms
                               withWidth: width
                              withHeight: height
+                         withPixelRatio: pixelRatio
                               withFboId: fboId
                     withContextChildren: contextChildren
                            withChildren: children];
