@@ -27,25 +27,25 @@ npm i --save gl-react-native
 **on Android:**
 
 1. `android/settings.gradle`:: Add the following snippet
-  ```gradle
-  include ':RNGL'
-  project(':RNGL').projectDir = file('../node_modules/gl-react-native/android')
-  ```
+```gradle
+include ':RNGL'
+project(':RNGL').projectDir = file('../node_modules/gl-react-native/android')
+```
 1. `android/app/build.gradle`: Add in dependencies block.
-  ```gradle
-  compile project(':RNGL')
-  ```
+```gradle
+compile project(':RNGL')
+```
 1. in your `MainActivity` (or equivalent):
-  ```java
-  import com.projectseptember.RNGL.RNGLPackage;
-  ...
+```java
+import com.projectseptember.RNGL.RNGLPackage;
+...
 
-  mReactInstanceManager = ReactInstanceManager.builder()
-      .setApplication(getApplication())
-      ...
-      .addPackage(new MainReactPackage())
-      .addPackage(new RNGLPackage())
-      ...
-      .build();
+mReactInstanceManager = ReactInstanceManager.builder()
+    .setApplication(getApplication())
+    ...
+    .addPackage(new MainReactPackage())
+    .addPackage(new RNGLPackage())
+    ...
+    .build();
 
-  ```
+```
