@@ -22,6 +22,8 @@ const {
   MKButton,
 } = require("react-native-material-kit");
 
+const RNFS = require("react-native-fs");
+
 const HelloGL = require("./HelloGL");
 const Saturation = require("./Saturation");
 const HueRotate = require("./HueRotate");
@@ -82,7 +84,8 @@ class Simple extends Component {
       switch1: false,
       switch2: false,
       switch3: false,
-      captured: null
+      captured: null,
+      captureConfig: null
     };
     this.onCapture1 = this.onCapture1.bind(this);
 
@@ -97,9 +100,17 @@ class Simple extends Component {
   }
 
   onCapture1 () {
-    this.refs.helloGL.captureFrame().then(data64 => {
-      this.setState({ captured: data64 });
-    });
+    const captureConfig = {
+      quality: Math.round((Math.random() * 100))/100,
+      type: Math.random() < 0.5 ? "jpg": "png",
+      format: Math.random() < 0.5 ? "base64" : "file"
+    };
+    if (captureConfig.format === "file") {
+      captureConfig.filePath = RNFS.DocumentDirectoryPath+"/hellogl_capture.png";
+    }
+    this.refs.helloGL
+    .captureFrame(captureConfig)
+    .then(captured => this.setState({ captured, captureConfig }));
   }
 
   render () {
@@ -113,7 +124,8 @@ class Simple extends Component {
       switch1,
       switch2,
       switch3,
-      captured
+      captured,
+      captureConfig
     } = this.state;
 
     return <View style={styles.container}>
@@ -128,9 +140,28 @@ class Simple extends Component {
           </Surface>
           <View style={{ paddingTop: 20, alignItems: "center", flexDirection: "row" }}>
             <Button onPress={this.onCapture1}>captureFrame()</Button>
-            {captured && <Image source={{ uri: captured }} style={{ marginLeft: 20, width: 51, height: 34 }} />}
+            {captured &&
+              <Image source={{ uri: captured }}
+                style={{ marginLeft: 20, width: 51, height: 34 }}
+              /> }
           </View>
-          {captured && <Text style={{ marginTop: 10, fontSize: 10, fontFamily: "Cochin" }} numberOfLines={1}>{captured.slice(0, 100)}</Text>}
+          {captureConfig &&
+            <View style={{ paddingTop: 20, alignItems: "center", flexDirection: "row", justifyContent: "space-between" }}>
+              <Text style={{ fontSize: 10 }}>
+                format={captureConfig.format}
+              </Text>
+              <Text style={{ fontSize: 10 }}>
+                type={captureConfig.type}
+              </Text>
+              <Text style={{ fontSize: 10 }}>
+                quality={captureConfig.quality+""}
+              </Text>
+            </View>
+          }
+          {captured &&
+            <Text numberOfLines={1} style={{ marginTop: 10, fontSize: 10, color: "#aaa" }}>
+              {captured.slice(0, 100)}
+            </Text> }
         </Demo>
 
         <Demo id={2} title="2. Saturate an Image">

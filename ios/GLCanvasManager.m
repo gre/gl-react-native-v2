@@ -1,6 +1,7 @@
 #import "GLCanvasManager.h"
 #import "GLCanvas.h"
 #import "RCTConvert+GLData.h"
+#import "RCTConvert+CaptureConfig.h"
 #import "RCTUIManager.h"
 #import "RCTLog.h"
 #import <UIKit/UIKit.h>
@@ -28,7 +29,7 @@ RCT_EXPORT_VIEW_PROPERTY(onGLLoad, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onGLProgress, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onGLCaptureFrame, RCTBubblingEventBlock);
 
-RCT_EXPORT_METHOD(capture: (nonnull NSNumber *)reactTag)
+RCT_EXPORT_METHOD(capture: (nonnull NSNumber *)reactTag withConfig:(id)config)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[reactTag];
@@ -37,7 +38,7 @@ RCT_EXPORT_METHOD(capture: (nonnull NSNumber *)reactTag)
     }
     else {
       GLCanvas *glCanvas = (GLCanvas *)view;
-      [glCanvas requestCaptureFrame];
+      [glCanvas requestCaptureFrame:[RCTConvert CaptureConfig:config]];
     }
   }];
 }

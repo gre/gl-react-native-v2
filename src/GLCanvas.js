@@ -1,3 +1,4 @@
+const invariant = require("invariant");
 const React = require("react-native");
 const {
   Component,
@@ -5,6 +6,9 @@ const {
 } = React;
 
 const captureFrame = require("./GLCanvas.captureFrame");
+
+const serializeOption = config =>
+config.format + ":" + config.type + ":" + config.quality;
 
 const GLCanvasNative = requireNativeComponent("GLCanvas", GLCanvas, {
   nativeOnly: {
@@ -25,21 +29,85 @@ function defer() {
 }
 
 class GLCanvas extends Component {
-  captureFrame (cb) {
-    const promise = (
-      this._pendingCaptureFrame || // use pending capture OR create a new captureFrame pending
-      (captureFrame(React.findNodeHandle(this.refs.native)), this._pendingCaptureFrame = defer())
-    ).promise;
-    if (typeof cb === "function") {
-      console.warn("GLSurface: callback parameter of captureFrame is deprecated, use the returned promise instead"); // eslint-disable-line no-console
-      promise.then(cb);
+
+  componentWillMount () {
+    this._pendingCaptureFrame = {};
+  }
+
+  componentWillUnmount () {
+    Object.keys(this._pendingCaptureFrame).forEach(key =>
+      this._pendingCaptureFrame[key].reject(new Error("GLCanvas is unmounting")));
+    this._pendingCaptureFrame = null;
+  }
+
+  addPendingCaptureFrame (config) {
+    const key = serializeOption(config);
+    return this._pendingCaptureFrame[key] || (
+      (captureFrame(React.findNodeHandle(this.refs.native), config),
+      this._pendingCaptureFrame[key] = defer())
+    );
+  }
+
+  captureFrame (configArg) {
+    let config;
+    if (configArg) {
+      invariant(typeof configArg==="object", "captureFrame takes an object option in parameter");
+      let nb = 0;
+      if ("format" in configArg) {
+        invariant(
+          typeof configArg.format === "string",
+          "captureFrame({format}): format must be a string (e.g: 'base64'), Got: '%s'",
+          configArg.format);
+        if (configArg.format === "file") invariant(
+          typeof configArg.filePath === "string" && configArg.filePath,
+          "captureFrame({filePath}): filePath must be defined when using 'file' format and be an non-empty string, Got: '%s'",
+          configArg.filePath);
+        nb ++;
+      }
+      if ("type" in configArg) {
+        invariant(
+          typeof configArg.type === "string",
+          "captureFrame({type}): type must be a string (e.g: 'png', 'jpg'), Got: '%s'",
+          configArg.type);
+        nb ++;
+      }
+      if ("quality" in configArg) {
+        invariant(
+          typeof configArg.quality === "number" &&
+          configArg.quality >= 0 &&
+          configArg.quality <= 1,
+          "captureFrame({quality}): quality must be a number between 0 and 1, Got: '%s'",
+          configArg.quality);
+        nb ++;
+      }
+      if ("filePath" in configArg) {
+        nb ++;
+      }
+      const keys = Object.keys(configArg);
+      invariant(keys.length === nb, "captureFrame(config): config must be an object with {format, type, quality, filePath}, found some invalid keys in '%s'", keys);
+      config = configArg;
     }
-    return promise;
+    return this.addPendingCaptureFrame({
+      format: "base64",
+      type: "png",
+      quality: 1,
+      filePath: "",
+      ...config
+    }).promise;
   }
-  onGLCaptureFrame = ({ nativeEvent: {frame} }) => {
-    this._pendingCaptureFrame.resolve(frame);
-    this._pendingCaptureFrame = undefined;
+
+  onGLCaptureFrame = ({ nativeEvent: { error, result, config } }) => {
+    const key = serializeOption(config);
+    invariant(key in this._pendingCaptureFrame, "capture '%s' is not scheduled in this._pendingCaptureFrame", key);
+    if (error) {
+      this._pendingCaptureFrame[key].reject(error);
+    }
+    else {
+      this._pendingCaptureFrame[key].resolve(result);
+    }
+    delete this._pendingCaptureFrame[key];
   }
+
   render () {
     const { width, height, onLoad, onProgress, eventsThrough, ...restProps } = this.props;
     return <GLCanvasNative

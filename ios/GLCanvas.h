@@ -1,5 +1,6 @@
 #import <GLKit/GLKit.h>
 #import "GLData.h"
+#import "CaptureConfig.h"
 #import "RCTComponent.h"
 
 @interface GLCanvas: GLKView
@@ -19,6 +20,6 @@
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
-- (void) requestCaptureFrame;
+- (void) requestCaptureFrame:(CaptureConfig *)config;
 
 @end

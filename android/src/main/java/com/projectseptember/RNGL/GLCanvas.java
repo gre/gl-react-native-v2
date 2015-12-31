@@ -27,6 +27,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -69,7 +70,8 @@ public class GLCanvas extends GLSurfaceView
     private Map<Integer, GLFBO> fbos;
     private ExecutorSupplier executorSupplier;
     private final Queue<Runnable> mRunOnDraw = new LinkedList<>();
-    private boolean captureFrameRequested = false;
+
+    private List<CaptureConfig> captureConfigs = new ArrayList<>();
     private float pixelRatio;
 
     private float displayDensity;
@@ -169,16 +171,74 @@ public class GLCanvas extends GLSurfaceView
         if (shouldRenderNow) {
             this.render();
             deferredRendering = false;
-            if (captureFrameRequested) {
-                captureFrameRequested = false;
-                Bitmap capture = createSnapshot();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                capture.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                String frame = "data:image/png;base64,"+
-                        Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
-                dispatchOnCaptureFrame(frame);
+            if (captureConfigs.size() > 0) {
+                capture(); // FIXME: maybe we should schedule this?
             }
         }
+    }
+
+    private void capture () {
+        Bitmap capture = createSnapshot();
+        ReactContext reactContext = (ReactContext)getContext();
+        RCTEventEmitter eventEmitter = reactContext.getJSModule(RCTEventEmitter.class);
+
+        for (CaptureConfig config : captureConfigs) {
+            String result = null, error = null;
+            boolean isPng = config.type.equals("png");
+            boolean isJpeg = !isPng && (config.type.equals("jpg")||config.type.equals("jpeg"));
+            boolean isWebm = !isPng && !isJpeg && config.type.equals("webm");
+            boolean isBase64 = config.format.equals("base64");
+            boolean isFile = !isBase64 && config.format.equals("file");
+
+            Bitmap.CompressFormat compressFormat =
+                isPng ? Bitmap.CompressFormat.PNG :
+                isJpeg ? Bitmap.CompressFormat.JPEG :
+                isWebm ? Bitmap.CompressFormat.WEBP :
+                null;
+
+            int quality = (int)(100 * config.quality);
+
+            if (compressFormat == null) {
+                error = "Unsupported capture type '"+config.type+"'";
+            }
+            else if (isBase64) {
+                try {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    capture.compress(compressFormat, quality, baos);
+                    String frame = "data:image/png;base64,"+
+                            Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+                    baos.close();
+                    result = frame;
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    error = "Could not capture as base64: "+e.getMessage();
+                }
+            }
+            else if (isFile) {
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(config.filePath);
+                    capture.compress(compressFormat, quality, fileOutputStream);
+                    fileOutputStream.close();
+                    result = "file://"+config.filePath;
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    error = "Could not write file: "+e.getMessage();
+                }
+            }
+            else {
+                error = "Unsupported capture format '"+config.format+"'";
+            }
+
+            WritableMap response = Arguments.createMap();
+            response.putMap("config", config.toMap());
+            if (error != null) response.putString("error", error);
+            if (result != null) response.putString("result", result);
+            eventEmitter.receiveEvent(getId(), "captureFrame", response);
+        }
+
+        captureConfigs = new ArrayList<>();
     }
 
     private boolean haveRemainingToPreload() {
@@ -677,16 +737,6 @@ public class GLCanvas extends GLSurfaceView
         }
     }
 
-    private void dispatchOnCaptureFrame (String frame) {
-        WritableMap event = Arguments.createMap();
-        event.putString("frame", frame);
-        ReactContext reactContext = (ReactContext)getContext();
-        reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-                getId(),
-                "captureFrame",
-                event);
-    }
-
     private void dispatchOnProgress (double progress, int loaded, int total) {
         WritableMap event = Arguments.createMap();
         event.putDouble("progress", Double.isNaN(progress) ? 0.0 : progress);
@@ -708,9 +758,14 @@ public class GLCanvas extends GLSurfaceView
                 event);
     }
 
-    public void requestCaptureFrame() {
-        captureFrameRequested = true;
+    public void requestCaptureFrame (CaptureConfig config) {
         this.requestRender();
+        for (CaptureConfig existing : captureConfigs) {
+            if (existing.equals(config)) {
+                return;
+            }
+        }
+        captureConfigs.add(config);
     }
 
     private Bitmap createSnapshot () {

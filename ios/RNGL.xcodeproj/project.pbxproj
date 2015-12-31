@@ -18,6 +18,8 @@
 		346089D81BEFD0A500C90DB5 /* GLTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089CB1BEFD0A500C90DB5 /* GLTexture.m */; };
 		346089D91BEFD0A500C90DB5 /* RCTConvert+GLData.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089CD1BEFD0A500C90DB5 /* RCTConvert+GLData.m */; };
 		346089DA1BEFD0A500C90DB5 /* RNGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 346089CF1BEFD0A500C90DB5 /* RNGLContext.m */; };
+		34C990421C34939C002F49FC /* RCTConvert+CaptureConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C990411C34939C002F49FC /* RCTConvert+CaptureConfig.m */; };
+		34C990471C349422002F49FC /* CaptureConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C990461C349422002F49FC /* CaptureConfig.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,6 +57,10 @@
 		346089CD1BEFD0A500C90DB5 /* RCTConvert+GLData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+GLData.m"; sourceTree = "<group>"; };
 		346089CE1BEFD0A500C90DB5 /* RNGLContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGLContext.h; sourceTree = "<group>"; };
 		346089CF1BEFD0A500C90DB5 /* RNGLContext.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = RNGLContext.m; sourceTree = "<group>"; tabWidth = 2; };
+		34C990401C34939C002F49FC /* RCTConvert+CaptureConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+CaptureConfig.h"; sourceTree = "<group>"; };
+		34C990411C34939C002F49FC /* RCTConvert+CaptureConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+CaptureConfig.m"; sourceTree = "<group>"; tabWidth = 2; };
+		34C990451C34941C002F49FC /* CaptureConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CaptureConfig.h; sourceTree = "<group>"; };
+		34C990461C349422002F49FC /* CaptureConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = CaptureConfig.m; sourceTree = "<group>"; tabWidth = 2; };
 		4107012F1ACB723B00C6AA39 /* libRNGL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNGL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -92,6 +98,10 @@
 				346089CB1BEFD0A500C90DB5 /* GLTexture.m */,
 				346089CC1BEFD0A500C90DB5 /* RCTConvert+GLData.h */,
 				346089CD1BEFD0A500C90DB5 /* RCTConvert+GLData.m */,
+				34C990461C349422002F49FC /* CaptureConfig.m */,
+				34C990451C34941C002F49FC /* CaptureConfig.h */,
+				34C990401C34939C002F49FC /* RCTConvert+CaptureConfig.h */,
+				34C990411C34939C002F49FC /* RCTConvert+CaptureConfig.m */,
 				346089CE1BEFD0A500C90DB5 /* RNGLContext.h */,
 				346089CF1BEFD0A500C90DB5 /* RNGLContext.m */,
 				410701301ACB723B00C6AA39 /* Products */,
@@ -161,10 +171,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34C990421C34939C002F49FC /* RCTConvert+CaptureConfig.m in Sources */,
 				346089D31BEFD0A500C90DB5 /* GLFBO.m in Sources */,
 				346089DA1BEFD0A500C90DB5 /* RNGLContext.m in Sources */,
 				346089D21BEFD0A500C90DB5 /* GLData.m in Sources */,
 				346089D91BEFD0A500C90DB5 /* RCTConvert+GLData.m in Sources */,
+				34C990471C349422002F49FC /* CaptureConfig.m in Sources */,
 				346089D51BEFD0A500C90DB5 /* GLImageData.m in Sources */,
 				346089D41BEFD0A500C90DB5 /* GLImage.m in Sources */,
 				346089D61BEFD0A500C90DB5 /* GLRenderData.m in Sources */,

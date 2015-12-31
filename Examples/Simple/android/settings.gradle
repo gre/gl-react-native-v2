@@ -7,3 +7,6 @@ project(':RNMaterialKit').projectDir = file('../node_modules/react-native-materi
 
 include ':RNGL'
 project(':RNGL').projectDir = file('../../../android')
+
+include ':react-native-fs'
+project(':react-native-fs').projectDir = new File(settingsDir, '../node_modules/react-native-fs/android')

@@ -44,8 +44,6 @@ NSArray* diff (NSArray* a, NSArray* b) {
 
   GLRenderData *_renderData;
 
-  BOOL _captureFrameRequested;
-
   NSArray *_contentData;
   NSArray *_contentTextures;
   NSDictionary *_images; // This caches the currently used images (imageSrc -> GLReactImage)
@@ -63,6 +61,9 @@ NSArray* diff (NSArray* a, NSArray* b) {
   NSTimer *animationTimer;
 
   BOOL _needSync;
+  
+  NSMutableArray *_captureConfigs;
+  BOOL _captureScheduled;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -71,7 +72,8 @@ NSArray* diff (NSArray* a, NSArray* b) {
     _bridge = bridge;
     _images = @{};
     _preloaded = [[NSMutableArray alloc] init];
-    _captureFrameRequested = false;
+    _captureConfigs = [[NSMutableArray alloc] init];
+    _captureScheduled = false;
     _dirtyOnLoad = true;
     _neverRendered = true;
     self.context = [bridge.rnglContext getContext];
@@ -83,10 +85,15 @@ RCT_NOT_IMPLEMENTED(-init)
 
 //// Props Setters
 
-- (void) requestCaptureFrame
+- (void) requestCaptureFrame: (CaptureConfig *)config
 {
-  _captureFrameRequested = true;
   [self setNeedsDisplay];
+  for (CaptureConfig *existing in _captureConfigs) {
+    if ([existing isEqualToCaptureConfig:config]) {
+      return;
+    }
+  }
+  [_captureConfigs addObject:config];
 }
 
 -(void)setImagesToPreload:(NSArray *)imagesToPreload
@@ -383,21 +390,63 @@ RCT_NOT_IMPLEMENTED(-init)
 
   if (willRender) {
     [self render];
-    if (_captureFrameRequested) {
-      _captureFrameRequested = false;
+    if (!_captureScheduled && [_captureConfigs count] > 0) {
+      _captureScheduled = true;
       [self performSelectorOnMainThread:@selector(capture) withObject:nil waitUntilDone:NO];
     }
   }
 }
 
--(void)capture
+-(void) capture
 {
+  _captureScheduled = false;
+  if (!self.onGLCaptureFrame) return;
+  
   UIImage *frameImage = [self snapshot];
-  NSData *frameData = UIImagePNGRepresentation(frameImage);
-  NSString *frame =
-  [NSString stringWithFormat:@"data:image/png;base64,%@",
-   [frameData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]];
-  if (self.onGLCaptureFrame) self.onGLCaptureFrame(@{ @"frame": frame });
+  
+  for (CaptureConfig *config in _captureConfigs) {
+    id result;
+    id error;
+    
+    BOOL isPng = [config.type isEqualToString:@"png"];
+    BOOL isJpeg = !isPng && ([config.type isEqualToString:@"jpeg"] || [config.type isEqualToString:@"jpg"]);
+    
+    BOOL isBase64 = [config.format isEqualToString:@"base64"];
+    BOOL isFile = !isBase64 && [config.format isEqualToString:@"file"];
+    
+    NSData *frameData =
+    isPng ? UIImagePNGRepresentation(frameImage) :
+    isJpeg ? UIImageJPEGRepresentation(frameImage, [config.quality floatValue]) :
+    nil;
+    
+    if (!frameData) {
+      error = [NSString stringWithFormat:@"Unsupported capture type '%@'", config.type];
+    }
+    else if (isBase64) {
+      NSString *base64 = [frameData base64EncodedStringWithOptions: NSDataBase64Encoding64CharacterLineLength];
+      result = [NSString stringWithFormat:@"data:image/%@;base64,%@", config.type, base64];
+    }
+    else if (isFile) {
+      NSError *e;
+      if (![frameData writeToFile:config.filePath options:0 error:&e]) {
+        error = [NSString stringWithFormat:@"Could not write file: %@", e.localizedDescription];
+      }
+      else {
+        result = [NSString stringWithFormat:@"file://%@", config.filePath];
+      }
+    }
+    else {
+      error = [NSString stringWithFormat:@"Unsupported capture format '%@'", config.format];
+    }
+    
+    NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
+    response[@"config"] = [config dictionary];
+    if (error) response[@"error"] = error;
+    if (result) response[@"result"] = result;
+    self.onGLCaptureFrame(response);
+  }
+  
+  _captureConfigs = [[NSMutableArray alloc] init];
 }
 
 - (void)render

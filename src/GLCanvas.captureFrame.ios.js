@@ -10,4 +10,4 @@ See README install instructions.
 
 React.NativeModules.GLCanvasManager is %s`, GLCanvasManager);
 
-module.exports = handle => GLCanvasManager.capture(handle);
+module.exports = (handle, config) => GLCanvasManager.capture(handle, config);

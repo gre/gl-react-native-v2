@@ -78,4 +78,6 @@ dependencies {
 
     compile project(":RNMaterialKit")
     compile project(":RNGL")
+    compile project(':react-native-fs')
+
 }

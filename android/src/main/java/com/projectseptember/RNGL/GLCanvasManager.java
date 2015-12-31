@@ -94,7 +94,7 @@ public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
         Assertions.assertNotNull(args);
         switch (commandType) {
             case COMMAND_CAPTURE_FRAME: {
-                canvas.requestCaptureFrame();
+                canvas.requestCaptureFrame(CaptureConfig.fromMap(args.getMap(0)));
                 return;
             }
             default:

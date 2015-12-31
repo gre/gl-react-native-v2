@@ -12,4 +12,4 @@ See README install instructions.
 React.NativeModules.UIManager.GLCanvas is %s`, GLCanvas);
 const {Commands} = GLCanvas;
 
-module.exports = handle => UIManager.dispatchViewManagerCommand(handle, Commands.captureFrame, []);
+module.exports = (handle, config) => UIManager.dispatchViewManagerCommand(handle, Commands.captureFrame, [ config ]);
