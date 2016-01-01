@@ -173,7 +173,7 @@ RCT_NOT_IMPLEMENTED(-init)
   [self setNeedsDisplay];
 }
 
-- (void)syncData
+- (bool)syncData:(NSError **)error
 {
   @autoreleasepool {
 
@@ -204,6 +204,7 @@ RCT_NOT_IMPLEMENTED(-init)
 
       GLShader *shader = [_bridge.rnglContext getShader:data.shader];
       if (shader == nil) return nil;
+      if (![shader ensureCompiles:error]) return nil;
 
       NSDictionary *uniformTypes = [shader uniformTypes];
       NSMutableDictionary *uniforms = [[NSMutableDictionary alloc] init];
@@ -292,16 +293,15 @@ RCT_NOT_IMPLEMENTED(-init)
 
     GLRenderData *res = traverseTree(_data);
     if (res != nil) {
-      _needSync = false;
       _renderData = traverseTree(_data);
       _images = images;
       for (NSString *src in diff([prevImages allKeys], [images allKeys])) {
         [_preloaded removeObject:src];
       }
+      return true;
     }
     else {
-      // the data is not ready, retry in one tick
-      [self setNeedsDisplay];
+      return false;
     }
   }
 }
@@ -374,7 +374,14 @@ RCT_NOT_IMPLEMENTED(-init)
   }
 
   if (_needSync) {
-    [self syncData];
+    NSError *error;
+    if(![self syncData:&error] && error==nil) {
+      // the data is not ready, retry in one tick
+      [self setNeedsDisplay];
+    }
+    else {
+      _needSync = false;
+    }
   }
 
   if ([self haveRemainingToPreload]) {

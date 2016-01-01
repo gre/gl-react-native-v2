@@ -113,7 +113,7 @@ public class GLCanvas extends GLSurfaceView
         if (!shaders.containsKey(id)) {
             GLShaderData shaderData = rnglContext.getShader(id);
             if (shaderData == null) return null;
-            shaders.put(id, new GLShader(shaderData));
+            shaders.put(id, new GLShader(shaderData, id, rnglContext));
         }
         return shaders.get(id);
     }
@@ -315,8 +315,13 @@ public class GLCanvas extends GLSurfaceView
         execute(new Runnable() {
             public void run() {
                 // FIXME: maybe should set a flag so we don't do it twice??
-                if (!syncData())
-                    requestSyncData();
+                try {
+                    if (!syncData())
+                        requestSyncData();
+                }
+                catch (GLShaderCompilationFailed e) {
+                    // This is ignored. It will be handled by RNGLContext.shaderFailedToCompile
+                }
             }
         });
     }

@@ -50,7 +50,7 @@
 		346089C61BEFD0A500C90DB5 /* GLRenderData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLRenderData.h; sourceTree = "<group>"; };
 		346089C71BEFD0A500C90DB5 /* GLRenderData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLRenderData.m; sourceTree = "<group>"; };
 		346089C81BEFD0A500C90DB5 /* GLShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLShader.h; sourceTree = "<group>"; };
-		346089C91BEFD0A500C90DB5 /* GLShader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLShader.m; sourceTree = "<group>"; };
+		346089C91BEFD0A500C90DB5 /* GLShader.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = GLShader.m; sourceTree = "<group>"; tabWidth = 2; };
 		346089CA1BEFD0A500C90DB5 /* GLTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLTexture.h; sourceTree = "<group>"; };
 		346089CB1BEFD0A500C90DB5 /* GLTexture.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = GLTexture.m; sourceTree = "<group>"; tabWidth = 2; };
 		346089CC1BEFD0A500C90DB5 /* RCTConvert+GLData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+GLData.h"; sourceTree = "<group>"; };
