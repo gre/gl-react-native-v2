@@ -1,9 +1,9 @@
 require("gl-react/react-native");
-const React = require("react-native");
-const {
+import React, {
   StyleSheet,
   View,
-} = React;
+  Component,
+} from "react-native";
 const { width: viewportW, height: viewportH } = require("Dimensions").get("window");
 
 const resolveAssetSource = require("react-native/Libraries/Image/resolveAssetSource");
@@ -13,7 +13,7 @@ const Intro = require("./Intro");
 const Vignette = require("./Vignette");
 const Slideshow = require("./Slideshow");
 
-class AdvancedEffects extends React.Component {
+class AdvancedEffects extends Component {
 
   constructor (props) {
     super(props);

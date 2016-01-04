@@ -1,4 +1,4 @@
-const React = require("react-native");
+import React from "react-native";
 const GL = require("gl-react");
 
 module.exports = GL.createComponent(

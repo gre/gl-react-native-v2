@@ -1,4 +1,6 @@
-const React = require("react-native");
+import React, {
+  Component
+} from "react-native";
 const GL = require("gl-react");
 const {Surface} = require("gl-react-native");
 
@@ -39,7 +41,7 @@ void main() {
 });
 
 
-class Vignette extends React.Component {
+class Vignette extends Component {
   constructor (props) {
     super(props);
     this.onResponderMove = this.onResponderMove.bind(this);

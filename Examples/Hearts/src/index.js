@@ -1,10 +1,9 @@
 require("gl-react/react-native");
-const React = require("react-native");
-const {
+import React, {
   StyleSheet,
   ListView,
   Component,
-} = React;
+} from "react-native";
 const seedrandom = require("seedrandom");
 const { width: viewportWidth } = require("Dimensions").get("window");
 const {Surface} = require("gl-react-native");

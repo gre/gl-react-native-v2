@@ -1,8 +1,7 @@
-const React = require("react-native");
-const {
+import React, {
   Component,
-  requireNativeComponent
-} = React;
+  requireNativeComponent,
+} from "react-native";
 
 const captureFrame = require("./GLCanvas.captureFrame");
 
