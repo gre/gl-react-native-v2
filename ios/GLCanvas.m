@@ -312,7 +312,6 @@ RCT_NOT_IMPLEMENTED(-init)
     if (imgData) contentData[i] = imgData;
   }
   _contentData = contentData;
-  _deferredRendering = false;
   [self setNeedsDisplay];
   RCT_PROFILE_END_EVENT(0, @"gl", nil);
 }
@@ -368,14 +367,13 @@ RCT_NOT_IMPLEMENTED(-init)
     return;
   }
   
-  bool willRender = !_deferredRendering;
-  
-  if ([_nbContentTextures intValue] > 0 && !_autoRedraw) {
+  BOOL needsDeferredRendering = [_nbContentTextures intValue] > 0 && !_autoRedraw;
+  if (needsDeferredRendering && !_deferredRendering) {
     _deferredRendering = true;
     [self performSelectorOnMainThread:@selector(syncContentData) withObject:nil waitUntilDone:NO];
   }
-  
-  if (willRender) {
+  else {
+    _deferredRendering = false;
     [self render];
     if (_captureFrameRequested) {
       _captureFrameRequested = false;
