@@ -1,4 +1,4 @@
-const React = require("react-native");
+import React, { Component } from "react-native";
 const GL = require("gl-react");
 const {Surface} = require("gl-react-native");
 
@@ -17,7 +17,7 @@ void main () {
   }
 });
 
-class HelloGL extends React.Component {
+class HelloGL extends Component {
   constructor (props) {
     super(props);
     this.state = {

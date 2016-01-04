@@ -1,8 +1,8 @@
-const React = require("react-native");
-const {
+import React, {
   View,
   Text,
-} = React;
+  Component,
+} from "react-native";
 const GL = require("gl-react");
 const {Surface} = require("gl-react-native");
 
@@ -37,7 +37,7 @@ void main() {
   }
 });
 
-class Intro extends React.Component {
+class Intro extends Component {
   render () {
     const { time, fps, width, height } = this.props;
     return <Surface width={width} height={height} opaque={false}

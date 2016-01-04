@@ -1,5 +1,9 @@
-const React = require("react-native");
-const { View, Text, StyleSheet } = React;
+import React, {
+  View,
+  Text,
+  StyleSheet,
+  Component,
+} from "react-native";
 const GL = require("gl-react");
 const {Surface} = require("gl-react-native");
 const TransitionGenerator = require("./TransitionGenerator");
@@ -7,7 +11,7 @@ const Transition = require("./Transition");
 
 const shaders = GL.Shaders.create(TransitionGenerator.shaders);
 
-class Slideshow extends React.Component {
+class Slideshow extends Component {
   constructor (props) {
     super(props);
     this._currentTransition = -1;

@@ -1,7 +1,6 @@
 require("gl-react/react-native");
 
-const React = require("react-native");
-const {
+import React, {
   StyleSheet,
   Text,
   View,
@@ -9,7 +8,7 @@ const {
   TextInput,
   Component,
   TouchableOpacity
-} = React;
+} from "react-native";
 
 const { Surface } = require("gl-react-native");
 

@@ -1,8 +1,10 @@
-const React = require("react-native");
+import React, {
+  PanResponder,
+  UIManager,
+} from "react-native";
 const GL = require("gl-react");
 const {Surface} = require("gl-react-native");
 
-const {PanResponder, UIManager} = React;
 
 const shaders = GL.Shaders.create({
   oneFingerResponse: {

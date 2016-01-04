@@ -1,4 +1,6 @@
-const React = require("react-native");
+import React, {
+  Component
+} from "react-native";
 const GL = require("gl-react");
 const {Surface} = require("gl-react-native");
 const shaders = GL.Shaders.create({
@@ -24,7 +26,7 @@ void main( void ) {
   }
 });
 
-class Banner extends React.Component {
+class Banner extends Component {
   render () {
     const { width, height, time } = this.props;
     return <Surface width={width} height={height} opaque={false}

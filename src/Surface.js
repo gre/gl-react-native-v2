@@ -1,12 +1,11 @@
 const invariant = require("invariant");
 const {createSurface} = require("gl-react");
 invariant(typeof createSurface === "function", "gl-react createSurface is not a function. Check your gl-react dependency");
-const React = require("react-native");
 const GLCanvas = require("./GLCanvas");
 
-const {
+import React, {
   View,
-} = React;
+} from "react-native";
 
 function renderVcontent (width, height, id, children, { visibleContent }) {
   const childrenStyle = {
