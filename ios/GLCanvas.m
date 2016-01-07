@@ -83,6 +83,22 @@ NSArray* diff (NSArray* a, NSArray* b) {
 
 RCT_NOT_IMPLEMENTED(-init)
 
+- (void)dealloc
+{
+  _bridge = nil;
+  _images = nil;
+  _preloaded = nil;
+  _captureConfigs = nil;
+  _contentData = nil;
+  _contentTextures = nil;
+  _data = nil;
+  _renderData = nil;
+  if (animationTimer) {
+    [animationTimer invalidate];
+    animationTimer = nil;
+  }
+}
+
 //// Props Setters
 
 - (void) requestCaptureFrame: (CaptureConfig *)config
@@ -375,9 +391,11 @@ RCT_NOT_IMPLEMENTED(-init)
 
   if (_needSync) {
     NSError *error;
-    if(![self syncData:&error] && error==nil) {
-      // the data is not ready, retry in one tick
-      [self setNeedsDisplay];
+    BOOL syncSuccessful = [self syncData:&error];
+    BOOL errorCanBeRecovered = error==nil || (error.code != GLLinkingFailure && error.code != GLCompileFailure);
+    if (!syncSuccessful && errorCanBeRecovered) {
+      // something failed but is recoverable, retry in one tick
+      [self performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:nil waitUntilDone:NO];
     }
     else {
       _needSync = false;

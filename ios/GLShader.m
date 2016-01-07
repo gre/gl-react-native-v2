@@ -66,11 +66,20 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
 {
   glDeleteProgram(program);
   glDeleteBuffers(1, &buffer);
+  _name = nil;
+  _context = nil;
+  _vert = nil;
+  _frag = nil;
+  _uniformLocations = nil;
+  _uniformTypes = nil;
+  program = 0;
+  buffer = 0;
+  pointerLoc = 0;
 }
 
 - (bool) ensureContext: (NSError **)error
 {
-  if (![EAGLContext setCurrentContext:_context]) {
+  if (!_context || ![EAGLContext setCurrentContext:_context]) {
     *error = [[NSError alloc] initWithDomain:@"Failed to set current OpenGL context" code:GLContextFailure userInfo:nil];
     return false;
   }
@@ -79,15 +88,6 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
 
 - (void) bind
 {
-  NSError *error;
-  if (![self ensureContext:&error]) {
-    RCTLogError(@"%@", error.domain);
-    return;
-  }
-  if ( glIsProgram(program) != GL_TRUE ){
-    RCTLogError(@"Shader '%@': not a program!", _name);
-    return;
-  }
   glUseProgram(program);
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
   glEnableVertexAttribArray(pointerLoc);
@@ -341,6 +341,13 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
 
 - (bool) ensureCompiles: (NSError **)error
 {
+  if (![self ensureContext:error]) {
+    return false;
+  }
+  if (!glIsProgram(program)) {
+    *error = [[NSError alloc] initWithDomain:@"not a program" code:GLNotAProgram userInfo:nil];
+    return false;
+  }
   if (_error == nil) return true;
   *error = _error;
   return false;

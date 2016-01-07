@@ -1,4 +1,3 @@
-require("gl-react/react-native");
 const React = require("react-native");
 const {
   StyleSheet,

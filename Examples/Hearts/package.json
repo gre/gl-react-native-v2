@@ -7,9 +7,11 @@
   },
   "dependencies": {
     "crypto": "0.0.3",
-    "gl-react": "^2.0.6",
+    "fbjs": "^0.6.0",
+    "gl-react": "^2.1.0",
     "gl-react-native": "file:../..",
-    "react-native": "^0.17.0",
+    "react": "^0.14.5",
+    "react-native": "0.18.0-rc",
     "seedrandom": "gre/seedrandom#released"
   }
 }

@@ -6,10 +6,12 @@
     "start": "react-native start"
   },
   "dependencies": {
-    "gl-react": "^2.0.8",
+    "fbjs": "^0.6.0",
+    "gl-react": "^2.1.0",
     "gl-react-native": "file:../..",
-    "react-native": "^0.17.0",
+    "react": "^0.14.5",
+    "react-native": "0.18.0-rc",
     "react-native-fs": "^1.1.0",
-    "react-native-material-kit": "^0.2.4"
+    "react-native-material-kit": "gre/react-native-material-kit#no-peerDependencies"
   }
 }

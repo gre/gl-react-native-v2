@@ -18,6 +18,11 @@ RCT_EXPORT_MODULE();
   return self;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return self.bridge.uiManager.methodQueue;
+}
+
 RCT_EXPORT_VIEW_PROPERTY(nbContentTextures, NSNumber);
 RCT_EXPORT_VIEW_PROPERTY(opaque, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(autoRedraw, BOOL);

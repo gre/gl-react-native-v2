@@ -106,7 +106,7 @@ class GLCanvas extends Component {
       this._pendingCaptureFrame[key].resolve(result);
     }
     delete this._pendingCaptureFrame[key];
-  }
+  };
 
   render () {
     const { width, height, onLoad, onProgress, eventsThrough, ...restProps } = this.props;

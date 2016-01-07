@@ -4,7 +4,8 @@
 NS_ENUM(NSInteger) {
     GLContextFailure = 87001,
     GLLinkingFailure = 87002,
-    GLCompileFailure = 87003
+    GLCompileFailure = 87003,
+    GLNotAProgram    = 87004
 };
 
 @interface GLShader: NSObject

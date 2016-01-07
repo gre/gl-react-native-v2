@@ -1,5 +1,5 @@
 const GL = require("gl-react");
-const React = GL.React;
+const React = require("react");
 const Blur1D = require("./Blur1D");
 
 module.exports = GL.createComponent(({ width, height, factor, children }) =>
