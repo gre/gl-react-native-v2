@@ -39,7 +39,7 @@ class GLCanvas extends Component {
   onGLCaptureFrame = ({ nativeEvent: {frame} }) => {
     this._pendingCaptureFrame.resolve(frame);
     this._pendingCaptureFrame = undefined;
-  }
+  };
   render () {
     const { width, height, onLoad, onProgress, eventsThrough, ...restProps } = this.props;
     return <GLCanvasNative
