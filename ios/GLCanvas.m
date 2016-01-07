@@ -61,7 +61,7 @@ NSArray* diff (NSArray* a, NSArray* b) {
   NSTimer *animationTimer;
 
   BOOL _needSync;
-  
+
   NSMutableArray *_captureConfigs;
   BOOL _captureScheduled;
 }
@@ -341,7 +341,6 @@ RCT_NOT_IMPLEMENTED(-init)
     if (imgData) contentData[i] = imgData;
   }
   _contentData = contentData;
-  _deferredRendering = false;
   [self setNeedsDisplay];
   RCT_PROFILE_END_EVENT(0, @"gl", nil);
 }
@@ -406,14 +405,13 @@ RCT_NOT_IMPLEMENTED(-init)
     return;
   }
 
-  bool willRender = !_deferredRendering;
-
-  if ([_nbContentTextures intValue] > 0 && !_autoRedraw) {
+  BOOL needsDeferredRendering = [_nbContentTextures intValue] > 0 && !_autoRedraw;
+  if (needsDeferredRendering && !_deferredRendering) {
     _deferredRendering = true;
     [self performSelectorOnMainThread:@selector(syncContentData) withObject:nil waitUntilDone:NO];
   }
-
-  if (willRender) {
+  else {
+    _deferredRendering = false;
     [self render];
     if (!_captureScheduled && [_captureConfigs count] > 0) {
       _captureScheduled = true;
@@ -426,24 +424,24 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   _captureScheduled = false;
   if (!self.onGLCaptureFrame) return;
-  
+
   UIImage *frameImage = [self snapshot];
-  
+
   for (CaptureConfig *config in _captureConfigs) {
     id result;
     id error;
-    
+
     BOOL isPng = [config.type isEqualToString:@"png"];
     BOOL isJpeg = !isPng && ([config.type isEqualToString:@"jpeg"] || [config.type isEqualToString:@"jpg"]);
-    
+
     BOOL isBase64 = [config.format isEqualToString:@"base64"];
     BOOL isFile = !isBase64 && [config.format isEqualToString:@"file"];
-    
+
     NSData *frameData =
     isPng ? UIImagePNGRepresentation(frameImage) :
     isJpeg ? UIImageJPEGRepresentation(frameImage, [config.quality floatValue]) :
     nil;
-    
+
     if (!frameData) {
       error = [NSString stringWithFormat:@"Unsupported capture type '%@'", config.type];
     }
@@ -463,14 +461,14 @@ RCT_NOT_IMPLEMENTED(-init)
     else {
       error = [NSString stringWithFormat:@"Unsupported capture format '%@'", config.format];
     }
-    
+
     NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
     response[@"config"] = [config dictionary];
     if (error) response[@"error"] = error;
     if (result) response[@"result"] = result;
     self.onGLCaptureFrame(response);
   }
-  
+
   _captureConfigs = [[NSMutableArray alloc] init];
 }
 
