@@ -1,5 +1,5 @@
 import GL from "gl-react";
-const {React} = GL;
+import React from "react";
 const {PropTypes} = React;
 
 const shaders = GL.Shaders.create({

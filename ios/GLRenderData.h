@@ -7,8 +7,8 @@
 @property (nonatomic) GLShader *shader;
 @property (nonatomic) NSDictionary *uniforms;
 @property (nonatomic) NSDictionary *textures;
-@property (nonatomic) NSNumber *width;
-@property (nonatomic) NSNumber *height;
+@property (nonatomic) int width;
+@property (nonatomic) int height;
 @property (nonatomic) int fboId;
 @property (nonatomic) NSArray *contextChildren;
 @property (nonatomic) NSArray *children;
@@ -16,8 +16,8 @@
 -(instancetype) initWithShader: (GLShader *)shader
                   withUniforms:(NSDictionary *)uniforms
                   withTextures: (NSDictionary *)textures
-                     withWidth: (NSNumber *)width
-                    withHeight: (NSNumber *)height
+                     withWidth: (int)width
+                    withHeight: (int)height
                      withFboId: (int)fboId
            withContextChildren: (NSArray *)contextChildren
                   withChildren: (NSArray *)children;

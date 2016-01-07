@@ -1,6 +1,13 @@
 #import <GLKit/GLKit.h>
 #import "RCTBridgeModule.h"
 
+NS_ENUM(NSInteger) {
+    GLContextFailure = 87001,
+    GLLinkingFailure = 87002,
+    GLCompileFailure = 87003,
+    GLNotAProgram    = 87004
+};
+
 @interface GLShader: NSObject
 
 @property EAGLContext *context;
@@ -18,10 +25,7 @@
  */
 - (void) bind;
 
-/**
- * Check the shader validity
- */
-- (void) validate;
+- (bool) ensureCompiles: (NSError**)error;
 
 /**
  * Set the value of an uniform

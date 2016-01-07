@@ -27,6 +27,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -69,7 +70,11 @@ public class GLCanvas extends GLSurfaceView
     private Map<Integer, GLFBO> fbos;
     private ExecutorSupplier executorSupplier;
     private final Queue<Runnable> mRunOnDraw = new LinkedList<>();
-    private boolean captureFrameRequested = false;
+
+    private List<CaptureConfig> captureConfigs = new ArrayList<>();
+    private float pixelRatio;
+
+    private float displayDensity;
 
     public GLCanvas(ThemedReactContext context, ExecutorSupplier executorSupplier) {
         super(context);
@@ -77,6 +82,10 @@ public class GLCanvas extends GLSurfaceView
         this.executorSupplier = executorSupplier;
         rnglContext = context.getNativeModule(RNGLContext.class);
         setEGLContextClientVersion(2);
+
+        DisplayMetrics dm = reactContext.getResources().getDisplayMetrics();
+        displayDensity = dm.density;
+        pixelRatio = dm.density;
 
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         getHolder().setFormat(PixelFormat.RGB_888);
@@ -104,7 +113,7 @@ public class GLCanvas extends GLSurfaceView
         if (!shaders.containsKey(id)) {
             GLShaderData shaderData = rnglContext.getShader(id);
             if (shaderData == null) return null;
-            shaders.put(id, new GLShader(shaderData));
+            shaders.put(id, new GLShader(shaderData, id, rnglContext));
         }
         return shaders.get(id);
     }
@@ -122,6 +131,12 @@ public class GLCanvas extends GLSurfaceView
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {}
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        syncSize(w, h, pixelRatio);
+    }
 
     @Override
     public void onDrawFrame(GL10 gl) {
@@ -156,16 +171,74 @@ public class GLCanvas extends GLSurfaceView
         if (shouldRenderNow) {
             this.render();
             deferredRendering = false;
-            if (captureFrameRequested) {
-                captureFrameRequested = false;
-                Bitmap capture = createSnapshot();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                capture.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                String frame = "data:image/png;base64,"+
-                        Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
-                dispatchOnCaptureFrame(frame);
+            if (captureConfigs.size() > 0) {
+                capture(); // FIXME: maybe we should schedule this?
             }
         }
+    }
+
+    private void capture () {
+        Bitmap capture = createSnapshot();
+        ReactContext reactContext = (ReactContext)getContext();
+        RCTEventEmitter eventEmitter = reactContext.getJSModule(RCTEventEmitter.class);
+
+        for (CaptureConfig config : captureConfigs) {
+            String result = null, error = null;
+            boolean isPng = config.type.equals("png");
+            boolean isJpeg = !isPng && (config.type.equals("jpg")||config.type.equals("jpeg"));
+            boolean isWebm = !isPng && !isJpeg && config.type.equals("webm");
+            boolean isBase64 = config.format.equals("base64");
+            boolean isFile = !isBase64 && config.format.equals("file");
+
+            Bitmap.CompressFormat compressFormat =
+                isPng ? Bitmap.CompressFormat.PNG :
+                isJpeg ? Bitmap.CompressFormat.JPEG :
+                isWebm ? Bitmap.CompressFormat.WEBP :
+                null;
+
+            int quality = (int)(100 * config.quality);
+
+            if (compressFormat == null) {
+                error = "Unsupported capture type '"+config.type+"'";
+            }
+            else if (isBase64) {
+                try {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    capture.compress(compressFormat, quality, baos);
+                    String frame = "data:image/png;base64,"+
+                            Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+                    baos.close();
+                    result = frame;
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    error = "Could not capture as base64: "+e.getMessage();
+                }
+            }
+            else if (isFile) {
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(config.filePath);
+                    capture.compress(compressFormat, quality, fileOutputStream);
+                    fileOutputStream.close();
+                    result = "file://"+config.filePath;
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    error = "Could not write file: "+e.getMessage();
+                }
+            }
+            else {
+                error = "Unsupported capture format '"+config.format+"'";
+            }
+
+            WritableMap response = Arguments.createMap();
+            response.putMap("config", config.toMap());
+            if (error != null) response.putString("error", error);
+            if (result != null) response.putString("result", result);
+            eventEmitter.receiveEvent(getId(), "captureFrame", response);
+        }
+
+        captureConfigs = new ArrayList<>();
     }
 
     private boolean haveRemainingToPreload() {
@@ -242,8 +315,13 @@ public class GLCanvas extends GLSurfaceView
         execute(new Runnable() {
             public void run() {
                 // FIXME: maybe should set a flag so we don't do it twice??
-                if (!syncData())
-                    requestSyncData();
+                try {
+                    if (!syncData())
+                        requestSyncData();
+                }
+                catch (GLShaderCompilationFailed e) {
+                    // This is ignored. It will be handled by RNGLContext.shaderFailedToCompile
+                }
             }
         });
     }
@@ -472,8 +550,8 @@ public class GLCanvas extends GLSurfaceView
                         if (arraySizeForType(type) != arr.size()) {
                             shader.runtimeException(
                                     "uniform '"+uniformName+
-                                    "': Invalid array size: "+arr.size()+
-                                    ". Expected: "+arraySizeForType(type));
+                                            "': Invalid array size: "+arr.size()+
+                                            ". Expected: "+arraySizeForType(type));
                         }
                         uniformsFloatBuffer.put(uniformName, parseAsFloatArray(arr));
                         break;
@@ -488,8 +566,8 @@ public class GLCanvas extends GLSurfaceView
                         if (arraySizeForType(type) != arr2.size()) {
                             shader.runtimeException(
                                     "uniform '"+uniformName+
-                                    "': Invalid array size: "+arr2.size()+
-                                    ". Expected: "+arraySizeForType(type));
+                                            "': Invalid array size: "+arr2.size()+
+                                            ". Expected: "+arraySizeForType(type));
                         }
                         uniformsIntBuffer.put(uniformName, parseAsIntArray(arr2));
                         break;
@@ -497,7 +575,7 @@ public class GLCanvas extends GLSurfaceView
                     default:
                         shader.runtimeException(
                                 "uniform '"+uniformName+
-                                "': type not supported: "+type);
+                                        "': type not supported: "+type);
                 }
 
             }
@@ -511,9 +589,9 @@ public class GLCanvas extends GLSurfaceView
 
         for (String uniformName: uniformTypes.keySet()) {
             if (!uniformsFloat.containsKey(uniformName) &&
-                !uniformsInteger.containsKey(uniformName) &&
-                !uniformsFloatBuffer.containsKey(uniformName) &&
-                !uniformsIntBuffer.containsKey(uniformName)) {
+                    !uniformsInteger.containsKey(uniformName) &&
+                    !uniformsFloatBuffer.containsKey(uniformName) &&
+                    !uniformsIntBuffer.containsKey(uniformName)) {
                 shader.runtimeException("All defined uniforms must be provided. Missing '"+uniformName+"'");
             }
         }
@@ -525,8 +603,8 @@ public class GLCanvas extends GLSurfaceView
                 uniformsIntBuffer,
                 uniformsFloatBuffer,
                 textures,
-                data.width,
-                data.height,
+                (int)(data.width * data.pixelRatio),
+                (int)(data.height * data.pixelRatio),
                 data.fboId,
                 contextChildren,
                 children);
@@ -538,7 +616,7 @@ public class GLCanvas extends GLSurfaceView
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer();
         for (int i=0; i<size; i++)
-          buf.put((float) array.getDouble(i));
+            buf.put((float) array.getDouble(i));
         buf.position(0);
         return buf;
     }
@@ -598,11 +676,8 @@ public class GLCanvas extends GLSurfaceView
     }
 
     private void recRender (GLRenderData renderData) {
-        DisplayMetrics dm = reactContext.getResources().getDisplayMetrics();
-
-        int w = Float.valueOf(renderData.width.floatValue() * dm.density).intValue();
-        int h = Float.valueOf(renderData.height.floatValue() * dm.density).intValue();
-
+        int w = renderData.width;
+        int h = renderData.height;
         for (GLRenderData child: renderData.contextChildren)
             recRender(child);
 
@@ -667,16 +742,6 @@ public class GLCanvas extends GLSurfaceView
         }
     }
 
-    private void dispatchOnCaptureFrame (String frame) {
-        WritableMap event = Arguments.createMap();
-        event.putString("frame", frame);
-        ReactContext reactContext = (ReactContext)getContext();
-        reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-                getId(),
-                "captureFrame",
-                event);
-    }
-
     private void dispatchOnProgress (double progress, int loaded, int total) {
         WritableMap event = Arguments.createMap();
         event.putDouble("progress", Double.isNaN(progress) ? 0.0 : progress);
@@ -698,9 +763,14 @@ public class GLCanvas extends GLSurfaceView
                 event);
     }
 
-    public void requestCaptureFrame() {
-        captureFrameRequested = true;
+    public void requestCaptureFrame (CaptureConfig config) {
         this.requestRender();
+        for (CaptureConfig existing : captureConfigs) {
+            if (existing.equals(config)) {
+                return;
+            }
+        }
+        captureConfigs.add(config);
     }
 
     private Bitmap createSnapshot () {
@@ -750,5 +820,17 @@ public class GLCanvas extends GLSurfaceView
         d.addAll(a);
         d.removeAll(b);
         return d;
+    }
+
+
+    public void setPixelRatio(float pixelRatio) {
+        this.pixelRatio = pixelRatio;
+        syncSize(this.getWidth(), this.getHeight(), pixelRatio);
+    }
+
+    private void syncSize (int w, int h, float pixelRatio) {
+        int width  = (int) (w * pixelRatio / displayDensity);
+        int height = (int) (h * pixelRatio / displayDensity);
+        getHolder().setFixedSize(width, height);
     }
 }

@@ -5,7 +5,7 @@
 #import "RCTConvert.h"
 #import "GLShader.h"
 
-GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shaderType) {
+GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shaderType, NSError **error) {
   
   GLuint shaderHandle = glCreateShader(shaderType);
   
@@ -20,8 +20,10 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
   if (compileSuccess == GL_FALSE) {
     GLchar messages[256];
     glGetShaderInfoLog(shaderHandle, sizeof(messages), 0, &messages[0]);
-    NSString *messageString = [NSString stringWithUTF8String:messages];
-    RCTLogError(@"Shader '%@' failed to compile: %@", shaderName, messageString);
+    *error = [[NSError alloc]
+              initWithDomain:[NSString stringWithUTF8String:messages]
+              code:GLCompileFailure
+              userInfo:nil];
     return -1;
   }
   
@@ -41,6 +43,7 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
   GLint pointerLoc; // The "pointer" attribute is used to iterate over vertex
   NSDictionary *_uniformTypes; // The types of the GLSL uniforms (N.B: array are not supported)
   NSDictionary *_uniformLocations; // The uniform locations cache
+  NSError *_error;
 }
 
 - (instancetype)initWithContext: (EAGLContext*)context withName:(NSString *)name withVert:(NSString *)vert withFrag:(NSString *)frag
@@ -51,7 +54,10 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
     _context = context;
     _vert = vert;
     _frag = frag;
-    [self makeProgram];
+    NSError *error;
+    if (![self makeProgram:&error]) {
+      _error = error;
+    }
   }
   return self;
 }
@@ -60,12 +66,21 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
 {
   glDeleteProgram(program);
   glDeleteBuffers(1, &buffer);
+  _name = nil;
+  _context = nil;
+  _vert = nil;
+  _frag = nil;
+  _uniformLocations = nil;
+  _uniformTypes = nil;
+  program = 0;
+  buffer = 0;
+  pointerLoc = 0;
 }
 
-- (bool) ensureContext
+- (bool) ensureContext: (NSError **)error
 {
-  if (![EAGLContext setCurrentContext:_context]) {
-    RCTLogError(@"Shader '%@': Failed to set current OpenGL context", _name);
+  if (!_context || ![EAGLContext setCurrentContext:_context]) {
+    *error = [[NSError alloc] initWithDomain:@"Failed to set current OpenGL context" code:GLContextFailure userInfo:nil];
     return false;
   }
   return true;
@@ -73,11 +88,6 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
 
 - (void) bind
 {
-  if (![self ensureContext]) return;
-  if ( glIsProgram(program) != GL_TRUE ){
-    RCTLogError(@"Shader '%@': not a program!", _name);
-    return;
-  }
   glUseProgram(program);
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
   glEnableVertexAttribArray(pointerLoc);
@@ -307,19 +317,6 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
   }
 }
 
-- (void) validate
-{
-  glValidateProgram(program);
-  GLint validSuccess;
-  glGetProgramiv(program, GL_VALIDATE_STATUS, &validSuccess);
-  if (validSuccess == GL_FALSE) {
-    GLchar messages[256];
-    glGetProgramInfoLog(program, sizeof(messages), 0, &messages[0]);
-    NSString *messageString = [NSString stringWithUTF8String:messages];
-    RCTLogError(@"Shader '%@': Validation failed %@", _name, messageString);
-  }
-}
-
 - (void) computeMeta
 {
   NSMutableDictionary *uniforms = @{}.mutableCopy;
@@ -342,15 +339,29 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
   _uniformLocations = locations;
 }
 
-- (void) makeProgram
+- (bool) ensureCompiles: (NSError **)error
 {
-  if (![self ensureContext]) return;
+  if (![self ensureContext:error]) {
+    return false;
+  }
+  if (!glIsProgram(program)) {
+    *error = [[NSError alloc] initWithDomain:@"not a program" code:GLNotAProgram userInfo:nil];
+    return false;
+  }
+  if (_error == nil) return true;
+  *error = _error;
+  return false;
+}
 
-  GLuint vertex = compileShader(_name, _vert, GL_VERTEX_SHADER);
-  if (vertex == -1) return;
+- (bool) makeProgram: (NSError **)error
+{
+  if (![self ensureContext:error]) return false;
 
-  GLuint fragment = compileShader(_name, _frag, GL_FRAGMENT_SHADER);
-  if (fragment == -1) return;
+  GLuint vertex = compileShader(_name, _vert, GL_VERTEX_SHADER, error);
+  if (vertex == -1) return false;
+
+  GLuint fragment = compileShader(_name, _frag, GL_FRAGMENT_SHADER, error);
+  if (fragment == -1) return false;
 
   program = glCreateProgram();
   glAttachShader(program, vertex);
@@ -362,9 +373,11 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
   if (linkSuccess == GL_FALSE) {
     GLchar messages[256];
     glGetProgramInfoLog(program, sizeof(messages), 0, &messages[0]);
-    NSString *messageString = [NSString stringWithUTF8String:messages];
-    RCTLogError(@"Shader '%@': Linking failed %@", _name, messageString);
-    return;
+    *error = [[NSError alloc]
+              initWithDomain:[NSString stringWithUTF8String:messages]
+              code:GLLinkingFailure
+              userInfo:nil];
+    return false;
   }
 
   glUseProgram(program);
@@ -384,6 +397,8 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
     1.0,  1.0
   };
   glBufferData(GL_ARRAY_BUFFER, sizeof(buf), buf, GL_STATIC_DRAW);
+    
+  return true;
 }
 
 

@@ -8,7 +8,7 @@
 
 + (GLImageData*) empty;
 + (GLImageData*) genPixelsWithImage: (UIImage *)image;
-+ (GLImageData*) genPixelsWithView: (UIView *)view;
++ (GLImageData*) genPixelsWithView: (UIView *)view withPixelRatio:(float)pixelRatio;
 
 - (instancetype)initWithData: (GLubyte *)data withWidth:(int)width withHeight:(int)height;
 

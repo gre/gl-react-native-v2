@@ -3,12 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "react-native start"
+    "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
-    "gl-react": "^2.0.2",
+    "fbjs": "^0.6.0",
+    "gl-react": "^2.1.0",
     "gl-react-native": "file:../..",
     "glsl-transitions": "^2015.11.8",
-    "react-native": "^0.17.0"
+    "react": "^0.14.5",
+    "react-native": "0.18.0-rc"
   }
 }

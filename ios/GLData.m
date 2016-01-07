@@ -6,6 +6,7 @@
                  withUniforms: (NSDictionary *)uniforms
                     withWidth: (NSNumber *)width
                    withHeight: (NSNumber *)height
+               withPixelRatio: (NSNumber *)pixelRatio
                     withFboId: (NSNumber *)fboId
           withContextChildren: (NSArray *)contextChildren
                  withChildren: (NSArray *)children
@@ -15,6 +16,7 @@
     self.uniforms = uniforms;
     self.width = width;
     self.height = height;
+    self.pixelRatio = pixelRatio;
     self.fboId = fboId;
     self.contextChildren = contextChildren;
     self.children = children;

@@ -21,29 +21,30 @@ public class GLShader {
     private int pointerLoc; // The "pointer" attribute is used to iterate over vertex
     private Map<String, Integer> uniformLocations; // The uniform locations cache
 
-    public GLShader(String name, String vert, String frag) {
-        this.name = name;
-        this.vert = vert;
-        this.frag = frag;
-    }
+    private Integer id;
+    private RNGLContext rnglContext;
+    private GLShaderCompilationFailed compilationFailed;
 
-    public GLShader(GLShaderData data) {
+    public GLShader(GLShaderData data, Integer id, RNGLContext rnglContext) {
         this.name = data.name;
         this.vert = data.vert;
         this.frag = data.frag;
+        this.id = id;
+        this.rnglContext = rnglContext;
     }
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
         if (buffer != null) {
+            // TODO: need to check if this works properly
             glDeleteProgram(program);
             glDeleteBuffers(1, buffer, 0);
         }
     }
 
     public void runtimeException (String msg) {
-        throw new RuntimeException("Shader '"+name+"': "+msg);
+        throw new GLShaderCompilationFailed(name, msg);
     }
 
     public void bind () {
@@ -64,7 +65,7 @@ public class GLShader {
         glGetProgramiv(program, GL_VALIDATE_STATUS, validSuccess, 0);
         if (validSuccess[0] == GL_FALSE) {
             glGetProgramInfoLog(program);
-            runtimeException("Validation failed " + glGetProgramInfoLog(program));
+            runtimeException(glGetProgramInfoLog(program));
         }
     }
 
@@ -133,7 +134,7 @@ public class GLShader {
         int compileSuccess[] = new int[1];
         glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, compileSuccess, 0);
         if (compileSuccess[0] == GL_FALSE) {
-            runtimeException("failed to compile: " + glGetShaderInfoLog(shaderHandle));
+            runtimeException(glGetShaderInfoLog(shaderHandle));
             return -1;
         }
         return shaderHandle;
@@ -157,7 +158,7 @@ public class GLShader {
         this.uniformLocations = locations;
     }
 
-    private void makeProgram () {
+    private void makeProgram () throws GLShaderCompilationFailed {
         int vertex = compileShader(vert, GL_VERTEX_SHADER);
         if (vertex == -1) return;
 
@@ -172,7 +173,7 @@ public class GLShader {
         int[] linkSuccess = new int[1];
         glGetProgramiv(program, GL_LINK_STATUS, linkSuccess, 0);
         if (linkSuccess[0] == GL_FALSE) {
-            runtimeException("Linking failed "+glGetProgramInfoLog(program));
+            runtimeException(glGetProgramInfoLog(program));
         }
 
         glUseProgram(program);
@@ -208,7 +209,18 @@ public class GLShader {
     }
 
     public boolean ensureCompile() {
-        if (!isReady()) makeProgram();
+        if (!isReady()) {
+            if (compilationFailed != null) throw compilationFailed;
+            try {
+                makeProgram();
+                rnglContext.shaderSucceedToCompile(id, uniformTypes);
+            }
+            catch (GLShaderCompilationFailed e) {
+                compilationFailed = e;
+                rnglContext.shaderFailedToCompile(id, e);
+                throw e;
+            }
+        }
         return isReady();
     }
 }

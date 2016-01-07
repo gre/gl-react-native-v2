@@ -3,12 +3,15 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "react-native start"
+    "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
+    "fbjs": "^0.6.0",
+    "gl-react": "^2.1.0",
     "gl-react-native": "file:../..",
-    "gl-react": "^2.0.8",
-    "react-native": "^0.17.0",
-    "react-native-material-kit": "^0.2.4"
+    "react": "^0.14.5",
+    "react-native": "0.18.0-rc",
+    "react-native-fs": "^1.1.0",
+    "react-native-material-kit": "gre/react-native-material-kit#no-peerDependencies"
   }
 }

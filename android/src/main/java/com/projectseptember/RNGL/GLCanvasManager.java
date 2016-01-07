@@ -27,6 +27,11 @@ public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
 
     private ExecutorSupplier executorSupplier;
 
+    @ReactProp(name="pixelRatio")
+    public void setPixelRatio (GLCanvas view, float pixelRatio) {
+        view.setPixelRatio(pixelRatio);
+    }
+
     @ReactProp(name="nbContentTextures")
     public void setNbContentTextures (GLCanvas view, int nbContentTextures) {
         view.setNbContentTextures(nbContentTextures);
@@ -89,7 +94,7 @@ public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
         Assertions.assertNotNull(args);
         switch (commandType) {
             case COMMAND_CAPTURE_FRAME: {
-                canvas.requestCaptureFrame();
+                canvas.requestCaptureFrame(CaptureConfig.fromMap(args.getMap(0)));
                 return;
             }
             default:
