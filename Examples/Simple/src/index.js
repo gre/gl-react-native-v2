@@ -256,25 +256,20 @@ class Simple extends Component {
                 width={256}
                 height={160}
                 factor={factor}>
-                <Blur
-                  width={256}
-                  height={160}
-                  factor={factor/2}>
-                  <View style={{ width: 256, height: 160, padding: 10, backgroundColor: "#f9f9f9" }}>
-                    <Slider
-                      style={{ height: 80 }}
-                      max={2}
-                      onChange={factor => this.setState({ factor })}
-                    />
-                  <View style={{ height: 60, flexDirection: "row", alignItems: "center" }}>
-                    <Switch style={{flex:1}} checked={switch1} onCheckedChange={({checked:switch1}) => this.setState({ switch1 })} />
-                    <Switch style={{flex:1}} checked={switch2} onCheckedChange={({checked:switch2}) => this.setState({ switch2 })} />
-                    <Switch style={{flex:1}} checked={switch3} onCheckedChange={({checked:switch3}) => this.setState({ switch3 })} />
-                  </View>
-                  <Progress progress={factor} style={{height: 10, marginTop: 8, flex:1}} />
+                <View style={{ width: 256, height: 160, padding: 10, backgroundColor: "#f9f9f9" }}>
+                  <Slider
+                    style={{ height: 80 }}
+                    max={1}
+                    onChange={factor => this.setState({ factor })}
+                  />
+                <View style={{ height: 60, flexDirection: "row", alignItems: "center" }}>
+                  <Switch style={{flex:1}} checked={switch1} onCheckedChange={({checked:switch1}) => this.setState({ switch1 })} />
+                  <Switch style={{flex:1}} checked={switch2} onCheckedChange={({checked:switch2}) => this.setState({ switch2 })} />
+                  <Switch style={{flex:1}} checked={switch3} onCheckedChange={({checked:switch3}) => this.setState({ switch3 })} />
+                </View>
+                <Progress progress={factor} style={{height: 10, marginTop: 8, flex:1}} />
 
-                  </View>
-                </Blur>
+                </View>
               </Blur>
             </HueRotate>
           </Surface>
