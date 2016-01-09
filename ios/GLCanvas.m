@@ -1,4 +1,3 @@
-
 #import "RCTBridge.h"
 #import "RCTUtils.h"
 #import "RCTConvert.h"
@@ -492,6 +491,9 @@ RCT_NOT_IMPLEMENTED(-init)
       for (GLRenderData *child in renderData.children)
         weak_recDraw(child);
 
+      RCT_PROFILE_BEGIN_EVENT(0, @"node", nil);
+
+      RCT_PROFILE_BEGIN_EVENT(0, @"bind fbo", nil);
       if (renderData.fboId == -1) {
         glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
         glViewport(0, 0, w, h);
@@ -501,23 +503,34 @@ RCT_NOT_IMPLEMENTED(-init)
         [fbo setShapeWithWidth:w withHeight:h];
         [fbo bind];
       }
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
+      RCT_PROFILE_BEGIN_EVENT(0, @"bind shader", nil);
       [renderData.shader bind];
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
+      RCT_PROFILE_BEGIN_EVENT(0, @"bind textures", nil);
       for (NSString *uniformName in renderData.textures) {
         GLTexture *texture = renderData.textures[uniformName];
         int unit = [((NSNumber *)renderData.uniforms[uniformName]) intValue];
         [texture bind:unit];
       }
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
+      RCT_PROFILE_BEGIN_EVENT(0, @"bind set uniforms", nil);
       for (NSString *uniformName in renderData.uniforms) {
         [renderData.shader setUniform:uniformName withValue:renderData.uniforms[uniformName]];
       }
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
+      RCT_PROFILE_BEGIN_EVENT(0, @"draw", nil);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glClearColor(0.0, 0.0, 0.0, 0.0);
       glClear(GL_COLOR_BUFFER_BIT);
       glDrawArrays(GL_TRIANGLES, 0, 6);
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
+
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
     };
 
     // DRAWING THE SCENE
