@@ -23,6 +23,7 @@
     "gl-react": "^2.1.0"
   },
   "dependencies": {
-    "invariant": "2.2.0"
+    "invariant": "2.2.0",
+    "promise-defer": "1.0.0"
   }
 }

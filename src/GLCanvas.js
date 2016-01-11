@@ -4,7 +4,7 @@ const {
   Component,
   requireNativeComponent
 } = React;
-
+const defer = require("promise-defer");
 const captureFrame = require("./GLCanvas.captureFrame");
 
 const serializeOption = config =>
@@ -17,16 +17,6 @@ const GLCanvasNative = requireNativeComponent("GLCanvas", GLCanvas, {
     onGLCaptureFrame: true
   }
 });
-
-function defer() {
-  const deferred = {};
-  const promise = new Promise(function(resolve, reject) {
-    deferred.resolve = resolve;
-    deferred.reject  = reject;
-  });
-  deferred.promise = promise;
-  return deferred;
-}
 
 class GLCanvas extends Component {
 
