@@ -30,7 +30,11 @@ class GLCanvas extends Component {
     this._pendingCaptureFrame = null;
   }
 
-  addPendingCaptureFrame (config) {
+  setNativeProps (props) {
+    this.refs.native.setNativeProps(props);
+  }
+
+  _addPendingCaptureFrame (config) {
     const key = serializeOption(config);
     return this._pendingCaptureFrame[key] || (
       (captureFrame(React.findNodeHandle(this.refs.native), config),
@@ -77,7 +81,7 @@ class GLCanvas extends Component {
       invariant(keys.length === nb, "captureFrame(config): config must be an object with {format, type, quality, filePath}, found some invalid keys in '%s'", keys);
       config = configArg;
     }
-    return this.addPendingCaptureFrame({
+    return this._addPendingCaptureFrame({
       format: "base64",
       type: "png",
       quality: 1,
