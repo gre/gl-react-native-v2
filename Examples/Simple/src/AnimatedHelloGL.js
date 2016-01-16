@@ -1,6 +1,7 @@
 const React = require("react-native");
 const GL = require("gl-react");
 const {Surface} = require("gl-react-native");
+const {Animated} = React;
 
 const shaders = GL.Shaders.create({
   helloGL: {
@@ -21,20 +22,15 @@ class HelloGL extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      value: 0
+      value: new Animated.Value(0)
     };
   }
   componentDidMount () {
-    const loop = time => {
-      this.raf = requestAnimationFrame(loop);
-      this.setState({
-        value: (1 + Math.cos(time / 1000)) / 2 // cycle between 0 and 1
-      });
-    };
-    this.raf = requestAnimationFrame(loop);
-  }
-  componentWillUnmount () {
-    cancelAnimationFrame(this.raf);
+    const loop = () => Animated.sequence([
+      Animated.timing(this.state.value, { toValue: 1, duration: 1000 }),
+      Animated.timing(this.state.value, { toValue: 0, duration: 1000 })
+    ]).start(loop);
+    loop();
   }
   render () {
     const { width, height } = this.props;
