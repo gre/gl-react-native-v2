@@ -27,13 +27,17 @@ function renderVGL (props) {
 }
 
 function renderVcontainer ({ style, width, height, visibleContent, eventsThrough }, contents, renderer) {
-  const parentStyle = {
-    position: "relative",
-    ...style,
-    width: width,
-    height: height,
-    overflow: "hidden",
-  };
+  const parentStyle = [
+    {
+      position: "relative",
+    },
+    style,
+    {
+      width: width,
+      height: height,
+      overflow: "hidden",
+    }
+  ];
   return <View
     pointerEvents={!visibleContent && eventsThrough ? "none" : "auto"}
     style={parentStyle}>

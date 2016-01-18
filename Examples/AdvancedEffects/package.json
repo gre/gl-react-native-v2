@@ -11,6 +11,6 @@
     "gl-react-native": "file:../..",
     "glsl-transitions": "^2015.11.8",
     "react": "^0.14.5",
-    "react-native": "0.18.0-rc"
+    "react-native": "^0.18.0"
   }
 }

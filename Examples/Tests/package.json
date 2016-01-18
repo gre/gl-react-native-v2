@@ -10,6 +10,6 @@
     "gl-react": "^2.1.0",
     "gl-react-native": "file:../..",
     "react": "^0.14.5",
-    "react-native": "0.18.0-rc"
+    "react-native": "^0.18.0"
   }
 }
