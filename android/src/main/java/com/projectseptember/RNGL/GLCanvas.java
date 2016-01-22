@@ -89,7 +89,7 @@ public class GLCanvas extends GLSurfaceView
 
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         getHolder().setFormat(PixelFormat.RGB_888);
-        setZOrderOnTop(true);
+        setZOrderOnTop(false);
 
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
