@@ -10,7 +10,7 @@
     "gl-react": "^2.1.0",
     "gl-react-native": "file:../..",
     "react": "^0.14.5",
-    "react-native": "^0.18.0",
+    "react-native": "^0.19.0",
     "react-native-fs": "^1.1.0",
     "react-native-material-kit": "gre/react-native-material-kit#no-peerDependencies"
   }
