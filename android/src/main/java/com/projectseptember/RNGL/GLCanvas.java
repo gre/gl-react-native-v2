@@ -59,7 +59,7 @@ public class GLCanvas extends GLSurfaceView
     private int nbContentTextures;
     private boolean autoRedraw;
     private GLData data;
-    private List<Uri> imagesToPreload;
+    private List<Uri> imagesToPreload = new ArrayList<>();
     private List<Uri> preloaded = new ArrayList<>();
 
     private Map<Uri, GLImage> images = new HashMap<>();
