@@ -14,5 +14,6 @@
 - (void)setShapeWithWidth:(float)width withHeight:(float)height;
 
 - (void)setPixels: (GLImageData *)data;
+- (void)setPixelsWithPixelBuffer: (CVPixelBufferRef)buffer;
 
 @end

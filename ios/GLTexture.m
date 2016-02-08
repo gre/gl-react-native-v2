@@ -6,6 +6,7 @@
 {
   GLuint _handle; // The identifier of the gl texture
   GLImageData* dataCurrentlyUploaded; // The last set data (cache)
+  CVPixelBufferRef bufferCurrentlyUploaded; // The last set buffer (cache)
 }
 
 - (instancetype)init
@@ -21,6 +22,7 @@
 {
   glDeleteTextures(1, &_handle);
   dataCurrentlyUploaded = nil;
+  bufferCurrentlyUploaded = NULL;
 }
 
 - (void) makeTexture
@@ -54,10 +56,30 @@
 - (void)setPixels: (GLImageData *)data
 {
   GLImageData *d = data==nil ? [GLImageData empty] : data;
+  bufferCurrentlyUploaded = NULL;
   if (d != dataCurrentlyUploaded) {
     dataCurrentlyUploaded = d;
     [self bind];
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, d.width, d.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, d.data);
+  }
+}
+
+
+- (void)setPixelsWithPixelBuffer: (CVPixelBufferRef)buffer
+{
+  if (buffer == NULL) {
+    [self setPixels:[GLImageData empty]];
+  }
+  else {
+    dataCurrentlyUploaded = nil;
+    if (buffer != bufferCurrentlyUploaded) {
+      bufferCurrentlyUploaded = buffer;
+      [self bind];
+      int width = (int) CVPixelBufferGetWidth(buffer);
+      int height = (int) CVPixelBufferGetHeight(buffer);
+      GLubyte* data = CVPixelBufferGetBaseAddress(buffer);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,  data);
+    }
   }
 }
 

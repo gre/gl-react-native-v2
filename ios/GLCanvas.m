@@ -43,7 +43,7 @@ NSArray* diff (NSArray* a, NSArray* b) {
 
   GLRenderData *_renderData;
 
-  NSArray *_contentData;
+  NSArray *_rasterizedContent;
   NSArray *_contentTextures;
   NSDictionary *_images; // This caches the currently used images (imageSrc -> GLReactImage)
 
@@ -88,7 +88,7 @@ RCT_NOT_IMPLEMENTED(-init)
   _images = nil;
   _preloaded = nil;
   _captureConfigs = nil;
-  _contentData = nil;
+  _rasterizedContent = nil;
   _contentTextures = nil;
   _data = nil;
   _renderData = nil;
@@ -323,11 +323,8 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)rasterizeContent
 {
-  // TODO: we need to refactor how this stuff work...
-  // we should no longer do any rasterize work if all the work is to be done in syncContentTextures
-
   RCT_PROFILE_BEGIN_EVENT(0, @"GLCanvas rasterizeContent", nil);
-  NSMutableArray *contentData = [[NSMutableArray alloc] init];
+  NSMutableArray *rasterizedContent = [[NSMutableArray alloc] init];
   int nb = [_nbContentTextures intValue];
   for (int i = 0; i < nb; i++) {
     UIView *view = self.superview.subviews[i]; // We take siblings by index (closely related to the JS code)
@@ -345,9 +342,9 @@ RCT_NOT_IMPLEMENTED(-init)
         imgData = [GLImageData genPixelsWithView:v withPixelRatio:self.contentScaleFactor];
       }
     }
-    if (imgData) contentData[i] = imgData;
+    if (imgData) rasterizedContent[i] = imgData;
   }
-  _contentData = contentData;
+  _rasterizedContent = rasterizedContent;
   [self setNeedsDisplay];
   RCT_PROFILE_END_EVENT(0, @"gl", nil);
 }
@@ -355,7 +352,6 @@ RCT_NOT_IMPLEMENTED(-init)
 - (void)syncContentTextures
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"GLCanvas syncContentTextures", nil);
-  NSMutableArray *contentData = _contentData.mutableCopy;
   unsigned long max = MIN([_nbContentTextures intValue], [_contentTextures count]);
 
   for (int i = 0; i < max; i++) {
@@ -374,16 +370,11 @@ RCT_NOT_IMPLEMENTED(-init)
         [invocation invoke];
         CVPixelBufferRef buffer;
         [invocation getReturnValue:&buffer];
-        
-        int width = (int) CVPixelBufferGetWidth(buffer);
-        int height = (int) CVPixelBufferGetHeight(buffer);
-        contentData[i] = [[GLImageData alloc]
-                   initWithData:CVPixelBufferGetBaseAddress(buffer)
-                   withWidth:width
-                   withHeight:height];
+        [_contentTextures[i] setPixelsWithPixelBuffer:buffer];
       }
-      
-      [_contentTextures[i] setPixels:contentData[i]];
+      else {
+        [_contentTextures[i] setPixels:_rasterizedContent[i]];
+      }
     }
   }
   RCT_PROFILE_END_EVENT(0, @"gl", nil);
