@@ -384,7 +384,7 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
 
   [self computeMeta];
 
-  pointerLoc = glGetAttribLocation(program, "position");
+  pointerLoc = glGetAttribLocation(program, "_p");
 
   glGenBuffers(1, &buffer);
   glBindBuffer(GL_ARRAY_BUFFER, buffer);

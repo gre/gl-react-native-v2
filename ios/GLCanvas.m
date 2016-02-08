@@ -342,7 +342,7 @@ RCT_NOT_IMPLEMENTED(-init)
         imgData = [GLImageData genPixelsWithView:v withPixelRatio:self.contentScaleFactor];
       }
     }
-    if (imgData) rasterizedContent[i] = imgData;
+    rasterizedContent[i] = imgData==nil ? [GLImageData empty] : imgData;
   }
   _rasterizedContent = rasterizedContent;
   [self setNeedsDisplay];
