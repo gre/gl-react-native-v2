@@ -5,6 +5,7 @@ const {
   View,
   Text,
 } = React;
+const Camera = require("react-native-camera");
 const Video = require("react-native-video").default;
 const {
   width: viewportW
@@ -49,21 +50,23 @@ class App extends React.Component {
         <Surface pixelRatio={1} width={640} height={480} autoRedraw eventsThrough width={width} height={height}>
           <Blur passes={blurPasses} factor={blur}>
             <HueRotate hue={hue}>
-              { mode === 0 ?
-                <Video source={{ uri: "video" }} repeat style={styles.video} /> :
-                mode === 1 ?
+              {   mode === 0 ?
+                <Video source={{ uri: "video" }} repeat style={styles.video} />
+                : mode === 1 ?
                 <View style={{ flex: 1, backgroundColor: "#fff", padding: 10 }}>
                   <Text style={{ fontSize: 80, color: "#F00" }}>Hello</Text>
                   <Text style={{ fontSize: 60, color: "#00F" }}>World</Text>
-                </View> :
-                mode === 2 ?
+                </View>
+                : mode === 2 ?
                 "http://i.imgur.com/2Go2D7i.jpg"
+                : mode === 3 ?
+                <Camera style={styles.preview} aspect={Camera.constants.Aspect.Fill} />
                 : null
               }
             </HueRotate>
           </Blur>
         </Surface>
-        <Field min={0} max={3} step={1} value={mode} onChange={mode => this.setState({ mode })} name="Content" width={width} />
+        <Field min={0} max={4} step={1} value={mode} onChange={mode => this.setState({ mode })} name="Content" width={width} />
         <Field min={0} max={2*Math.PI} value={hue} onChange={hue => this.setState({ hue })} name="Hue" width={width} />
         <Field min={0} max={16} value={blur} onChange={blur => this.setState({ blur })} name="Blur" width={width} />
         <Field min={2} max={8} step={1} value={blurPasses} onChange={blurPasses => this.setState({ blurPasses })} name="Blur Passes" width={width} />
