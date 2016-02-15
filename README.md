@@ -6,7 +6,7 @@ OpenGL bindings for React Native to implement complex effects over images and co
 
 **`gl-react-native` is an implementation of `gl-react` for `react-native`. Please [read the main gl-react README](https://github.com/ProjectSeptemberInc/gl-react/) for more information.**
 
-[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/docs/simple.gif)](./Examples/Simple)[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/docs/advancedeffects.gif)](./Examples/AdvancedEffects)
+[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/docs/simple.gif)](./example)[![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/docs/advancedeffects.gif)](./example)
 
 ## Documentation
 
