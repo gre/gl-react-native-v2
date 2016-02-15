@@ -1,6 +1,0 @@
-rootProject.name = 'Tests'
-
-include ':app'
-
-include ':RNGL'
-project(':RNGL').projectDir = file('../../../android')

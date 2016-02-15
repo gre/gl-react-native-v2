@@ -1,0 +1,22 @@
+{
+  "name": "example",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "crypto": "0.0.3",
+    "fbjs": "^0.6.1",
+    "gl-react": "^2.1.6",
+    "gl-react-blur": "^1.2.2",
+    "gl-react-native": "file:..",
+    "glsl-transitions": "^2016.2.15",
+    "react": "^0.14.7",
+    "react-native": "^0.19.0",
+    "react-native-fs": "^1.2.0",
+    "react-native-material-kit": "^0.3.0",
+    "react-transform-hmr": "^1.0.2",
+    "seedrandom": "gre/seedrandom#released"
+  }
+}
