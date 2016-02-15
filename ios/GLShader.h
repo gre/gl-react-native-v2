@@ -10,6 +10,7 @@ NS_ENUM(NSInteger) {
 
 @interface GLShader: NSObject
 
+@property NSString *name;
 @property EAGLContext *context;
 @property NSString *vert;
 @property NSString *frag;

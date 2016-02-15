@@ -36,7 +36,6 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
  */
 @implementation GLShader
 {
-  NSString *_name;
   EAGLContext *_context; // Context related to this shader
   GLuint program; // Program of the shader
   GLuint buffer; // the buffer currently contains 2 static triangles covering the surface

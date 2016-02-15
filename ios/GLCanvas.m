@@ -491,7 +491,7 @@ RCT_NOT_IMPLEMENTED(-init)
       for (GLRenderData *child in renderData.children)
         weak_recDraw(child);
 
-      RCT_PROFILE_BEGIN_EVENT(0, @"node", nil);
+      RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"node:%@", renderData.shader.name], nil);
 
       RCT_PROFILE_BEGIN_EVENT(0, @"bind fbo", nil);
       if (renderData.fboId == -1) {
