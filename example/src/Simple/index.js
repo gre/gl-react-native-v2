@@ -28,7 +28,7 @@ const HueRotate = require("./HueRotate");
 const PieProgress = require("./PieProgress");
 const OneFingerResponse = require("./OneFingerResponse");
 const AnimatedHelloGL = require("./AnimatedHelloGL");
-const Blur = require("./Blur");
+const {Blur} = require("gl-react-blur");
 const Button = require("./Button");
 
 class Demo extends Component {
@@ -206,7 +206,7 @@ class Simple extends Component {
             </TouchableOpacity>
             <View pointerEvents="box-none" style={{ position: "absolute", top: 0, left: 0, backgroundColor: "transparent" }}>
               <Surface width={256} height={180} opaque={false} eventsThrough>
-                <PieProgress progress={progress} width={256} height={180} />
+                <PieProgress progress={progress} />
               </Surface>
             </View>
           </View>
@@ -230,9 +230,9 @@ class Simple extends Component {
           />
         </Demo>
 
-        <Demo id={7} current={current} title="7. Blur (2-pass)">
+        <Demo id={7} current={current} title="7. Blur">
           <Surface preload width={256} height={180}>
-            <Blur width={256} height={180} factor={factor + 1}>
+            <Blur factor={factor * 2} passes={4}>
               http://i.imgur.com/3On9QEu.jpg
             </Blur>
           </Surface>
@@ -249,10 +249,7 @@ class Simple extends Component {
             eventsThrough
             visibleContent>
             <HueRotate hue={-switch1 + 2 * switch2 + 4 * switch3}>
-              <Blur
-                width={256}
-                height={160}
-                factor={factor}>
+              <Blur factor={factor}>
                 <View style={{ width: 256, height: 160, padding: 10, backgroundColor: "#f9f9f9" }}>
                   <Slider
                     style={{ height: 80 }}

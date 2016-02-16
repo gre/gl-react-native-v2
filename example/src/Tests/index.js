@@ -6,7 +6,7 @@ const {
   Image,
 } = React;
 const { Surface } = require("gl-react-native");
-const Blur = require("./Blur");
+const {Blur} = require("gl-react-blur");
 const Add = require("./Add");
 const Multiply = require("./Multiply");
 const Layer = require("./Layer");
