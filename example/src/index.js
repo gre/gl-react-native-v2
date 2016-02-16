@@ -6,6 +6,7 @@ import React, {
   Text,
   TouchableOpacity,
   Navigator,
+  AsyncStorage,
 } from "react-native";
 
 const screens = {
@@ -77,6 +78,26 @@ class Home extends Component {
 
 export default class App extends Component {
   static propTypes = {};
+  constructor (props) {
+    super(props);
+    this.state = {
+      initialRoute: homeRoute
+    };
+    /*
+    new Promise((success, failure) =>
+      AsyncStorage.getItem("route", (error, result) => {
+        if (error) failure(error);
+        else success(result);
+      }))
+    .then(result => {
+      const route = JSON.parse(result);
+      if (!route) throw new Error("invalid route");
+      return route;
+    })
+    .catch(() => homeRoute)
+    .then(initialRoute => this.setState({ initialRoute }));
+    */
+  }
   renderScene = (route, navigator) => {
     if (route.id === homeRoute.id) {
       return <Home openScreen={route => navigator.push(route)} />;
@@ -85,12 +106,14 @@ export default class App extends Component {
     return <Screen />;
   };
   render () {
+    const { initialRoute } = this.state;
+    if (!initialRoute) return <View />;
     return (
       <View style={styles.root}>
         <Navigator
           style={styles.navBar}
-          initialRoute={homeRoute}
           renderScene={this.renderScene}
+          initialRoute={initialRoute}
           navigationBar={
             <Navigator.NavigationBar
               routeMapper={{
