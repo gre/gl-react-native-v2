@@ -85,9 +85,8 @@
     <orderEntry type="library" exported="" name="okio-1.6.0" level="project" />
     <orderEntry type="library" exported="" name="stetho-okhttp-1.2.0" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.5.0" level="project" />
-    <orderEntry type="library" exported="" name="react-native-0.19.1" level="project" />
-    <orderEntry type="library" exported="" name="stetho-1.2.0" level="project" />
     <orderEntry type="library" exported="" name="jsr305-3.0.0" level="project" />
+    <orderEntry type="library" exported="" name="stetho-1.2.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-core-2.2.3" level="project" />
     <orderEntry type="library" exported="" name="fbcore-0.8.1" level="project" />
     <orderEntry type="library" exported="" name="commons-cli-1.2" level="project" />
@@ -99,6 +98,7 @@
     <orderEntry type="library" exported="" name="bolts-android-1.1.4" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.0.1" level="project" />
     <orderEntry type="library" exported="" name="drawee-0.8.1" level="project" />
+    <orderEntry type="library" exported="" name="react-native-0.20.1" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-23.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.0.1" level="project" />
   </component>

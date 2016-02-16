@@ -50,7 +50,7 @@ class Hearts extends Component {
     this.setState({
       dataSource: dataSource.cloneWithRows(genRows(increment + dataSource.getRowCount()))
     });
-  }
+  };
   render () {
     return (
       <ListView
