@@ -687,11 +687,13 @@ public class GLCanvas extends GLSurfaceView
         if (renderData.fboId == -1) {
             glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
             glViewport(0, 0, w, h);
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         }
         else {
             GLFBO fbo = getFBO(renderData.fboId);
             fbo.setShape(w, h);
             fbo.bind();
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         }
 
         renderData.shader.bind();
@@ -716,7 +718,6 @@ public class GLCanvas extends GLSurfaceView
             renderData.shader.setUniform(uniformName, renderData.uniformsIntBuffer.get(uniformName), uniformTypes.get(uniformName));
         }
 
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         glDrawArrays(GL_TRIANGLES, 0, 6);

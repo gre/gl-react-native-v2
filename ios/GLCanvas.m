@@ -497,11 +497,13 @@ RCT_NOT_IMPLEMENTED(-init)
       if (renderData.fboId == -1) {
         glBindFramebuffer(GL_FRAMEBUFFER, defaultFBO);
         glViewport(0, 0, w, h);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
       }
       else {
         GLFBO *fbo = [_bridge.rnglContext getFBO:[NSNumber numberWithInt:renderData.fboId]];
         [fbo setShapeWithWidth:w withHeight:h];
         [fbo bind];
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       }
       RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
@@ -524,7 +526,6 @@ RCT_NOT_IMPLEMENTED(-init)
       RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
       RCT_PROFILE_BEGIN_EVENT(0, @"draw", nil);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glClearColor(0.0, 0.0, 0.0, 0.0);
       glClear(GL_COLOR_BUFFER_BIT);
       glDrawArrays(GL_TRIANGLES, 0, 6);

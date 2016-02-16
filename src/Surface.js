@@ -46,4 +46,8 @@ function renderVcontainer ({ style, width, height, visibleContent, eventsThrough
   </View>;
 }
 
-module.exports = createSurface(renderVcontainer, renderVcontent, renderVGL, getPixelRatio);
+module.exports = createSurface(
+  renderVcontainer,
+  renderVcontent,
+  renderVGL,
+  getPixelRatio);

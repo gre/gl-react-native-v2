@@ -10,8 +10,15 @@ See README install instructions.
 React.NativeModules.RNGLContext is %s`, RNGLContext);
 
 // Hook Shaders to RNGLContext
-Shaders.on("add", (id, shader, onCompile) => RNGLContext.addShader(id, shader, onCompile));
-Shaders.on("remove", id => RNGLContext.removeShader(id));
+Shaders.setImplementation({
+  add: (id, shader) =>
+  new Promise((resolve, reject) =>
+    RNGLContext.addShader(id, shader, (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    })),
+  remove: id => RNGLContext.removeShader(id)
+});
 
 module.exports = {
   Surface

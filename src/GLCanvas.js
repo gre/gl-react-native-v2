@@ -18,35 +18,6 @@ const GLCanvasNative = requireNativeComponent("GLCanvas", GLCanvas, {
   }
 });
 
-const getExtraProps = ({ width, height, pixelRatio, data }) => {
-  // If Surface size matches the root node size, pass-in the styles
-  if (
-    !data ||
-    width * pixelRatio === data.width * data.pixelRatio &&
-    height * pixelRatio === data.height * data.pixelRatio
-  ) {
-    return { pixelRatio, style: { width, height } };
-  }
-  // otherwise, stretch the canvas to the surface size
-  const w = data.width * data.pixelRatio;
-  const h = data.height * data.pixelRatio;
-  return {
-    pixelRatio: 1, // pixelRatio is hardcoded to 1 to normalize the transform
-    style: {
-      width: w,
-      height: h,
-      transform: [
-        { translateX: -w / 2 },
-        { translateY: -h / 2 },
-        { scaleX: width / w },
-        { scaleY: height / h },
-        { translateX: w / 2 },
-        { translateY: h / 2 },
-      ]
-    }
-  };
-};
-
 class GLCanvas extends Component {
 
   componentWillMount () {
@@ -133,14 +104,13 @@ class GLCanvas extends Component {
 
   render () {
     const {
-      width, height, pixelRatio, data,
+      width, height,
       onLoad, onProgress, eventsThrough,
       ...restProps } = this.props;
     return <GLCanvasNative
       ref="native"
       {...restProps}
-      {...getExtraProps({ width, height, pixelRatio, data })}
-      data={data}
+      style={{ width, height }}
       onGLLoad={onLoad ? onLoad : null}
       onGLProgress={onProgress ? onProgress : null}
       onGLCaptureFrame={this.onGLCaptureFrame}
