@@ -6,7 +6,6 @@
 @interface GLCanvas: GLKView
 
 @property (nonatomic) GLData *data;
-@property (nonatomic) BOOL opaque;
 @property (nonatomic) BOOL autoRedraw;
 @property (nonatomic) BOOL eventsThrough;
 @property (nonatomic) BOOL visibleContent;

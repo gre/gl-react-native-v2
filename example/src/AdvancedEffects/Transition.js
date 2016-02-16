@@ -9,7 +9,7 @@ module.exports = GL.createComponent(
       shader={shader}
       width={width}
       height={height}
-      opaque={false}
+      backgroundColor="transparent"
       uniforms={{
         progress,
         from,

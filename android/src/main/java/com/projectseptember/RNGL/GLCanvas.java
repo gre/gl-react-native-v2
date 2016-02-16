@@ -3,6 +3,7 @@ package com.projectseptember.RNGL;
 import static android.opengl.GLES20.*;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.net.Uri;
@@ -262,12 +263,14 @@ public class GLCanvas extends GLSurfaceView
         }
     }
 
-    public void setOpaque(boolean opaque) {
-        if (opaque) {
-            this.getHolder().setFormat(PixelFormat.RGB_888);
+    @Override
+    public void setBackgroundColor(int color) {
+        super.setBackgroundColor(color);
+        if (color == Color.TRANSPARENT) {
+            this.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         }
         else {
-            this.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+            this.getHolder().setFormat(PixelFormat.RGB_888);
         }
         this.requestRender();
     }

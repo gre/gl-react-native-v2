@@ -42,11 +42,6 @@ public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
         view.setRenderId(renderId);
     }
 
-    @ReactProp(name="opaque")
-    public void setOpaque (GLCanvas view, boolean opaque) {
-        view.setOpaque(opaque);
-    }
-
     @ReactProp(name = "autoRedraw")
     public void setAutoRedraw (GLCanvas view, boolean autoRedraw) {
         view.setAutoRedraw(autoRedraw);

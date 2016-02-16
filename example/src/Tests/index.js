@@ -94,7 +94,7 @@ class Tests extends React.Component {
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Surface width={debugSize} height={debugSize} opaque={false}>
+          <Surface width={debugSize} height={debugSize} backgroundColor="transparent">
             <Copy last>
               <Copy>
                 <Copy>
@@ -109,7 +109,7 @@ class Tests extends React.Component {
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Surface width={debugSize} height={debugSize} opaque={false}>
+          <Surface width={debugSize} height={debugSize} backgroundColor="transparent">
             <Layer>
               http://i.imgur.com/mp79p5T.png
               <TransparentNonPremultiplied>
@@ -121,7 +121,7 @@ class Tests extends React.Component {
 
         <NativeLayer width={debugSize} height={debugSize}>
           <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Surface width={debugSize} height={debugSize} opaque={false}>
+          <Surface width={debugSize} height={debugSize} backgroundColor="transparent">
             <Layer>
               http://i.imgur.com/mp79p5T.png
               <TransparentNonPremultiplied>

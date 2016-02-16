@@ -27,7 +27,7 @@ void main( void ) {
 class Banner extends React.Component {
   render () {
     const { width, height, time } = this.props;
-    return <Surface width={width} height={height} opaque={false}
+    return <Surface width={width} height={height} backgroundColor="transparent"
       onLoad={() => console.log("Banner onLoad")}
       onProgress={e => console.log("Banner onProgress", e.nativeEvent)}>
       <GL.Node shader={shaders.banner} uniforms={{ time }} />

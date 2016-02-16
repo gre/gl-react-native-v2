@@ -205,7 +205,7 @@ class Simple extends Component {
               />
             </TouchableOpacity>
             <View pointerEvents="box-none" style={{ position: "absolute", top: 0, left: 0, backgroundColor: "transparent" }}>
-              <Surface width={256} height={180} opaque={false} eventsThrough>
+              <Surface width={256} height={180} backgroundColor="transparent" eventsThrough>
                 <PieProgress progress={progress} />
               </Surface>
             </View>

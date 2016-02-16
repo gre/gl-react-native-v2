@@ -47,8 +47,6 @@ NSArray* diff (NSArray* a, NSArray* b) {
   NSArray *_contentTextures;
   NSDictionary *_images; // This caches the currently used images (imageSrc -> GLReactImage)
 
-  BOOL _opaque; // opaque prop (if false, the GLCanvas will become transparent)
-
   BOOL _deferredRendering; // This flag indicates a render has been deferred to the next frame (when using contents)
 
   GLint defaultFBO;
@@ -117,12 +115,6 @@ RCT_NOT_IMPLEMENTED(-init)
   [self requestSyncData];
 }
 
-- (void)setOpaque:(BOOL)opaque
-{
-  _opaque = opaque;
-  [self setNeedsDisplay];
-}
-
 - (void)setRenderId:(NSNumber *)renderId
 {
   if ([_nbContentTextures intValue] > 0) {
@@ -178,6 +170,12 @@ RCT_NOT_IMPLEMENTED(-init)
 - (void)setNbContentTextures:(NSNumber *)nbContentTextures
 {
   _nbContentTextures = nbContentTextures;
+}
+
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  CGFloat alpha = CGColorGetAlpha(backgroundColor.CGColor);
+  self.opaque = (alpha == 1.0);
 }
 
 //// Sync methods (called from props setters)
@@ -379,8 +377,6 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)drawRect:(CGRect)rect
 {
-  self.layer.opaque = _opaque;
-
   if (_neverRendered) {
     _neverRendered = false;
     glClearColor(0.0, 0.0, 0.0, 0.0);

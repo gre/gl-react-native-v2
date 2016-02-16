@@ -59,7 +59,7 @@ class Vignette extends React.Component {
     return <Surface
       width={width}
       height={height}
-      opaque={false}
+      backgroundColor="transparent"
       preload
       onStartShouldSetResponder={() => true}
       onMoveShouldSetResponder={() => true}

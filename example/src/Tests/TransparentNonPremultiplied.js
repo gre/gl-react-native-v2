@@ -20,7 +20,7 @@ module.exports = GL.createComponent(
   ({ children: t, ...rest }) =>
   <GL.Node
     {...rest}
-    opaque={false}
+    backgroundColor="transparent"
     shader={shaders.TransparentNonPremultiplied}
     uniforms={{ t }}
   />,
