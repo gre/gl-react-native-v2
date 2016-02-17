@@ -8,7 +8,7 @@
   "dependencies": {
     "crypto": "0.0.3",
     "fbjs": "^0.6.1",
-    "gl-react": "^2.1.6",
+    "gl-react": "^2.2.0",
     "gl-react-blur": "^1.2.2",
     "gl-react-native": "file:..",
     "glsl-transitions": "^2016.2.15",
