@@ -60,10 +60,10 @@ RCT_NOT_IMPLEMENTED(-init)
   return _texture;
 }
 
-- (void)setSrc:(NSString *)src
+- (void)setSource:(RCTImageSource *)source
 {
-  if (![src isEqualToString:_src]) {
-    _src = [src copy];
+  if (![source isEqual:_source]) {
+    _source = source;
     [self reloadImage];
   }
 }
@@ -72,22 +72,15 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   if (_loading) _loading();
   _loading = nil;
-  if (!_src) {
+  if (!_source) {
     [self clearImage];
-  } else {
-
+  }
+  else {
     // Load the image (without resizing it)
-
-    if (![_src hasPrefix:@"http://"] && ![_src hasPrefix:@"https://"]) {
-      self.image = [UIImage imageNamed:_src];
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (_onload) _onload();
-      });
-    } else {
-      _loading = [_bridge.imageLoader loadImageWithTag:_src
+    _loading = [_bridge.imageLoader loadImageWithoutClipping:_source.imageURL.absoluteString
                                        size:CGSizeZero
                                       scale:0
-                                 resizeMode:UIViewContentModeScaleToFill
+                                 resizeMode:RCTResizeModeStretch
                               progressBlock:nil
                             completionBlock:^(NSError *error, UIImage *image) {
                               _loading = nil;
@@ -96,13 +89,13 @@ RCT_NOT_IMPLEMENTED(-init)
                                 NSLog(@"Image failed to load: %@", error);
                               } else {
                                 // we need to copy the image because it seems the image will be altered.
+                                // ^^^ FIXME: check if it's still the case
                                 self.image = [UIImage imageWithCGImage:image.CGImage];
                                 dispatch_async(dispatch_get_main_queue(), ^{
                                   if (_onload) _onload();
                                 });
                               }
                             }];
-    }
   }
 }
 

@@ -11,18 +11,10 @@
 #import "GLImage.h"
 #import "GLRenderData.h"
 #import "UIView+React.h"
+#import "RCTImageSource.h"
 
-NSString* srcResource (id res)
-{
-  NSString *src;
-  if ([res isKindOfClass:[NSString class]]) {
-    src = [RCTConvert NSString:res];
-  } else {
-    BOOL isStatic = [RCTConvert BOOL:res[@"isStatic"]];
-    src = [RCTConvert NSString:res[@"path"]];
-    if (!src || isStatic) src = [RCTConvert NSString:res[@"uri"]];
-  }
-  return src;
+NSString* imageSourceHash (RCTImageSource *is) {
+  return is.imageURL.absoluteString;
 }
 
 NSArray* diff (NSArray* a, NSArray* b) {
@@ -250,26 +242,30 @@ RCT_NOT_IMPLEMENTED(-init)
               textures[uniformName] = fbo.color[0];
             }
             else if ([type isEqualToString:@"uri"]) {
-              NSString *src = srcResource(value);
+              RCTImageSource *src = [RCTConvert RCTImageSource:value];
               if (!src) {
-                RCTLogError(@"texture uniform '%@': Invalid uri format '%@'", uniformName, value);
+                GLTexture *emptyTexture = [[GLTexture alloc] init];
+                [emptyTexture setPixels:nil];
+                textures[uniformName] = emptyTexture;
               }
-
-              GLImage *image = images[src];
-              if (image == nil) {
-                image = prevImages[src];
-                if (image != nil)
-                  images[src] = image;
+              else {
+                NSString *key = imageSourceHash(src);
+                GLImage *image = images[key];
+                if (image == nil) {
+                  image = prevImages[key];
+                  if (image != nil)
+                    images[key] = image;
+                }
+                if (image == nil) {
+                  __weak GLCanvas *weakSelf = self;
+                  image = [[GLImage alloc] initWithBridge:_bridge withOnLoad:^{
+                    if (weakSelf) [weakSelf onImageLoad:src];
+                  }];
+                  image.source = src;
+                  images[key] = image;
+                }
+                textures[uniformName] = [image getTexture];
               }
-              if (image == nil) {
-                __weak GLCanvas *weakSelf = self;
-                image = [[GLImage alloc] initWithBridge:_bridge withOnLoad:^{
-                  if (weakSelf) [weakSelf onImageLoad:src];
-                }];
-                image.src = src;
-                images[src] = image;
-              }
-              textures[uniformName] = [image getTexture];
             }
             else {
               RCTLogError(@"texture uniform '%@': Unexpected type '%@'", uniformName, type);
@@ -354,7 +350,7 @@ RCT_NOT_IMPLEMENTED(-init)
 - (BOOL)haveRemainingToPreload
 {
   for (id res in _imagesToPreload) {
-    if (![_preloaded containsObject:srcResource(res)]) {
+    if (![_preloaded containsObject:imageSourceHash([RCTConvert RCTImageSource:res])]) {
       return true;
     }
   }
@@ -552,9 +548,9 @@ RCT_NOT_IMPLEMENTED(-init)
 
 //// utility methods
 
-- (void)onImageLoad:(NSString *)loaded
+- (void)onImageLoad:(RCTImageSource *)source
 {
-  [_preloaded addObject:loaded];
+  [_preloaded addObject:imageSourceHash(source)];
   int count = [self countPreloaded];
   int total = (int) [_imagesToPreload count];
   double progress = ((double) count) / ((double) total);
@@ -567,7 +563,7 @@ RCT_NOT_IMPLEMENTED(-init)
 {
   int nb = 0;
   for (id toload in _imagesToPreload) {
-    if ([_preloaded containsObject:srcResource(toload)])
+    if ([_preloaded containsObject:imageSourceHash([RCTConvert RCTImageSource:toload])])
       nb++;
   }
   return nb;
