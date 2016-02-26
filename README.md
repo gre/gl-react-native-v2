@@ -24,6 +24,12 @@ npm i --save gl-react-native
 
 ![](https://github.com/ProjectSeptemberInc/gl-react-native/raw/master/docs/install-steps.png)
 
+or if you use Cocapods:
+
+```ruby
+pod 'RNGL', :path => './node_modules/gl-react-native'
+```
+
 **on Android:**
 
 1. `android/settings.gradle`:: Add the following snippet
