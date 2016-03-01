@@ -37,21 +37,22 @@ pod 'RNGL', :path => './node_modules/gl-react-native'
 include ':RNGL'
 project(':RNGL').projectDir = file('../node_modules/gl-react-native/android')
 ```
-1. `android/app/build.gradle`: Add in dependencies block.
+2. `android/app/build.gradle`: Add in dependencies block.
 ```gradle
 compile project(':RNGL')
 ```
-1. in your `MainActivity` (or equivalent):
+3. in your `MainActivity` (or equivalent) the RNGLPackage needs to be added. Add the import at the top:
 ```java
 import com.projectseptember.RNGL.RNGLPackage;
-...
-
-mReactInstanceManager = ReactInstanceManager.builder()
-    .setApplication(getApplication())
-    ...
-    .addPackage(new MainReactPackage())
-    .addPackage(new RNGLPackage())
-    ...
-    .build();
-
+```
+4. In order for React Native to use the package, add it the packages inside of the class extending ReactActivity.
+```java
+@Override
+protected List<ReactPackage> getPackages() {
+  return Arrays.<ReactPackage>asList(
+	new MainReactPackage(), 
+	...
+	new RNGLPackage()
+  );
+}
 ```
