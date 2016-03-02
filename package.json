@@ -19,7 +19,7 @@
   "author": "Project September <tech@projectseptember.com>",
   "license": "MIT",
   "peerDependencies": {
-    "react-native": "^0.20.0",
+    "react-native": "^0.21.0",
     "gl-react": "^2.2.0"
   },
   "dependencies": {
