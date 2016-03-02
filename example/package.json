@@ -13,7 +13,7 @@
     "gl-react-native": "file:..",
     "glsl-transitions": "^2016.2.15",
     "react": "^0.14.7",
-    "react-native": "^0.20.0",
+    "react-native": "^0.21.0",
     "react-native-fs": "^1.2.0",
     "react-native-material-kit": "^0.3.0",
     "react-transform-hmr": "^1.0.2",
