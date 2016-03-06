@@ -141,6 +141,10 @@ class Tests extends React.Component {
           <HelloGL width={2} height={2} pixelRatio={1} />
         </Surface>
 
+        <Surface style={{ borderRadius: 50 }} width={debugSize} height={debugSize}>
+          <HelloGL />
+        </Surface>
+
       </View>
 
     </ScrollView>;
