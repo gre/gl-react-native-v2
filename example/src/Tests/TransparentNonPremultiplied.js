@@ -1,5 +1,5 @@
-const GL = require("gl-react");
-const React = require("react");
+import GL from "gl-react";
+import React from "react";
 
 const shaders = GL.Shaders.create({
   TransparentNonPremultiplied: {

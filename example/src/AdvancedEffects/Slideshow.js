@@ -1,9 +1,8 @@
-const React = require("react-native");
-const { View, Text, StyleSheet } = React;
-const GL = require("gl-react");
-const {Surface} = require("gl-react-native");
-const TransitionGenerator = require("./TransitionGenerator");
-const Transition = require("./Transition");
+import React, { View, Text, StyleSheet } from "react-native";
+import GL from "gl-react";
+import {Surface} from "gl-react-native";
+import TransitionGenerator from "./TransitionGenerator";
+import Transition from "./Transition";
 
 const shaders = GL.Shaders.create(TransitionGenerator.shaders);
 

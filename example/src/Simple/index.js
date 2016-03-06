@@ -1,5 +1,4 @@
-const React = require("react-native");
-const {
+import React, {
   StyleSheet,
   Text,
   View,
@@ -7,9 +6,9 @@ const {
   TextInput,
   Component,
   TouchableOpacity,
-} = React;
+} from "react-native";
 
-const { Surface } = require("gl-react-native");
+import { Surface } from "gl-react-native";
 
 const {
   mdl: {
@@ -20,16 +19,15 @@ const {
   MKButton,
 } = require("react-native-material-kit");
 
-const RNFS = require("react-native-fs");
-
-const HelloGL = require("./HelloGL");
-const Saturation = require("./Saturation");
-const HueRotate = require("./HueRotate");
-const PieProgress = require("./PieProgress");
-const OneFingerResponse = require("./OneFingerResponse");
-const AnimatedHelloGL = require("./AnimatedHelloGL");
-const {Blur} = require("gl-react-blur");
-const Button = require("./Button");
+import RNFS from "react-native-fs";
+import HelloGL from "./HelloGL";
+import Saturation from "./Saturation";
+import HueRotate from "./HueRotate";
+import PieProgress from "./PieProgress";
+import OneFingerResponse from "./OneFingerResponse";
+import AnimatedHelloGL from "./AnimatedHelloGL";
+import {Blur} from "gl-react-blur";
+import Button from "./Button";
 
 class Demo extends Component {
   render () {

@@ -1,7 +1,8 @@
-const invariant = require("invariant");
-const { Shaders } = require("gl-react");
-const Surface = require("./Surface");
-const { NativeModules: { RNGLContext } } = require("react-native");
+import invariant from "invariant";
+import { Shaders } from "gl-react";
+import Surface from "./Surface";
+import {NativeModules} from "react-native";
+const {RNGLContext} = NativeModules;
 invariant(RNGLContext,
 `gl-react-native: the native module is not available.
 Make sure you have properly configured it.

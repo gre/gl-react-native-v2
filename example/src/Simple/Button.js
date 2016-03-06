@@ -1,12 +1,10 @@
-const React = require("react-native");
-
-const {
+import React, {
   StyleSheet,
   Component,
   View,
   Text,
   TouchableOpacity
-} = React;
+} from "react-native";
 
 const styles = StyleSheet.create({
   root: {

@@ -1,16 +1,14 @@
-const React = require("react-native");
-const {
+import React, {
   StyleSheet,
   View,
-} = React;
+} from "react-native";
 const { width: viewportW, height: viewportH } = require("Dimensions").get("window");
 
-const resolveAssetSource = require("react-native/Libraries/Image/resolveAssetSource");
-
-const Banner = require("./Banner");
-const Intro = require("./Intro");
-const Vignette = require("./Vignette");
-const Slideshow = require("./Slideshow");
+import resolveAssetSource from "react-native/Libraries/Image/resolveAssetSource";
+import Banner from "./Banner";
+import Intro from "./Intro";
+import Vignette from "./Vignette";
+import Slideshow from "./Slideshow";
 
 class AdvancedEffects extends React.Component {
 

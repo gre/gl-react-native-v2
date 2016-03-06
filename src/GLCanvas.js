@@ -1,11 +1,10 @@
-const invariant = require("invariant");
-const React = require("react-native");
-const {
+import invariant from "invariant";
+import React, {
   Component,
   requireNativeComponent,
-} = React;
-const defer = require("promise-defer");
-const captureFrame = require("./GLCanvas.captureFrame");
+} from "react-native";
+import defer from "promise-defer";
+import captureFrame from "./GLCanvas.captureFrame";
 
 const serializeOption = config =>
 config.format + ":" + config.type + ":" + config.quality;

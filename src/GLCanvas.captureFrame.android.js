@@ -1,8 +1,6 @@
-const invariant = require("invariant");
-const React = require("react-native");
-const {
-  NativeModules: { UIManager }
-} = React;
+import invariant from "invariant";
+import {NativeModules} from "react-native";
+const {UIManager} = NativeModules;
 const {GLCanvas} = UIManager;
 invariant(GLCanvas,
 `gl-react-native: the native module is not available.

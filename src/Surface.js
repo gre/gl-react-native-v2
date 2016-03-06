@@ -1,12 +1,13 @@
-const invariant = require("invariant");
-const {createSurface} = require("gl-react");
-invariant(typeof createSurface === "function", "gl-react createSurface is not a function. Check your gl-react dependency");
-const React = require("react-native");
-const {
+import invariant from "invariant";
+import {createSurface} from "gl-react";
+import React, {
   View,
   PixelRatio
-} = React;
-const GLCanvas = require("./GLCanvas");
+} from "react-native";
+import GLCanvas from "./GLCanvas";
+
+invariant(typeof createSurface === "function",
+"gl-react createSurface is not a function. Check your gl-react dependency");
 
 const getPixelRatio = props => props.scale || PixelRatio.get();
 

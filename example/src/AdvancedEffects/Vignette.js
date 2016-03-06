@@ -1,6 +1,6 @@
-const React = require("react-native");
-const GL = require("gl-react");
-const {Surface} = require("gl-react-native");
+import React from "react-native";
+import GL from "gl-react";
+import {Surface} from "gl-react-native";
 
 const shaders = GL.Shaders.create({
   imageVignette: {

@@ -1,21 +1,21 @@
-const React = require("react-native");
-const {
+import React, {
   Text,
   View,
   ScrollView,
   Image,
-} = React;
-const { Surface } = require("gl-react-native");
-const {Blur} = require("gl-react-blur");
-const Add = require("./Add");
-const Multiply = require("./Multiply");
-const Layer = require("./Layer");
-const NativeLayer = require("./NativeLayer");
-const HelloGL = require("./HelloGL");
-const Display2 = require("./Display2");
-const Copy = require("./Copy");
-const TransparentNonPremultiplied = require("./TransparentNonPremultiplied");
-const { width: viewportW, height: viewportH } = require("Dimensions").get("window");
+} from "react-native";
+import {Surface} from "gl-react-native";
+import {Blur} from "gl-react-blur";
+import Add from "./Add";
+import Multiply from "./Multiply";
+import Layer from "./Layer";
+import NativeLayer from "./NativeLayer";
+import HelloGL from "./HelloGL";
+import Display2 from "./Display2";
+import Copy from "./Copy";
+import TransparentNonPremultiplied from "./TransparentNonPremultiplied";
+import Dimensions from "Dimensions";
+const { width: viewportW, height: viewportH } = Dimensions.get("window");
 
 class Tests extends React.Component {
 

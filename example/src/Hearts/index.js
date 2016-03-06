@@ -1,13 +1,13 @@
-const React = require("react-native");
-const {
+import React, {
   StyleSheet,
   ListView,
   Component,
-} = React;
-const seedrandom = require("seedrandom");
-const { width: viewportWidth } = require("Dimensions").get("window");
-const {Surface} = require("gl-react-native");
-const Heart = require("./Heart");
+} from "react-native";
+import seedrandom from "seedrandom";
+import Dimensions from "Dimensions";
+const { width: viewportWidth } = Dimensions.get("window");
+import {Surface} from "gl-react-native";
+import Heart from "./Heart";
 
 const sameColor = ([r,g,b], [R,G,B]) =>
   r===R && g===G && b===B;

@@ -1,7 +1,4 @@
-const React = require("react-native");
-const {
-  View
-} = React;
+import React, { View } from "react-native";
 
 class NativeLayer extends React.Component {
   render () {

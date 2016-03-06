@@ -1,6 +1,5 @@
 import GL from "gl-react";
-import React from "react";
-const {PropTypes} = React;
+import React, {PropTypes} from "react";
 
 const shaders = GL.Shaders.create({
   Heart: { // inspired from http://glslsandbox.com/e#29521.0

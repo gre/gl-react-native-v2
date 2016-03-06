@@ -1,4 +1,4 @@
-const GlslTransitions = require("glsl-transitions");
+import GlslTransitions from "glsl-transitions";
 const byName = {};
 GlslTransitions.forEach(function (t) {
   byName[t.name] = t;
