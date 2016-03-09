@@ -49,13 +49,17 @@ RCT_EXPORT_MODULE()
 withConfig:(NSDictionary *)config
 withOnCompile:(RCTResponseSenderBlock)onCompile
 {
+  NSString *vert = [RCTConvert NSString:config[@"vert"]];
   NSString *frag = [RCTConvert NSString:config[@"frag"]];
   NSString *name = [RCTConvert NSString:config[@"name"]];
+  if (!vert) {
+    vert = fullViewportVert;
+  }
   if (!frag) {
     RCTLogError(@"Shader '%@': missing frag field", name);
     return;
   }
-  GLShader *shader = [[GLShader alloc] initWithContext:_context withName:name withVert:fullViewportVert withFrag:frag];
+  GLShader *shader = [[GLShader alloc] initWithContext:_context withName:name withVert:vert withFrag:frag];
   NSError *error;
   bool success = [shader ensureCompiles:&error];
   if (onCompile) {
@@ -112,13 +116,17 @@ NSDictionary* glTypesString (NSDictionary *types) {
 RCT_EXPORT_METHOD(addShader:(nonnull NSNumber *)id
                   withConfig:(NSDictionary *)config
                   withOnCompile:(RCTResponseSenderBlock)onCompile) {
+  NSString *vert = [RCTConvert NSString:config[@"vert"]];
   NSString *frag = [RCTConvert NSString:config[@"frag"]];
   NSString *name = [RCTConvert NSString:config[@"name"]];
+  if (!vert) {
+    vert = fullViewportVert;
+  }
   if (!frag) {
     RCTLogError(@"Shader '%@': missing frag field", name);
     return;
   }
-  GLShader *shader = [[GLShader alloc] initWithContext:_context withName:name withVert:fullViewportVert withFrag:frag];
+  GLShader *shader = [[GLShader alloc] initWithContext:_context withName:name withVert:vert withFrag:frag];
   NSError *error;
   bool success = [shader ensureCompiles:&error];
   if (onCompile) {
