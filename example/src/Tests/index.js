@@ -13,6 +13,8 @@ import NativeLayer from "./NativeLayer";
 import HelloGL from "./HelloGL";
 import Display2 from "./Display2";
 import Copy from "./Copy";
+import ColoredDisc from "./ColoredDisc";
+import DiamondCrop from "./DiamondCrop";
 import TransparentNonPremultiplied from "./TransparentNonPremultiplied";
 import Dimensions from "Dimensions";
 const { width: viewportW, height: viewportH } = Dimensions.get("window");
@@ -143,6 +145,12 @@ class Tests extends React.Component {
 
         <Surface style={{ borderRadius: 50 }} width={debugSize} height={debugSize}>
           <HelloGL />
+        </Surface>
+
+        <Surface style={{ margin: 4 }} width={300} height={300}>
+          <Blur passes={6} factor={2}>
+            http://i.imgur.com/rkiglmm.jpg
+          </Blur>
         </Surface>
 
       </View>
