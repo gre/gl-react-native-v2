@@ -1,13 +1,5 @@
-import React, {
-  StyleSheet,
-  Component,
-  View,
-  PropTypes,
-  Text,
-  TouchableOpacity,
-  Navigator,
-  AsyncStorage,
-} from "react-native";
+import React, {Component, PropTypes} from "react";
+import {StyleSheet, View, Text, TouchableOpacity, Navigator, AsyncStorage} from "react-native";
 
 const screens = {
   Simple: require("./Simple"),

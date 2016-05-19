@@ -1,4 +1,5 @@
-import React, {PanResponder, UIManager} from "react-native";
+import React from "react";
+import {PanResponder, UIManager, findNodeHandle} from "react-native";
 import GL from "gl-react";
 import {Surface} from "gl-react-native";
 
@@ -38,7 +39,7 @@ class OneFingerResponse extends React.Component {
 
       onPanResponderGrant: (evt, gestureState) =>
         UIManager.measure(
-          React.findNodeHandle(this.refs.surface),
+          findNodeHandle(this.refs.surface),
           (a, b, w, h, x, y) =>
             this.setState({
               pressed: 1,

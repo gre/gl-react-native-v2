@@ -1,4 +1,5 @@
-import React, {Animated} from "react-native";
+import React from "react";
+import {Animated} from "react-native";
 import GL from "gl-react";
 import {Surface} from "gl-react-native";
 

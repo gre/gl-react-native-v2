@@ -7,15 +7,14 @@
   },
   "dependencies": {
     "crypto": "0.0.3",
-    "fbjs": "^0.6.1",
     "gl-react": "^2.2.0",
     "gl-react-blur": "^1.2.2",
     "gl-react-native": "file:..",
     "glsl-transitions": "^2016.2.15",
-    "react": "^0.14.7",
-    "react-native": "^0.24.0",
-    "react-native-fs": "^1.2.0",
-    "react-native-material-kit": "^0.3.0",
+    "react": "^0.14.8",
+    "react-native": "^0.25.1",
+    "react-native-fs": "^1.4.0",
+    "react-native-material-kit": "PyYoshi/react-native-material-kit#rn-0.25.1",
     "react-transform-hmr": "^1.0.2",
     "seedrandom": "gre/seedrandom#released"
   }

@@ -22,7 +22,7 @@
 .*/node_modules/fbjs/lib/crc32.js
 .*/node_modules/fbjs/lib/ErrorUtils.js
 
-# Flow has a built-in definition for the 'react' module which we prefer to use
+# Flow has a built-in definition for the "react" module which we prefer to use
 # over the currently-untyped source
 .*/node_modules/react/react.js
 .*/node_modules/react/lib/React.js

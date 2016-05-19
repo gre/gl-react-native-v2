@@ -1,9 +1,5 @@
-import React, {
-  Text,
-  View,
-  ScrollView,
-  Image,
-} from "react-native";
+import React from "react";
+import {Text, View, ScrollView, Image} from "react-native";
 import {Surface} from "gl-react-native";
 import {Blur} from "gl-react-blur";
 import Add from "./Add";

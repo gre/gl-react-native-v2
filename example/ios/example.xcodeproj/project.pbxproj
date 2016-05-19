@@ -23,7 +23,7 @@
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		3469C4C71C723AD300AE6E0E /* libRCTMaterialKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3469C4C61C723AC400AE6E0E /* libRCTMaterialKit.a */; };
 		3469C4C81C723AD300AE6E0E /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3469C4C01C723ABC00AE6E0E /* libRNFS.a */; };
-		3469C4C91C723AD300AE6E0E /* libRNGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3469C4BA1C723AB400AE6E0E /* libRNGL.a */; };
+		34BA81381CEDCC6100FCF175 /* libRNGL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3469C4BA1C723AB400AE6E0E /* libRNGL.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 /* End PBXBuildFile section */
 
@@ -167,9 +167,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34BA81381CEDCC6100FCF175 /* libRNGL.a in Frameworks */,
 				3469C4C71C723AD300AE6E0E /* libRCTMaterialKit.a in Frameworks */,
 				3469C4C81C723AD300AE6E0E /* libRNFS.a in Frameworks */,
-				3469C4C91C723AD300AE6E0E /* libRNGL.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,

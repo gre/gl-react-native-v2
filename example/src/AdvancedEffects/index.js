@@ -1,7 +1,5 @@
-import React, {
-  StyleSheet,
-  View,
-} from "react-native";
+import React from "react";
+import {StyleSheet, View} from "react-native";
 const { width: viewportW, height: viewportH } = require("Dimensions").get("window");
 
 import resolveAssetSource from "react-native/Libraries/Image/resolveAssetSource";

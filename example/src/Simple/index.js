@@ -1,12 +1,5 @@
-import React, {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TextInput,
-  Component,
-  TouchableOpacity,
-} from "react-native";
+import React, {Component} from "react";
+import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity} from "react-native";
 
 import { Surface } from "gl-react-native";
 

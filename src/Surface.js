@@ -1,9 +1,7 @@
 import invariant from "invariant";
 import {createSurface} from "gl-react";
-import React, {
-  View,
-  PixelRatio
-} from "react-native";
+import React from "react";
+import {View, PixelRatio} from "react-native";
 import GLCanvas from "./GLCanvas";
 
 invariant(typeof createSurface === "function",

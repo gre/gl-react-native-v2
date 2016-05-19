@@ -8,7 +8,7 @@ invariant(RNGLContext,
 Make sure you have properly configured it.
 See README install instructions.
 
-React.NativeModules.RNGLContext is %s`, RNGLContext);
+NativeModules.RNGLContext is %s`, RNGLContext);
 
 // Hook Shaders to RNGLContext
 Shaders.setImplementation({

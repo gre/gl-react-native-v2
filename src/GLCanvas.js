@@ -1,8 +1,6 @@
 import invariant from "invariant";
-import React, {
-  Component,
-  requireNativeComponent,
-} from "react-native";
+import React, {Component} from "react";
+import {requireNativeComponent, findNodeHandle} from "react-native";
 import defer from "promise-defer";
 import captureFrame from "./GLCanvas.captureFrame";
 
@@ -36,7 +34,7 @@ class GLCanvas extends Component {
   _addPendingCaptureFrame (config) {
     const key = serializeOption(config);
     return this._pendingCaptureFrame[key] || (
-      (captureFrame(React.findNodeHandle(this.refs.native), config),
+      (captureFrame(findNodeHandle(this.refs.native), config),
       this._pendingCaptureFrame[key] = defer())
     );
   }

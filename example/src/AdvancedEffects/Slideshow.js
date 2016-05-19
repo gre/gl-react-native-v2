@@ -1,4 +1,5 @@
-import React, { View, Text, StyleSheet } from "react-native";
+import React from "react";
+import {View, Text, StyleSheet} from "react-native";
 import GL from "gl-react";
 import {Surface} from "gl-react-native";
 import TransitionGenerator from "./TransitionGenerator";

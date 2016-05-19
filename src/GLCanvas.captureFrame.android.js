@@ -7,7 +7,7 @@ invariant(GLCanvas,
 Make sure you have properly configured it.
 See README install instructions.
 
-React.NativeModules.UIManager.GLCanvas is %s`, GLCanvas);
+NativeModules.UIManager.GLCanvas is %s`, GLCanvas);
 const {Commands} = GLCanvas;
 
 module.exports = (handle, config) => UIManager.dispatchViewManagerCommand(handle, Commands.captureFrame, [ config ]);

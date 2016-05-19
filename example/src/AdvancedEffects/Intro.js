@@ -1,8 +1,8 @@
-import React from "react-native";
-const {
+import React from "react";
+import {
   View,
   Text,
-} = React;
+} from "react-native";
 import GL from "gl-react";
 import {Surface} from "gl-react-native";
 

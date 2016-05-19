@@ -1,8 +1,5 @@
-import React, {
-  StyleSheet,
-  ListView,
-  Component,
-} from "react-native";
+import React, {Component} from "react";
+import {StyleSheet, ListView} from "react-native";
 import seedrandom from "seedrandom";
 import Dimensions from "Dimensions";
 const { width: viewportWidth } = Dimensions.get("window");

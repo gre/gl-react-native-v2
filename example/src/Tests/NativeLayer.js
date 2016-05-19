@@ -1,4 +1,5 @@
-import React, { View } from "react-native";
+import React from "react";
+import {View} from "react-native";
 
 class NativeLayer extends React.Component {
   render () {
