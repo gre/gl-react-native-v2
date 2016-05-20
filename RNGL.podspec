@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "RNGL"
-  s.version      = "2.25.0"
+  s.version      = "2.26.0"
   s.homepage     = "https://github.com/ProjectSeptemberInc/gl-react-native"
   s.platform     = :ios, "8.0"
   s.source       = { :git => "https://github.com/ProjectSeptemberInc/gl-react-native.git" }
