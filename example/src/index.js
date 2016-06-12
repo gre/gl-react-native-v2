@@ -1,12 +1,13 @@
 import React, {Component, PropTypes} from "react";
 import {StyleSheet, View, Text, TouchableOpacity, Navigator, AsyncStorage} from "react-native";
 
-const screens = {
-  Simple: require("./Simple"),
-  AdvancedEffects: require("./AdvancedEffects"),
-  Hearts: require("./Hearts"),
-  Tests: require("./Tests"),
-};
+import Simple from "./Simple";
+import AdvancedEffects from "./AdvancedEffects";
+import Hearts from "./Hearts";
+import Tests from "./Tests";
+import Animated from "./Animated";
+
+const screens = { Simple, AdvancedEffects, Hearts, Tests, Animated };
 
 const homeRoute = {
   id: "home",
@@ -18,6 +19,7 @@ const routes = [
   { id: "AdvancedEffects" },
   { id: "Hearts" },
   { id: "Tests" },
+  { id: "Animated" },
 ];
 
 const styles = StyleSheet.create({

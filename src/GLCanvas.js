@@ -104,6 +104,7 @@ class GLCanvas extends Component {
       width, height,
       onLoad, onProgress, eventsThrough,
       ...restProps } = this.props;
+
     return <GLCanvasNative
       ref="native"
       {...restProps}

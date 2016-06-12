@@ -1,7 +1,9 @@
 import invariant from "invariant";
 import { Shaders } from "gl-react";
-import Surface from "./Surface";
-import {NativeModules} from "react-native";
+import isAnimated from "gl-react/src/isAnimated";
+import makeSurface from "./makeSurface";
+import GLCanvas from "./GLCanvas";
+import {NativeModules, View, Animated} from "react-native";
 const {RNGLContext} = NativeModules;
 invariant(RNGLContext,
 `gl-react-native: the native module is not available.
@@ -22,5 +24,21 @@ Shaders.setImplementation({
 });
 
 module.exports = {
-  Surface
+  Surface: makeSurface({
+    View,
+    GLCanvas,
+    dimensionInvariant: (value, field) =>
+      isAnimated(value)
+      ? invariant(false, "GL.Surface "+field+" prop cannot be an Animated object. Use GL.AnimatedSurface instead")
+      : invariant(typeof value === "number" && value > 0, "GL.Surface: "+field+" prop must be a strictly positive number")
+  }),
+  AnimatedSurface: makeSurface({
+    View: Animated.View,
+    GLCanvas: Animated.createAnimatedComponent(GLCanvas),
+    dimensionInvariant: (value, field) =>
+      invariant(
+        isAnimated(value) || typeof value === "number" && value > 0,
+        "GL.AnimatedSurface: "+field+" must be a strictly positive number OR an Animated object"
+      )
+  }),
 };
