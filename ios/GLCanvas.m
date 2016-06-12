@@ -520,7 +520,7 @@ RCT_NOT_IMPLEMENTED(-init)
       RCT_PROFILE_BEGIN_EVENT(0, @"draw", nil);
       glClearColor(0.0, 0.0, 0.0, 0.0);
       glClear(GL_COLOR_BUFFER_BIT);
-      glDrawArrays(GL_TRIANGLES, 0, 6);
+      glDrawArrays(GL_TRIANGLES, 0, 3);
       RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
       RCT_PROFILE_END_EVENT(0, @"gl", nil);

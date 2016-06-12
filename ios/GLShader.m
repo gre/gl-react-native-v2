@@ -389,11 +389,8 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
   GLfloat buf[] = {
     -1.0, -1.0,
-    1.0, -1.0,
-    -1.0,  1.0,
-    -1.0,  1.0,
-    1.0, -1.0,
-    1.0,  1.0
+    -1.0, 4.0,
+     4.0,  -1.0
   };
   glBufferData(GL_ARRAY_BUFFER, sizeof(buf), buf, GL_STATIC_DRAW);
     

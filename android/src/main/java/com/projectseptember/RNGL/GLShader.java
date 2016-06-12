@@ -189,12 +189,9 @@ public class GLShader {
         glBindBuffer(GL_ARRAY_BUFFER, buffer[0]);
 
         float buf[] = {
-                -1.0f, -1.0f,
-                1.0f, -1.0f,
-                -1.0f,  1.0f,
-                -1.0f,  1.0f,
-                1.0f, -1.0f,
-                1.0f,  1.0f
+            -1.0f, -1.0f,
+            -1.0f, 4.0f,
+             4.0f,  -1.0f
         };
         FloatBuffer bufferData = ByteBuffer.allocateDirect(buf.length * 4)
                 .order(ByteOrder.nativeOrder())
