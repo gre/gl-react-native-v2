@@ -40,8 +40,10 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
   GLuint program; // Program of the shader
   GLuint buffer; // the buffer currently contains 2 static triangles covering the surface
   GLint pointerLoc; // The "pointer" attribute is used to iterate over vertex
-  NSDictionary *_uniformTypes; // The types of the GLSL uniforms (N.B: array are not supported)
+  NSDictionary *_uniformTypes; // The types of the GLSL uniforms
+  NSDictionary *_uniformSizes; // The size of the uniform variable
   NSDictionary *_uniformLocations; // The uniform locations cache
+  NSArray *__uniformNames; // The uniforms names
   NSError *_error;
 }
 
@@ -95,13 +97,28 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
 
 - (void) setUniform: (NSString *)name withValue:(id)value
 {
+  GLint size = [_uniformSizes[name] intValue];
+  GLenum type = [_uniformTypes[name] intValue];
+  if (size != 1) {
+    NSArray *v = [RCTConvert NSArray:value];
+    if (!v || [v count]!=size) {
+      RCTLogError(@"Shader '%@': uniform '%@' should be an array of %i elements", _name, name, size);
+      return;
+    }
+    for (int i=0; i<size; i++) {
+      NSString *indexName = [NSString stringWithFormat:@"%@[%i]", name, i];
+      id indexValue = v[i];
+      [self setUniform:indexName withValue:indexValue];
+    }
+    return;
+  }
+  
   if ([_uniformLocations objectForKey:name] == nil) {
     RCTLogError(@"Shader '%@': uniform '%@' does not exist", _name, name);
     return;
   }
   GLint location = [_uniformLocations[name] intValue];
-  GLenum type = [_uniformTypes[name] intValue];
-
+  
   switch (type)
   {
     case GL_FLOAT: {
@@ -318,8 +335,10 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
 
 - (void) computeMeta
 {
-  NSMutableDictionary *uniforms = @{}.mutableCopy;
+  NSMutableArray *uniformNames = [[NSMutableArray alloc] init];
+  NSMutableDictionary *uniformTypes = @{}.mutableCopy;
   NSMutableDictionary *locations = @{}.mutableCopy;
+  NSMutableDictionary *sizes = @{}.mutableCopy;
   int nbUniforms;
   GLchar name[256];
   GLenum type;
@@ -328,14 +347,33 @@ GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shade
   glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &nbUniforms);
   for (int i=0; i<nbUniforms; i++) {
     glGetActiveUniform(program, i, sizeof(name), &length, &size, &type, name);
-    GLint location = glGetUniformLocation(program, name);
     NSString *uniformName = [NSString stringWithUTF8String:name];
-    uniforms[uniformName] = [NSNumber numberWithInt:type];
-    locations[uniformName] = [NSNumber numberWithInt:location];
-
+    if ([uniformName containsString:@"[0]"]) {
+      uniformName = [uniformName substringToIndex:[uniformName length]-3];
+    }
+    uniformTypes[uniformName] = [NSNumber numberWithInt:type];
+    sizes[uniformName] = [NSNumber numberWithInt:size];
+    [uniformNames addObject:uniformName];
+    
+    if (size == 1) {
+      GLint location = glGetUniformLocation(program, name);
+      locations[uniformName] = [NSNumber numberWithInt:location];
+    }
+    else {
+      for (int j=0; j<size; j++) {
+        NSString *uniformIndexName = [NSString stringWithFormat:@"%@[%i]", uniformName, j];
+        GLint location = glGetUniformLocation(program, [uniformIndexName UTF8String]);
+        locations[uniformIndexName] = [NSNumber numberWithInt:location];
+        uniformTypes[uniformIndexName] = [NSNumber numberWithInt:type];
+        sizes[uniformIndexName] = [NSNumber numberWithInt:1];
+      }
+    }
   }
-  _uniformTypes = uniforms;
+  
+  _uniformTypes = uniformTypes;
   _uniformLocations = locations;
+  _uniformSizes = sizes;
+  _uniformNames = uniformNames;
 }
 
 - (bool) ensureCompiles: (NSError **)error

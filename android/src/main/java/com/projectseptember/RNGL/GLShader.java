@@ -7,7 +7,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GLShader {
@@ -16,10 +18,12 @@ public class GLShader {
     private final String vert;
     private final String frag;
     private Map<String, Integer> uniformTypes;
+    private List<String> uniformNames;
     private int program; // Program of the shader
     private int buffer[]; // the buffer currently contains 2 static triangles covering the surface
     private int pointerLoc; // The "pointer" attribute is used to iterate over vertex
     private Map<String, Integer> uniformLocations; // The uniform locations cache
+    private Map<String, Integer> uniformSizes; // The size of the uniform variable
 
     private Integer id;
     private RNGLContext rnglContext;
@@ -76,6 +80,7 @@ public class GLShader {
         glUniform1f(uniformLocations.get(name), f);
     }
     public void setUniform (String name, FloatBuffer buf, int type) {
+        System.out.println("setUniform "+name);
         switch (type) {
             case GL_FLOAT_VEC2:
                 glUniform2fv(uniformLocations.get(name), 1, buf);
@@ -125,7 +130,10 @@ public class GLShader {
     public Map<String, Integer> getUniformTypes() {
         return uniformTypes;
     }
-
+    public Map<String, Integer> getUniformSizes() {
+        return uniformSizes;
+    }
+    public List<String> getUniformNames() { return uniformNames; }
 
     private int compileShader (String code, int shaderType) {
         int shaderHandle = glCreateShader(shaderType);
@@ -143,19 +151,42 @@ public class GLShader {
     private void computeMeta () {
         Map<String, Integer> uniforms = new HashMap<>();
         Map<String, Integer> locations = new HashMap<>();
+        Map<String, Integer> sizes = new HashMap<>();
+        ArrayList<String> uniformNames = new ArrayList<>();
 
         int[] nbUniforms = new int[1];
-        int[] type = new int[1];
-        int[] size = new int[1];
+        int[] typePointer = new int[1];
+        int[] sizePointer = new int[1];
         glGetProgramiv(program, GL_ACTIVE_UNIFORMS, nbUniforms, 0);
         for (int i=0; i < nbUniforms[0]; i++) {
-            String uniformName = glGetActiveUniform(program, i, size, 0, type, 0);
-            int location = glGetUniformLocation(program, uniformName);
-            uniforms.put(uniformName, type[0]);
-            locations.put(uniformName, location);
+            String uniformName = glGetActiveUniform(program, i, sizePointer, 0, typePointer, 0);
+            int size = sizePointer[0];
+            int type = typePointer[0];
+            if (uniformName.contains("[0]")) {
+                uniformName = uniformName.substring(0, uniformName.length()-3);
+            }
+            uniformNames.add(uniformName);
+            uniforms.put(uniformName, type);
+            sizes.put(uniformName, size);
+            if (size == 1) {
+                int location = glGetUniformLocation(program, uniformName);
+                locations.put(uniformName, location);
+            }
+            else {
+                for (int j=0; j<size; j++) {
+                    String uniformIndexName = uniformName+ "[" + j + "]";
+                    int location = glGetUniformLocation(program, uniformIndexName);
+                    locations.put(uniformIndexName, location);
+                    uniforms.put(uniformIndexName, type);
+                    sizes.put(uniformIndexName, 1);
+                }
+            }
+
         }
         this.uniformTypes = uniforms;
         this.uniformLocations = locations;
+        this.uniformSizes = sizes;
+        this.uniformNames = uniformNames;
     }
 
     private void makeProgram () throws GLShaderCompilationFailed {

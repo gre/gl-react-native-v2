@@ -283,7 +283,7 @@ RCT_NOT_IMPLEMENTED(-init)
         RCTLogError(@"Maximum number of texture reach. got %i >= max %i", units, maxTextureUnits);
       }
 
-      for (NSString *uniformName in shader.uniformTypes) {
+      for (NSString *uniformName in shader.uniformNames) {
         if (uniforms[uniformName] == nil) {
           RCTLogError(@"All defined uniforms must be provided. Missing '%@'", uniformName);
         }

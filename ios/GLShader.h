@@ -14,6 +14,7 @@ NS_ENUM(NSInteger) {
 @property EAGLContext *context;
 @property NSString *vert;
 @property NSString *frag;
+@property NSArray *uniformNames;
 @property NSDictionary *uniformTypes;
 
 /**

@@ -469,12 +469,15 @@ public class GLCanvas extends GLSurfaceView
         }
 
         Map<String, Integer> uniformTypes = shader.getUniformTypes();
+        List<String> uniformNames = shader.getUniformNames();
+        Map<String, Integer> uniformSizes = shader.getUniformSizes();
 
         int units = 0;
         ReadableMapKeySetIterator iterator = data.uniforms.keySetIterator();
         while (iterator.hasNextKey()) {
             String uniformName = iterator.nextKey();
             int type = uniformTypes.get(uniformName);
+            int size = uniformSizes.get(uniformName);
 
             ReadableMap dataUniforms = data.uniforms;
 
@@ -530,57 +533,120 @@ public class GLCanvas extends GLSurfaceView
                 }
             }
             else {
-                switch (type) {
-                    case GL_INT:
-                        uniformsInteger.put(uniformName, dataUniforms.getInt(uniformName));
-                        break;
+                if (size == 1) {
+                    switch (type) {
+                        case GL_INT:
+                            uniformsInteger.put(uniformName, dataUniforms.getInt(uniformName));
+                            break;
 
-                    case GL_BOOL:
-                        uniformsInteger.put(uniformName, dataUniforms.getBoolean(uniformName) ? 1 : 0);
-                        break;
+                        case GL_BOOL:
+                            uniformsInteger.put(uniformName, dataUniforms.getBoolean(uniformName) ? 1 : 0);
+                            break;
 
-                    case GL_FLOAT:
-                        uniformsFloat.put(uniformName, (float) dataUniforms.getDouble(uniformName));
-                        break;
+                        case GL_FLOAT:
+                            uniformsFloat.put(uniformName, (float) dataUniforms.getDouble(uniformName));
+                            break;
 
-                    case GL_FLOAT_VEC2:
-                    case GL_FLOAT_VEC3:
-                    case GL_FLOAT_VEC4:
-                    case GL_FLOAT_MAT2:
-                    case GL_FLOAT_MAT3:
-                    case GL_FLOAT_MAT4:
-                        ReadableArray arr = dataUniforms.getArray(uniformName);
-                        if (arraySizeForType(type) != arr.size()) {
+                        case GL_FLOAT_VEC2:
+                        case GL_FLOAT_VEC3:
+                        case GL_FLOAT_VEC4:
+                        case GL_FLOAT_MAT2:
+                        case GL_FLOAT_MAT3:
+                        case GL_FLOAT_MAT4:
+                            ReadableArray arr = dataUniforms.getArray(uniformName);
+                            if (arraySizeForType(type) != arr.size()) {
+                                shader.runtimeException(
+                                        "uniform '"+uniformName+
+                                                "': Invalid array size: "+arr.size()+
+                                                ". Expected: "+arraySizeForType(type));
+                            }
+                            uniformsFloatBuffer.put(uniformName, parseAsFloatArray(arr));
+                            break;
+
+                        case GL_INT_VEC2:
+                        case GL_INT_VEC3:
+                        case GL_INT_VEC4:
+                        case GL_BOOL_VEC2:
+                        case GL_BOOL_VEC3:
+                        case GL_BOOL_VEC4:
+                            ReadableArray arr2 = dataUniforms.getArray(uniformName);
+                            if (arraySizeForType(type) != arr2.size()) {
+                                shader.runtimeException(
+                                        "uniform '"+uniformName+
+                                                "': Invalid array size: "+arr2.size()+
+                                                ". Expected: "+arraySizeForType(type));
+                            }
+                            uniformsIntBuffer.put(uniformName, parseAsIntArray(arr2));
+                            break;
+
+                        default:
                             shader.runtimeException(
                                     "uniform '"+uniformName+
-                                            "': Invalid array size: "+arr.size()+
-                                            ". Expected: "+arraySizeForType(type));
-                        }
-                        uniformsFloatBuffer.put(uniformName, parseAsFloatArray(arr));
-                        break;
-
-                    case GL_INT_VEC2:
-                    case GL_INT_VEC3:
-                    case GL_INT_VEC4:
-                    case GL_BOOL_VEC2:
-                    case GL_BOOL_VEC3:
-                    case GL_BOOL_VEC4:
-                        ReadableArray arr2 = dataUniforms.getArray(uniformName);
-                        if (arraySizeForType(type) != arr2.size()) {
-                            shader.runtimeException(
-                                    "uniform '"+uniformName+
-                                            "': Invalid array size: "+arr2.size()+
-                                            ". Expected: "+arraySizeForType(type));
-                        }
-                        uniformsIntBuffer.put(uniformName, parseAsIntArray(arr2));
-                        break;
-
-                    default:
+                                            "': type not supported: "+type);
+                    }
+                }
+                else {
+                    ReadableArray array = dataUniforms.getArray(uniformName);
+                    if (size != array.size()) {
                         shader.runtimeException(
                                 "uniform '"+uniformName+
-                                        "': type not supported: "+type);
-                }
+                                        "': Invalid array size: "+array.size()+
+                                        ". Expected: "+size);
+                    }
+                    for (int i=0; i<size; i++) {
+                        String name = uniformName+"["+i+"]";
+                        switch (type) {
+                            case GL_INT:
+                                uniformsInteger.put(name, array.getInt(i));
+                                break;
 
+                            case GL_BOOL:
+                                uniformsInteger.put(name, array.getBoolean(i) ? 1 : 0);
+                                break;
+
+                            case GL_FLOAT:
+                                uniformsFloat.put(name, (float) array.getDouble(i));
+                                break;
+
+                            case GL_FLOAT_VEC2:
+                            case GL_FLOAT_VEC3:
+                            case GL_FLOAT_VEC4:
+                            case GL_FLOAT_MAT2:
+                            case GL_FLOAT_MAT3:
+                            case GL_FLOAT_MAT4:
+                                ReadableArray arr = array.getArray(i);
+                                if (arraySizeForType(type) != arr.size()) {
+                                    shader.runtimeException(
+                                            "uniform '"+name+
+                                                    "': Invalid array size: "+arr.size()+
+                                                    ". Expected: "+arraySizeForType(type));
+                                }
+                                uniformsFloatBuffer.put(name, parseAsFloatArray(arr));
+                                break;
+
+                            case GL_INT_VEC2:
+                            case GL_INT_VEC3:
+                            case GL_INT_VEC4:
+                            case GL_BOOL_VEC2:
+                            case GL_BOOL_VEC3:
+                            case GL_BOOL_VEC4:
+                                ReadableArray arr2 = array.getArray(i);
+                                if (arraySizeForType(type) != arr2.size()) {
+                                    shader.runtimeException(
+                                            "uniform '"+name+
+                                                    "': Invalid array size: "+arr2.size()+
+                                                    ". Expected: "+arraySizeForType(type));
+                                }
+                                uniformsIntBuffer.put(name, parseAsIntArray(arr2));
+                                break;
+
+                            default:
+                                shader.runtimeException(
+                                        "uniform '"+name+
+                                                "': type not supported: "+type);
+                        }
+                    }
+                }
             }
         }
 
@@ -590,12 +656,26 @@ public class GLCanvas extends GLSurfaceView
             shader.runtimeException("Maximum number of texture reach. got " + units + " >= max " + maxTextureUnits);
         }
 
-        for (String uniformName: uniformTypes.keySet()) {
-            if (!uniformsFloat.containsKey(uniformName) &&
-                    !uniformsInteger.containsKey(uniformName) &&
-                    !uniformsFloatBuffer.containsKey(uniformName) &&
-                    !uniformsIntBuffer.containsKey(uniformName)) {
-                shader.runtimeException("All defined uniforms must be provided. Missing '"+uniformName+"'");
+        for (String uniformName: uniformNames) {
+            int size = uniformSizes.get(uniformName);
+            if (size == 1) {
+                if (!uniformsFloat.containsKey(uniformName) &&
+                        !uniformsInteger.containsKey(uniformName) &&
+                        !uniformsFloatBuffer.containsKey(uniformName) &&
+                        !uniformsIntBuffer.containsKey(uniformName)) {
+                    shader.runtimeException("All defined uniforms must be provided. Missing '" + uniformName + "'");
+                }
+            }
+            else {
+                for (int i=0; i<size; i++) {
+                    String name = uniformName+"["+i+"]";
+                    if (!uniformsFloat.containsKey(name) &&
+                            !uniformsInteger.containsKey(name) &&
+                            !uniformsFloatBuffer.containsKey(name) &&
+                            !uniformsIntBuffer.containsKey(name)) {
+                        shader.runtimeException("All defined uniforms must be provided. Missing '" + name + "'");
+                    }
+                }
             }
         }
 

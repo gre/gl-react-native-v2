@@ -20,7 +20,7 @@
   "license": "MIT",
   "peerDependencies": {
     "react-native": "*",
-    "gl-react": "^2.2.0"
+    "gl-react": "^2.2.3"
   },
   "dependencies": {
     "invariant": "2.2.0",

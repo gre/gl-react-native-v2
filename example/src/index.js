@@ -6,21 +6,14 @@ import AdvancedEffects from "./AdvancedEffects";
 import Hearts from "./Hearts";
 import Tests from "./Tests";
 import Animated from "./Animated";
+import Particles from "./Particles";
 
-const screens = { Simple, AdvancedEffects, Hearts, Tests, Animated };
+const screens = { Simple, AdvancedEffects, Hearts, Tests, Animated, Particles };
 
 const homeRoute = {
   id: "home",
   title: "gl-react Showcase"
 };
-
-const routes = [
-  { id: "Simple" },
-  { id: "AdvancedEffects" },
-  { id: "Hearts" },
-  { id: "Tests" },
-  { id: "Animated" },
-];
 
 const styles = StyleSheet.create({
   root: {
@@ -62,9 +55,9 @@ class Home extends Component {
   render () {
     const { openScreen } = this.props;
     return <View style={styles.home}>
-      {routes.map(route =>
-        <TouchableOpacity style={styles.homeLink} key={route.id} onPress={() => openScreen(route)}>
-          <Text style={styles.homeText}>{route.id}</Text>
+      {Object.keys(screens).map(id =>
+        <TouchableOpacity style={styles.homeLink} key={id} onPress={() => openScreen({ id })}>
+          <Text style={styles.homeText}>{id}</Text>
         </TouchableOpacity>)}
     </View>;
   }
