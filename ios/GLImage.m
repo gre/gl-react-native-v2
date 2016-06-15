@@ -77,9 +77,10 @@ RCT_NOT_IMPLEMENTED(-init)
   }
   else {
     // Load the image (without resizing it)
-    _loading = [_bridge.imageLoader loadImageWithoutClipping:_source.imageURL.absoluteString
+    _loading = [_bridge.imageLoader loadImageWithURLRequest:_source.imageURL.absoluteString
                                        size:CGSizeZero
                                       scale:0
+                                      clipped:YES
                                  resizeMode:RCTResizeModeStretch
                               progressBlock:nil
                             completionBlock:^(NSError *error, UIImage *image) {
