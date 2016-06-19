@@ -227,6 +227,9 @@ RCT_NOT_IMPLEMENTED(-init)
             [emptyTexture setPixels:nil];
             textures[uniformName] = emptyTexture;
           }
+          else if ([value isKindOfClass:[NSNumber class]]) {
+            RCTLogError(@"texture uniform '%@': you cannot directly give require('./img.png') to gl-react, use resolveAssetSource(require('./img.png')) instead.", uniformName);
+          }
           else {
             NSString *type = [RCTConvert NSString:value[@"type"]];
             if ([type isEqualToString:@"content"]) {

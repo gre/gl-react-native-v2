@@ -5,6 +5,7 @@
 #import "RCTImageLoader.h"
 #import "RCTLog.h"
 #import "GLTexture.h"
+#import "RCTUtils.h"
 
 @implementation GLImage
 {
@@ -70,31 +71,46 @@ RCT_NOT_IMPLEMENTED(-init)
 
 - (void)reloadImage
 {
+  RCTImageSource *source = _source;
   if (_loading) _loading();
   _loading = nil;
-  if (!_source) {
+  if (!source) {
     [self clearImage];
   }
   else {
     // Load the image (without resizing it)
-    _loading = [_bridge.imageLoader loadImageWithURLRequest:_source.imageURL.absoluteString
+    __weak GLImage *weakSelf = self;
+    _loading = [_bridge.imageLoader loadImageWithURLRequest:source.request
                                        size:CGSizeZero
                                       scale:0
                                       clipped:YES
                                  resizeMode:RCTResizeModeStretch
                               progressBlock:nil
-                            completionBlock:^(NSError *error, UIImage *image) {
+                            completionBlock:^(NSError *error, UIImage *loadedImage) {
+                              GLImage *strongSelf = weakSelf;
+                              void (^setImageBlock)(UIImage *) = ^(UIImage *image) {
+                                if (![source isEqual:strongSelf.source]) {
+                                  // Bail out if source has changed since we started loading
+                                  return;
+                                }
+                                strongSelf.image = [UIImage imageWithCGImage:image.CGImage];
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                  if (_onload) _onload();
+                                });
+                              };
+
                               _loading = nil;
                               [self clearImage];
                               if (error) {
                                 NSLog(@"Image failed to load: %@", error);
                               } else {
-                                // we need to copy the image because it seems the image will be altered.
-                                // ^^^ FIXME: check if it's still the case
-                                self.image = [UIImage imageWithCGImage:image.CGImage];
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                  if (_onload) _onload();
-                                });
+                                if ([NSThread isMainThread]) {
+                                  setImageBlock(loadedImage);
+                                } else {
+                                  RCTExecuteOnMainThread(^{
+                                    setImageBlock(loadedImage);
+                                  }, NO);
+                                }
                               }
                             }];
   }

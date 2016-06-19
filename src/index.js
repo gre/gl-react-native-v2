@@ -1,9 +1,11 @@
 import invariant from "invariant";
-import { Shaders } from "gl-react";
+import { Shaders, runtime } from "gl-react";
 import isAnimated from "gl-react/src/isAnimated";
 import makeSurface from "./makeSurface";
 import GLCanvas from "./GLCanvas";
-import {NativeModules, View, Animated} from "react-native";
+import {NativeModules, View, Animated, Image} from "react-native";
+import resolveAssetSource from "react-native/Libraries/Image/resolveAssetSource";
+
 const {RNGLContext} = NativeModules;
 invariant(RNGLContext,
 `gl-react-native: the native module is not available.
@@ -23,7 +25,24 @@ Shaders.setImplementation({
   remove: id => RNGLContext.removeShader(id)
 });
 
+if (__DEV__) {
+  runtime.decorateVDOMContent = vdom => {
+    if (vdom && vdom.type === Image && !vdom.props.glReactUseImage) {
+      console.warn(
+`gl-react: Found a ReactNative.Image element. This is not performant. Try one of these:
+- pass-in directly the image URL in your uniforms.
+- use gl-react-image which implements the same Image API directly in OpenGL. https://github.com/gre/gl-react-image
+- If you need more features like padding, explicitly setting image size, you can implement your own shader.
+
+If you still want to do this, add a glReactUseImage prop to the Image to disable this warning.
+`);
+    }
+    return vdom;
+  };
+}
+
 module.exports = {
+  resolveAssetSource,
   Surface: makeSurface({
     View,
     GLCanvas,

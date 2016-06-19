@@ -490,7 +490,17 @@ public class GLCanvas extends GLSurfaceView
                     textures.put(uniformName, emptyTexture);
                 }
                 else {
-                    ReadableMap value = dataUniforms.getMap(uniformName);
+                    ReadableMap value = null;
+                    try {
+                        value = dataUniforms.getMap(uniformName);
+                    }
+                    catch (Exception e) {
+                        shader.runtimeException(
+                        "texture uniform '"+uniformName+"': you cannot directly give require('./img.png') "+
+                        "to gl-react, use resolveAssetSource(require('./img.png')) instead."
+                        );
+                        return null;
+                    }
                     String t = value.getString("type");
                     if (t.equals("content")) {
                         int id = value.getInt("id");
