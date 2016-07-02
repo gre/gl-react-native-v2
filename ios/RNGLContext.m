@@ -45,42 +45,6 @@ RCT_EXPORT_MODULE()
   return _context;
 }
 
-- (void)_addShader:(nonnull NSNumber *)id
-withConfig:(NSDictionary *)config
-withOnCompile:(RCTResponseSenderBlock)onCompile
-{
-  NSString *vert = [RCTConvert NSString:config[@"vert"]];
-  NSString *frag = [RCTConvert NSString:config[@"frag"]];
-  NSString *name = [RCTConvert NSString:config[@"name"]];
-  if (!vert) {
-    vert = fullViewportVert;
-  }
-  if (!frag) {
-    RCTLogError(@"Shader '%@': missing frag field", name);
-    return;
-  }
-  GLShader *shader = [[GLShader alloc] initWithContext:_context withName:name withVert:vert withFrag:frag];
-  NSError *error;
-  bool success = [shader ensureCompiles:&error];
-  if (onCompile) {
-    if (!success) {
-      onCompile(@[error.domain]);
-    }
-    else {
-      onCompile(@[[NSNull null],
-                  @{
-                    @"uniforms": shader.uniformTypes
-                    }]);
-    }
-  }
-  else {
-    if (!success) {
-      RCTLogError(@"Shader '%@': %@", name, error.domain);
-    }
-  }
-  _shaders[id] = shader;
-}
-
 static NSString* fullViewportVert = @"attribute vec2 position;varying vec2 uv;void main() {gl_Position = vec4(position,0.0,1.0);uv = vec2(0.5, 0.5) * (position+vec2(1.0, 1.0));}";
 
 NSString* glTypeString (int type) {

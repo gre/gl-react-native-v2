@@ -47,17 +47,6 @@ GLTexture *initTexture (float width, float height, GLuint attachment)
   return texture;
 }
 
-GLuint initRenderBuffer (float width, float height, GLuint component, GLuint attachment)
-{
-  GLuint handle;
-  glGenRenderbuffers(1, &handle);
-  glBindRenderbuffer(GL_RENDERBUFFER, handle);
-  glRenderbufferStorage(GL_RENDERBUFFER, component, width, height);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, handle);
-  return handle;
-}
-
-
 @implementation GLFBO
 {
   GLuint _handle;
