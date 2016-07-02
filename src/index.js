@@ -46,6 +46,7 @@ module.exports = {
   Surface: makeSurface({
     View,
     GLCanvas,
+    getGLCanvas: glSurface => glSurface.refs.canvas,
     dimensionInvariant: (value, field) =>
       isAnimated(value)
       ? invariant(false, "GL.Surface "+field+" prop cannot be an Animated object. Use GL.AnimatedSurface instead")
@@ -54,6 +55,7 @@ module.exports = {
   AnimatedSurface: makeSurface({
     View: Animated.View,
     GLCanvas: Animated.createAnimatedComponent(GLCanvas),
+    getGLCanvas: glSurface => glSurface.refs.canvas.refs.node,
     dimensionInvariant: (value, field) =>
       invariant(
         isAnimated(value) || typeof value === "number" && value > 0,

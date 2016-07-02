@@ -50,5 +50,6 @@ export default C => {
     renderVcontent,
     renderVGL,
     getPixelRatio,
+    C.getGLCanvas,
   );
 };
