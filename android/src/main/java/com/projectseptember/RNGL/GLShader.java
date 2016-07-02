@@ -80,7 +80,6 @@ public class GLShader {
         glUniform1f(uniformLocations.get(name), f);
     }
     public void setUniform (String name, FloatBuffer buf, int type) {
-        System.out.println("setUniform "+name);
         switch (type) {
             case GL_FLOAT_VEC2:
                 glUniform2fv(uniformLocations.get(name), 1, buf);
