@@ -7,8 +7,17 @@ import Hearts from "./Hearts";
 import Tests from "./Tests";
 import Animated from "./Animated";
 import Particles from "./Particles";
+import Orientation from "./Orientation";
 
-const screens = { Simple, AdvancedEffects, Hearts, Tests, Animated, Particles };
+const screens = {
+  Simple,
+  AdvancedEffects,
+  Hearts,
+  Tests,
+  Animated,
+  Particles,
+  Orientation,
+};
 
 const homeRoute = {
   id: "home",
