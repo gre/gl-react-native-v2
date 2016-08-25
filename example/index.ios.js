@@ -1,4 +1,4 @@
-import { AppRegistry, StatusBarIOS } from "react-native";
+import { AppRegistry, StatusBar } from "react-native";
 import example from "./src";
-StatusBarIOS.setHidden(true);
+StatusBar.setHidden(true);
 AppRegistry.registerComponent("example", () => example);
