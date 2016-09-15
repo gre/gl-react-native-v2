@@ -55,7 +55,7 @@ class Intro extends React.Component {
           moving: 1
         }}>
         <GL.Uniform name="texture">
-          <View style={{ flex: 1, justifyContent: "center", backgroundColor: "#111" }}>
+          <View key="root" style={{ flex: 1, justifyContent: "center", backgroundColor: "#111" }}>
             <Text style={{ color: "#00BDF3", fontSize: 32, letterSpacing: -1.0 }}>
               GL REACT NATIVE
             </Text>

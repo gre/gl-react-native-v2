@@ -166,9 +166,11 @@ class Simple extends Component {
         <Demo id={3} current={current} title="3. Hue Rotate on Text+Image">
           <Surface autoRedraw width={256} height={180}>
             <HueRotate hue={hue}>
-              <Image style={{ width: 256, height: 244 }} source={{ uri: "http://i.imgur.com/qVxHrkY.jpg" }}/>
-              <Text style={styles.demoText1}>Throw me to the wolves</Text>
-              <Text style={styles.demoText2}>{text}</Text>
+              <View key="hue" style={{ width: 256, height: 180 }}>
+                <Image style={{ width: 256, height: 244 }} source={{ uri: "http://i.imgur.com/qVxHrkY.jpg" }}/>
+                <Text style={styles.demoText1}>Throw me to the wolves</Text>
+                <Text style={styles.demoText2}>{text}</Text>
+              </View>
             </HueRotate>
           </Surface>
           <Slider
@@ -241,7 +243,7 @@ class Simple extends Component {
             visibleContent>
             <HueRotate hue={-switch1 + 2 * switch2 + 4 * switch3}>
               <Blur factor={factor}>
-                <View style={{ width: 256, height: 160, padding: 10, backgroundColor: "#f9f9f9" }}>
+                <View key="blur" style={{ width: 256, height: 160, padding: 10, backgroundColor: "#f9f9f9" }}>
                   <Slider
                     style={{ height: 80 }}
                     max={1}

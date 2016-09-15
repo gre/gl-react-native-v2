@@ -35,7 +35,7 @@ class Tests extends React.Component {
       <HelloGL width={64} height={64} />;
 
     const txt =
-      <View style={{ width: 400, height: 400, position: "relative", backgroundColor: "transparent" }}>
+      <View key="txt" style={{ width: 400, height: 400, position: "relative", backgroundColor: "transparent" }}>
         {[0,1,2,3].map(i => <Text key={i} style={{
           position: "absolute",
           top: 20+100*i,
@@ -86,12 +86,12 @@ class Tests extends React.Component {
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
 
         <NativeLayer width={debugSize} height={debugSize}>
-          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Image source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
+          <Image key={0} source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Image key={1} source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
-          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Image key={0} source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
           <Surface width={debugSize} height={debugSize} backgroundColor="transparent">
             <Copy last>
               <Copy>
