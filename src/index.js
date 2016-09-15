@@ -55,7 +55,7 @@ module.exports = {
   AnimatedSurface: makeSurface({
     View: Animated.View,
     GLCanvas: Animated.createAnimatedComponent(GLCanvas),
-    getGLCanvas: glSurface => glSurface.refs.canvas.refs.node,
+    getGLCanvas: glSurface => glSurface.refs.canvas.refs._component,
     dimensionInvariant: (value, field) =>
       invariant(
         isAnimated(value) || typeof value === "number" && value > 0,
