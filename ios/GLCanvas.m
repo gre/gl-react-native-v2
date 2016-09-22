@@ -14,7 +14,7 @@
 #import "RCTImageSource.h"
 
 NSString* imageSourceHash (RCTImageSource *is) {
-  return is.imageURL.absoluteString;
+  return is.request.URL;
 }
 
 NSArray* diff (NSArray* a, NSArray* b) {
@@ -338,7 +338,7 @@ RCT_NOT_IMPLEMENTED(-init)
   }
   _contentData = contentData;
   [self setNeedsDisplay];
-  RCT_PROFILE_END_EVENT(0, @"gl", nil);
+  RCT_PROFILE_END_EVENT(0, @"gl");
 }
 
 
@@ -486,7 +486,8 @@ RCT_NOT_IMPLEMENTED(-init)
       for (GLRenderData *child in renderData.children)
         weak_recDraw(child);
 
-      RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"node:%@", renderData.shader.name], nil);
+      NSString *nodeName = [NSString stringWithFormat:@"node:%@", renderData.shader.name];
+      RCT_PROFILE_BEGIN_EVENT(0, nodeName, nil);
 
       RCT_PROFILE_BEGIN_EVENT(0, @"bind fbo", nil);
       if (renderData.fboId == -1) {
@@ -500,11 +501,11 @@ RCT_NOT_IMPLEMENTED(-init)
         [fbo bind];
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       }
-      RCT_PROFILE_END_EVENT(0, @"gl", nil);
+      RCT_PROFILE_END_EVENT(0, @"gl");
 
       RCT_PROFILE_BEGIN_EVENT(0, @"bind shader", nil);
       [renderData.shader bind];
-      RCT_PROFILE_END_EVENT(0, @"gl", nil);
+      RCT_PROFILE_END_EVENT(0, @"gl");
 
       RCT_PROFILE_BEGIN_EVENT(0, @"bind textures", nil);
       for (NSString *uniformName in renderData.textures) {
@@ -512,21 +513,21 @@ RCT_NOT_IMPLEMENTED(-init)
         int unit = [((NSNumber *)renderData.uniforms[uniformName]) intValue];
         [texture bind:unit];
       }
-      RCT_PROFILE_END_EVENT(0, @"gl", nil);
+      RCT_PROFILE_END_EVENT(0, @"gl");
 
       RCT_PROFILE_BEGIN_EVENT(0, @"bind set uniforms", nil);
       for (NSString *uniformName in renderData.uniforms) {
         [renderData.shader setUniform:uniformName withValue:renderData.uniforms[uniformName]];
       }
-      RCT_PROFILE_END_EVENT(0, @"gl", nil);
+      RCT_PROFILE_END_EVENT(0, @"gl");
 
       RCT_PROFILE_BEGIN_EVENT(0, @"draw", nil);
       glClearColor(0.0, 0.0, 0.0, 0.0);
       glClear(GL_COLOR_BUFFER_BIT);
       glDrawArrays(GL_TRIANGLES, 0, 3);
-      RCT_PROFILE_END_EVENT(0, @"gl", nil);
+      RCT_PROFILE_END_EVENT(0, @"gl");
 
-      RCT_PROFILE_END_EVENT(0, @"gl", nil);
+      RCT_PROFILE_END_EVENT(0, @"gl");
     };
 
     // DRAWING THE SCENE
@@ -546,7 +547,7 @@ RCT_NOT_IMPLEMENTED(-init)
     }
   }
 
-  RCT_PROFILE_END_EVENT(0, @"gl", nil);
+  RCT_PROFILE_END_EVENT(0, @"gl");
 }
 
 //// utility methods
