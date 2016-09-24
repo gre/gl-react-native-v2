@@ -338,7 +338,7 @@ RCT_NOT_IMPLEMENTED(-init)
   }
   _contentData = contentData;
   [self setNeedsDisplay];
-  RCT_PROFILE_END_EVENT(0, @"gl");
+  RCT_PROFILE_END_EVENT(0, @"gl", nil);
 }
 
 
@@ -501,11 +501,11 @@ RCT_NOT_IMPLEMENTED(-init)
         [fbo bind];
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       }
-      RCT_PROFILE_END_EVENT(0, @"gl");
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
       RCT_PROFILE_BEGIN_EVENT(0, @"bind shader", nil);
       [renderData.shader bind];
-      RCT_PROFILE_END_EVENT(0, @"gl");
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
       RCT_PROFILE_BEGIN_EVENT(0, @"bind textures", nil);
       for (NSString *uniformName in renderData.textures) {
@@ -513,21 +513,21 @@ RCT_NOT_IMPLEMENTED(-init)
         int unit = [((NSNumber *)renderData.uniforms[uniformName]) intValue];
         [texture bind:unit];
       }
-      RCT_PROFILE_END_EVENT(0, @"gl");
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
       RCT_PROFILE_BEGIN_EVENT(0, @"bind set uniforms", nil);
       for (NSString *uniformName in renderData.uniforms) {
         [renderData.shader setUniform:uniformName withValue:renderData.uniforms[uniformName]];
       }
-      RCT_PROFILE_END_EVENT(0, @"gl");
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
       RCT_PROFILE_BEGIN_EVENT(0, @"draw", nil);
       glClearColor(0.0, 0.0, 0.0, 0.0);
       glClear(GL_COLOR_BUFFER_BIT);
       glDrawArrays(GL_TRIANGLES, 0, 3);
-      RCT_PROFILE_END_EVENT(0, @"gl");
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
 
-      RCT_PROFILE_END_EVENT(0, @"gl");
+      RCT_PROFILE_END_EVENT(0, @"gl", nil);
     };
 
     // DRAWING THE SCENE
@@ -547,7 +547,7 @@ RCT_NOT_IMPLEMENTED(-init)
     }
   }
 
-  RCT_PROFILE_END_EVENT(0, @"gl");
+  RCT_PROFILE_END_EVENT(0, @"gl", nil);
 }
 
 //// utility methods
