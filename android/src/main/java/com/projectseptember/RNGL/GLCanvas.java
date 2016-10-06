@@ -868,7 +868,7 @@ public class GLCanvas extends GLSurfaceView
     }
 
     private Bitmap createSnapshot () {
-        return createSnapshot(0, 0, getWidth(), getHeight());
+        return createSnapshot(0, 0, renderData.width, renderData.height);
     }
 
     private Bitmap createSnapshot (int x, int y, int w, int h) {
