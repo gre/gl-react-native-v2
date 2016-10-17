@@ -86,6 +86,7 @@ RCT_NOT_IMPLEMENTED(-init)
                                       clipped:YES
                                  resizeMode:RCTResizeModeStretch
                               progressBlock:nil
+                              partialLoadBlock:nil
                             completionBlock:^(NSError *error, UIImage *loadedImage) {
                               GLImage *strongSelf = weakSelf;
                               void (^setImageBlock)(UIImage *) = ^(UIImage *image) {
