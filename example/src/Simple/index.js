@@ -1,16 +1,16 @@
 import React, {Component} from "react";
-import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity} from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  Slider,
+  Switch,
+} from "react-native";
 
 import { Surface } from "gl-react-native";
-
-const {
-  mdl: {
-    Progress,
-    Slider,
-    Switch
-  },
-  MKButton,
-} = require("react-native-material-kit");
 
 import RNFS from "react-native-fs";
 import HelloGL from "./HelloGL";
@@ -40,18 +40,16 @@ class Demos extends Component {
     return <View>
       <View style={styles.nav}>
         {React.Children.map(children, (demo, i) =>
-          <MKButton
+          <Text
             style={{ flex: 1, padding: 10 }}
+            textStyle={{
+              textAlign: "center",
+              color: i!==value ? "#123" : "#69c",
+              fontWeight: "bold"
+            }}
             onPress={() => onChange(i)}>
-            <Text pointerEvents="none"
-              style={{
-                textAlign: "center",
-                color: i!==value ? "#123" : "#69c",
-                fontWeight: "bold"
-              }}>
-              {""+(i+1)}
-            </Text>
-          </MKButton>)}
+            {""+(i+1)}
+          </Text>)}
       </View>
       <View style={styles.demos}>
         {children[value]}
@@ -61,34 +59,23 @@ class Demos extends Component {
 }
 
 class Simple extends Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      current: 0,
-      saturationFactor: 1,
-      hue: 0,
-      progress: 0,
-      factor: 0,
-      text: "and I will return leading the pack",
-      switch1: false,
-      switch2: false,
-      switch3: false,
-      captured: null,
-      captureConfig: null
-    };
-    this.onCapture1 = this.onCapture1.bind(this);
 
-    /*
-    // Crazy stress mode
-    const self = this;
-    setTimeout(function loop () {
-      setTimeout(loop, 100 * Math.random());
-      self.setState({ current: Math.floor(8 * Math.random()) });
-    }, 100);
-    */
-  }
+  state = {
+    current: 0,
+    saturationFactor: 1,
+    hue: 0,
+    progress: 0,
+    factor: 0,
+    text: "and I will return leading the pack",
+    switch1: false,
+    switch2: false,
+    switch3: false,
+    captured: null,
+    captureConfig: null
+  };
 
-  onCapture1 () {
+
+  onCapture1 = () => {
     const captureConfig = {
       quality: Math.round((Math.random() * 100))/100,
       type: Math.random() < 0.5 ? "jpg": "png",
@@ -100,7 +87,7 @@ class Simple extends Component {
     this.refs.helloGL
     .captureFrame(captureConfig)
     .then(captured => this.setState({ captured, captureConfig }));
-  }
+  };
 
   render () {
     const {
@@ -124,8 +111,10 @@ class Simple extends Component {
           <Surface width={256} height={171} ref="helloGL">
             <HelloGL />
           </Surface>
-          <View style={{ paddingTop: 20, alignItems: "center", flexDirection: "row" }}>
-            <Button onPress={this.onCapture1}>captureFrame()</Button>
+          <View style={{ marginTop: 20, flexDirection: "row" }}>
+            <Button onPress={this.onCapture1}>
+              captureFrame()
+            </Button>
             {captured &&
               <Image source={{ uri: captured }}
                 style={{ marginLeft: 20, width: 51, height: 34 }}
@@ -158,8 +147,8 @@ class Simple extends Component {
             />
           </Surface>
           <Slider
-            max={8}
-            onChange={saturationFactor => this.setState({ saturationFactor })}
+            maximumValue={8}
+            onValueChange ={saturationFactor => this.setState({ saturationFactor })}
           />
         </Demo>
 
@@ -174,8 +163,8 @@ class Simple extends Component {
             </HueRotate>
           </Surface>
           <Slider
-            max={2 * Math.PI}
-            onChange={hue => this.setState({ hue })}
+            maximumValue={2 * Math.PI}
+            onValueChange={hue => this.setState({ hue })}
           />
           <TextInput
             style={{ height: 40, borderColor: "#aaa", borderWidth: 1 }}
@@ -204,8 +193,8 @@ class Simple extends Component {
             </View>
           </View>
           <Slider
-            max={1}
-            onChange={progress => this.setState({ progress })}
+            maximumValue={1}
+            onValueChange={progress => this.setState({ progress })}
           />
         </Demo>
 
@@ -230,8 +219,8 @@ class Simple extends Component {
             </Blur>
           </Surface>
           <Slider
-            max={2}
-            onChange={factor => this.setState({ factor })} />
+            maximumValue={2}
+            onValueChange={factor => this.setState({ factor })} />
         </Demo>
 
         <Demo id={8} current={current} title="8. Blur+Hue over UI">
@@ -246,16 +235,14 @@ class Simple extends Component {
                 <View key="blur" style={{ width: 256, height: 160, padding: 10, backgroundColor: "#f9f9f9" }}>
                   <Slider
                     style={{ height: 80 }}
-                    max={1}
-                    onChange={factor => this.setState({ factor })}
+                    maximumValue={1}
+                    onValueChange={factor => this.setState({ factor })}
                   />
                 <View style={{ height: 60, flexDirection: "row", alignItems: "center" }}>
-                  <Switch style={{flex:1}} checked={switch1} onCheckedChange={({checked:switch1}) => this.setState({ switch1 })} />
-                  <Switch style={{flex:1}} checked={switch2} onCheckedChange={({checked:switch2}) => this.setState({ switch2 })} />
-                  <Switch style={{flex:1}} checked={switch3} onCheckedChange={({checked:switch3}) => this.setState({ switch3 })} />
+                  <Switch style={{flex:1}} value={switch1} onValueChange={(switch1) => this.setState({ switch1 })} />
+                  <Switch style={{flex:1}} value={switch2} onValueChange={(switch2) => this.setState({ switch2 })} />
+                  <Switch style={{flex:1}} value={switch3} onValueChange={(switch3) => this.setState({ switch3 })} />
                 </View>
-                <Progress progress={factor} style={{height: 10, marginTop: 8, flex:1}} />
-
                 </View>
               </Blur>
             </HueRotate>

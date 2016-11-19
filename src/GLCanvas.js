@@ -1,6 +1,6 @@
 import invariant from "invariant";
 import React, {Component} from "react";
-import {requireNativeComponent, findNodeHandle} from "react-native";
+  import {requireNativeComponent, findNodeHandle} from "react-native";
 import defer from "promise-defer";
 import captureFrame from "./GLCanvas.captureFrame";
 
@@ -16,6 +16,10 @@ const GLCanvasNative = requireNativeComponent("GLCanvas", GLCanvas, {
 });
 
 class GLCanvas extends Component {
+
+  viewConfig = {
+    uiViewClassName: "GLCanvas"
+  };
 
   componentWillMount () {
     this._pendingCaptureFrame = {};

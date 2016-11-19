@@ -77,6 +77,7 @@ class OneFingerResponse extends React.Component {
     ];
     return <Surface
       ref="surface"
+      style={{ backgroundColor: "#000" }}
       {...this._panResponder.panHandlers}
       width={width}
       height={height}>

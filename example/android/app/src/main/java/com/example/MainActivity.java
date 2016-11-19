@@ -3,7 +3,6 @@ package com.example;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
-import com.github.xinthink.rnmk.ReactMaterialKitPackage;
 import com.projectseptember.RNGL.RNGLPackage;
 import com.rnfs.RNFSPackage;
 

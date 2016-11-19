@@ -9,20 +9,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: "solid",
     width: 150,
-    padding: 10
+    height: 30,
+    alignItems: "center",
+    justifyContent: "center",
   },
   text: {
-    color: "#333"
+    color: "#333",
   }
 });
 
 class Button extends Component {
   render () {
-    const { children, width, ...rest } = this.props;
+    const { children, style, textStyle, ...rest } = this.props;
     return (
       <TouchableOpacity {...rest}>
-        <View style={[ {width}, styles.root ]}>
-          <Text style={styles.text}>{children}</Text>
+        <View style={[ style, styles.root ]}>
+          <Text
+            style={[
+              styles.text,
+              textStyle,
+            ]}>
+            {children}
+          </Text>
         </View>
       </TouchableOpacity>
     );

@@ -8,7 +8,6 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
-import com.github.xinthink.rnmk.ReactMaterialKitPackage;
 import com.projectseptember.RNGL.RNGLPackage;
 import com.rnfs.RNFSPackage;
 
@@ -28,8 +27,7 @@ public class MainApplication extends Application implements ReactApplication {
             return Arrays.<ReactPackage>asList(
                     new MainReactPackage(),
                     new RNGLPackage(),
-                    new RNFSPackage(),
-                    new ReactMaterialKitPackage()
+                    new RNFSPackage()
             );
         }
     };
