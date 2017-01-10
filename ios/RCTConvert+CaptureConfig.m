@@ -1,11 +1,3 @@
-//
-//  RCTConvert+CaptureConfig.m
-//  RNGL
-//
-//  Created by Gaetan Renaudeau on 30/12/15.
-//
-//
-
 #import "RCTConvert+CaptureConfig.h"
 
 @implementation RCTConvert (CaptureConfig)

@@ -1,4 +1,4 @@
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 #import "CaptureConfig.h"
 
 @interface RCTConvert (CaptureConfig)

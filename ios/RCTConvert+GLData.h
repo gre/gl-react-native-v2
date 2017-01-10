@@ -1,4 +1,4 @@
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 #import "GLData.h"
 
 @interface RCTConvert (GLData)

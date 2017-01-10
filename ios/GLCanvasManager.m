@@ -1,10 +1,10 @@
+#import <React/RCTUIManager.h>
+#import <React/RCTLog.h>
+#import <UIKit/UIKit.h>
 #import "GLCanvasManager.h"
 #import "GLCanvas.h"
 #import "RCTConvert+GLData.h"
 #import "RCTConvert+CaptureConfig.h"
-#import "RCTUIManager.h"
-#import "RCTLog.h"
-#import <UIKit/UIKit.h>
 
 @implementation GLCanvasManager
 

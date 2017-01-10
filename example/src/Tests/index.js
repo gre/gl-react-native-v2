@@ -50,7 +50,7 @@ class Tests extends React.Component {
         </Text>)}
       </View>;
 
-    const img = "http://i.imgur.com/zJIxPEo.jpg";
+    const img = "https://i.imgur.com/zJIxPEo.jpg";
 
     const blurredImage =
       <Blur factor={4} passes={6} width={200} height={200}>
@@ -86,18 +86,18 @@ class Tests extends React.Component {
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
 
         <NativeLayer width={debugSize} height={debugSize}>
-          <Image key={0} source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
-          <Image key={1} source={{ uri: "http://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
+          <Image key={0} source={{ uri: "https://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Image key={1} source={{ uri: "https://i.imgur.com/mp79p5T.png" }} width={debugSize} height={debugSize} />
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
-          <Image key={0} source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Image key={0} source={{ uri: "https://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
           <Surface width={debugSize} height={debugSize} backgroundColor="transparent">
             <Copy last>
               <Copy>
                 <Copy>
                   <Copy>
-                    http://i.imgur.com/mp79p5T.png
+                    https://i.imgur.com/mp79p5T.png
                   </Copy>
                 </Copy>
               </Copy>
@@ -106,10 +106,10 @@ class Tests extends React.Component {
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
-          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Image source={{ uri: "https://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
           <Surface width={debugSize} height={debugSize} backgroundColor="transparent">
             <Layer>
-              http://i.imgur.com/mp79p5T.png
+              https://i.imgur.com/mp79p5T.png
               <TransparentNonPremultiplied>
                 <HelloGL />
               </TransparentNonPremultiplied>
@@ -118,15 +118,15 @@ class Tests extends React.Component {
         </NativeLayer>
 
         <NativeLayer width={debugSize} height={debugSize}>
-          <Image source={{ uri: "http://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
+          <Image source={{ uri: "https://i.imgur.com/S22HNaU.png" }} width={debugSize} height={debugSize} />
           <Surface width={debugSize} height={debugSize} backgroundColor="transparent">
             <Layer>
-              http://i.imgur.com/mp79p5T.png
+              https://i.imgur.com/mp79p5T.png
               <TransparentNonPremultiplied>
                 <Copy>
                   <TransparentNonPremultiplied>
                     <Copy>
-                      http://i.imgur.com/S22HNaU.png
+                      https://i.imgur.com/S22HNaU.png
                     </Copy>
                   </TransparentNonPremultiplied>
                 </Copy>
@@ -145,7 +145,7 @@ class Tests extends React.Component {
 
         <Surface style={{ margin: 4 }} width={300} height={300}>
           <Blur passes={6} factor={2}>
-            http://i.imgur.com/rkiglmm.jpg
+            https://i.imgur.com/rkiglmm.jpg
           </Blur>
         </Surface>
 

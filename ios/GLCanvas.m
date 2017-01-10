@@ -1,9 +1,10 @@
-#import "RCTBridge.h"
-#import "RCTUtils.h"
-#import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
-#import "RCTProfile.h"
+#import <React/RCTBridge.h>
+#import <React/RCTUtils.h>
+#import <React/RCTConvert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/RCTProfile.h>
+#import <React/RCTImageSource.h>
 #import "RNGLContext.h"
 #import "GLCanvas.h"
 #import "GLShader.h"
@@ -11,7 +12,6 @@
 #import "GLImage.h"
 #import "GLRenderData.h"
 #import "UIView+React.h"
-#import "RCTImageSource.h"
 
 NSString* imageSourceHash (RCTImageSource *is) {
   return is.request.URL;

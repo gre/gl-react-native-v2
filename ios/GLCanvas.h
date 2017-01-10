@@ -1,7 +1,7 @@
 #import <GLKit/GLKit.h>
+#import <React/RCTComponent.h>
 #import "GLData.h"
 #import "CaptureConfig.h"
-#import "RCTComponent.h"
 
 @interface GLCanvas: GLKView
 

@@ -1,11 +1,11 @@
 
+#import <React/RCTBridge.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
 #import "GLImage.h"
 #import "GLImageData.h"
-#import "RCTBridge.h"
-#import "RCTImageLoader.h"
-#import "RCTLog.h"
 #import "GLTexture.h"
-#import "RCTUtils.h"
 
 @implementation GLImage
 {

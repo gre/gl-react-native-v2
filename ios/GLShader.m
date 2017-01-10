@@ -1,8 +1,7 @@
 #import <GLKit/GLKit.h>
-
-#import "RCTBridgeModule.h"
-#import "RCTLog.h"
-#import "RCTConvert.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTLog.h>
+#import <React/RCTConvert.h>
 #import "GLShader.h"
 
 GLuint compileShader (NSString* shaderName, NSString* shaderString, GLenum shaderType, NSError **error) {

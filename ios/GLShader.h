@@ -1,5 +1,5 @@
 #import <GLKit/GLKit.h>
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 
 NS_ENUM(NSInteger) {
     GLContextFailure = 87001,

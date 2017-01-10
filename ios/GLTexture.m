@@ -1,6 +1,6 @@
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
 #import "GLTexture.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
 
 @implementation GLTexture
 {

@@ -1,6 +1,6 @@
 
+#import <React/RCTLog.h>
 #import "GLImageData.h"
-#import "RCTLog.h"
 
 // This structure aims to be used in an immutable way
 @implementation GLImageData

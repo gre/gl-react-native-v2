@@ -1,6 +1,6 @@
 #import "GLFBO.h"
 #import "GLTexture.h"
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 @interface FBOState: NSObject
 

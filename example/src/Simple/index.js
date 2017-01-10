@@ -143,7 +143,7 @@ class Simple extends Component {
           <Surface width={256} height={171}>
             <Saturation
               factor={saturationFactor}
-              image={{ uri: "http://i.imgur.com/iPKTONG.jpg" }}
+              image={{ uri: "https://i.imgur.com/iPKTONG.jpg" }}
             />
           </Surface>
           <Slider
@@ -156,7 +156,7 @@ class Simple extends Component {
           <Surface autoRedraw width={256} height={180}>
             <HueRotate hue={hue}>
               <View key="hue" style={{ width: 256, height: 180 }}>
-                <Image style={{ width: 256, height: 244 }} source={{ uri: "http://i.imgur.com/qVxHrkY.jpg" }}/>
+                <Image style={{ width: 256, height: 244 }} source={{ uri: "https://i.imgur.com/qVxHrkY.jpg" }}/>
                 <Text style={styles.demoText1}>Throw me to the wolves</Text>
                 <Text style={styles.demoText2}>{text}</Text>
               </View>
@@ -176,7 +176,7 @@ class Simple extends Component {
         <Demo id={4} current={current} title="4. Progress Indicator">
           <View style={{ position: "relative", width: 256, height: 180 }}>
             <TouchableOpacity>
-              <Image source={{ uri: "http://i.imgur.com/qM9BHCy.jpg" }}
+              <Image source={{ uri: "https://i.imgur.com/qM9BHCy.jpg" }}
                 style={{
                   width: 256,
                   height: 180,
@@ -215,7 +215,7 @@ class Simple extends Component {
         <Demo id={7} current={current} title="7. Blur">
           <Surface preload width={256} height={180}>
             <Blur factor={factor * 2} passes={4}>
-              http://i.imgur.com/3On9QEu.jpg
+              https://i.imgur.com/3On9QEu.jpg
             </Blur>
           </Surface>
           <Slider
