@@ -47,6 +47,11 @@ public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
         view.setAutoRedraw(autoRedraw);
     }
 
+    @ReactProp(name = "overlay")
+    public void setZOrderMediaOverlay(GLCanvas view, boolean overlay) {
+        view.setZOrderMediaOverlay(overlay);
+    }
+
     @ReactProp(name = "pointerEvents")
     public void setPointerEvents(GLCanvas view, @Nullable String pointerEventsStr) {
         if (pointerEventsStr != null) {
