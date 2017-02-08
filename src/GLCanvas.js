@@ -1,7 +1,6 @@
 import invariant from "invariant";
 import React, {Component} from "react";
   import {requireNativeComponent, findNodeHandle} from "react-native";
-import defer from "promise-defer";
 import captureFrame from "./GLCanvas.captureFrame";
 
 const serializeOption = config =>
@@ -39,8 +38,18 @@ class GLCanvas extends Component {
     const key = serializeOption(config);
     return this._pendingCaptureFrame[key] || (
       (captureFrame(findNodeHandle(this.refs.native), config),
-      this._pendingCaptureFrame[key] = defer())
+      this._pendingCaptureFrame[key] = this._makeDeferred())
     );
+  }
+
+  _makeDeferred() {
+    var defer = {};
+    var p = new Promise(function(resolve, reject) {
+      defer.resolve = resolve;
+      defer.reject;
+    });
+    defer.promise = p;
+    return defer;
   }
 
   captureFrame (configArg) {
