@@ -108,9 +108,9 @@ RCT_NOT_IMPLEMENTED(-init)
                                 if ([NSThread isMainThread]) {
                                   setImageBlock(loadedImage);
                                 } else {
-                                  RCTExecuteOnMainThread(^{
+                                  RCTExecuteOnMainQueue(^{
                                     setImageBlock(loadedImage);
-                                  }, NO);
+                                  });
                                 }
                               }
                             }];
