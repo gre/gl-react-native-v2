@@ -46,7 +46,7 @@ class GLCanvas extends Component {
     var defer = {};
     var p = new Promise(function(resolve, reject) {
       defer.resolve = resolve;
-      defer.reject;
+      defer.reject = reject;
     });
     defer.promise = p;
     return defer;
