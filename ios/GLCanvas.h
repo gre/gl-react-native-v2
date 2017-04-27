@@ -9,6 +9,7 @@
 @property (nonatomic) BOOL autoRedraw;
 @property (nonatomic) BOOL eventsThrough;
 @property (nonatomic) BOOL visibleContent;
+@property (nonatomic) BOOL preserveImages;
 @property (nonatomic) NSNumber *nbContentTextures;
 @property (nonatomic) NSNumber *renderId;
 @property (nonatomic) NSNumber *pixelRatio;

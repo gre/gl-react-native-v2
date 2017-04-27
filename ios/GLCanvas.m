@@ -183,7 +183,10 @@ RCT_NOT_IMPLEMENTED(-init)
   @autoreleasepool {
 
     NSDictionary *prevImages = _images;
-    NSMutableDictionary *images = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *images =
+      self.preserveImages
+      ? _images.mutableCopy
+      : [[NSMutableDictionary alloc] init];
 
     GLRenderData * (^traverseTree) (GLData *data);
     __block __weak GLRenderData * (^weak_traverseTree)(GLData *data);
