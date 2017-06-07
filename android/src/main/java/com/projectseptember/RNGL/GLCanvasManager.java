@@ -52,6 +52,16 @@ public class GLCanvasManager extends SimpleViewManager<GLCanvas> {
         view.setZOrderMediaOverlay(overlay);
     }
 
+    @ReactProp(name = "setZOrderOnTop")
+    public void setZOrderOnTop (GLCanvas view, boolean setZOrderOnTop) {
+        view.setZOrderOnTop(setZOrderOnTop);
+    }
+
+    @ReactProp(name = "backgroundColor")
+    public void setBackgroundColor (GLCanvas view, Integer color) {
+        view.setBackgroundColor(color);
+    }
+
     @ReactProp(name = "pointerEvents")
     public void setPointerEvents(GLCanvas view, @Nullable String pointerEventsStr) {
         if (pointerEventsStr != null) {
