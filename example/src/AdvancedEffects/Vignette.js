@@ -1,6 +1,6 @@
 import React from "react";
 import GL from "gl-react";
-import {Surface} from "gl-react-native";
+import { Surface } from "gl-react-native";
 
 const shaders = GL.Shaders.create({
   imageVignette: {
@@ -38,46 +38,49 @@ void main() {
   }
 });
 
-
 class Vignette extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.onResponderMove = this.onResponderMove.bind(this);
     this.state = {
       finger: [0.5, 0.5]
     };
   }
-  onResponderMove (evt) {
+  onResponderMove(evt) {
     const { width, height } = this.props;
     const { locationX, locationY } = evt.nativeEvent;
-    this.setState({ finger: [locationX/width, 1-locationY/height] });
+    this.setState({ finger: [locationX / width, 1 - locationY / height] });
   }
 
-  render () {
+  render() {
     const { width, height, time, source } = this.props;
     const { finger } = this.state;
-    return <Surface
-      width={width}
-      height={height}
-      backgroundColor="transparent"
-      preload
-      onStartShouldSetResponder={() => true}
-      onMoveShouldSetResponder={() => true}
-      onLoad={() => console.log("Vignette onLoad")}
-      onProgress={e => console.log("Vignette onProgress", e.nativeEvent)}
-      onResponderMove={this.onResponderMove}>
-      <GL.Node
-        shader={shaders.imageVignette}
-        uniforms={{
-          time: time,
-          freq: 10 + 2 * Math.sin(0.7*time),
-          texture: source,
-          amp: 0.05 + Math.max(0, 0.03*Math.cos(time)),
-          moving: 0,
-          finger: finger
-        }}
-      />
-    </Surface>;
+    return (
+      <Surface
+        width={width}
+        height={height}
+        backgroundColor="transparent"
+        setZOrderOnTop
+        preload
+        onStartShouldSetResponder={() => true}
+        onMoveShouldSetResponder={() => true}
+        onLoad={() => console.log("Vignette onLoad")}
+        onProgress={e => console.log("Vignette onProgress", e.nativeEvent)}
+        onResponderMove={this.onResponderMove}
+      >
+        <GL.Node
+          shader={shaders.imageVignette}
+          uniforms={{
+            time: time,
+            freq: 10 + 2 * Math.sin(0.7 * time),
+            texture: source,
+            amp: 0.05 + Math.max(0, 0.03 * Math.cos(time)),
+            moving: 0,
+            finger: finger
+          }}
+        />
+      </Surface>
+    );
   }
 }
 

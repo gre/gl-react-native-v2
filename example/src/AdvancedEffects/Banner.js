@@ -1,6 +1,6 @@
 import React from "react";
 import GL from "gl-react";
-import {Surface} from "gl-react-native";
+import { Surface } from "gl-react-native";
 const shaders = GL.Shaders.create({
   banner: {
     frag: `
@@ -25,13 +25,20 @@ void main( void ) {
 });
 
 class Banner extends React.Component {
-  render () {
+  render() {
     const { width, height, time } = this.props;
-    return <Surface width={width} height={height} backgroundColor="transparent"
-      onLoad={() => console.log("Banner onLoad")}
-      onProgress={e => console.log("Banner onProgress", e.nativeEvent)}>
-      <GL.Node shader={shaders.banner} uniforms={{ time }} />
-    </Surface>;
+    return (
+      <Surface
+        width={width}
+        height={height}
+        backgroundColor="transparent"
+        setZOrderOnTop
+        onLoad={() => console.log("Banner onLoad")}
+        onProgress={e => console.log("Banner onProgress", e.nativeEvent)}
+      >
+        <GL.Node shader={shaders.banner} uniforms={{ time }} />
+      </Surface>
+    );
   }
 }
 
