@@ -1,6 +1,6 @@
 import invariant from "invariant";
 import React, {Component} from "react";
-  import {requireNativeComponent, findNodeHandle} from "react-native";
+import {requireNativeComponent, findNodeHandle, processColor} from "react-native";
 import captureFrame from "./GLCanvas.captureFrame";
 
 const serializeOption = config =>
@@ -114,13 +114,15 @@ class GLCanvas extends Component {
 
   render () {
     const {
-      width, height,
+      width, height, style,
       onLoad, onProgress, eventsThrough,
       ...restProps } = this.props;
+    const { backgroundColor } = style;
 
     return <GLCanvasNative
       ref="native"
       {...restProps}
+      backgroundColor={processColor(backgroundColor)}
       style={{ width, height }}
       onGLLoad={onLoad ? onLoad : null}
       onGLProgress={onProgress ? onProgress : null}
