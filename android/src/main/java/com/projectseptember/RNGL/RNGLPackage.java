@@ -19,8 +19,7 @@ public class RNGLPackage implements ReactPackage {
       modules.add(new RNGLContext(reactApplicationContext));
       return modules;
   }
-
-    @Override
+    
     public List<Class<? extends JavaScriptModule>> createJSModules() {
         return Collections.emptyList();
     }
