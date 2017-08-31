@@ -1,4 +1,4 @@
-**STATUS: project is being rewritten from scratch in https://github.com/gre/gl-react. It will be the next v3. The React Native implementation will soon be available.**
+**This repository hosts the v2 of gl-react. Please also see the v3 at https://github.com/gre/gl-react**
 
 
 **[Gitbook documentation](https://github.com/ProjectSeptemberInc/gl-react/tree/master/docs) / [Github](https://github.com/ProjectSeptemberInc/gl-react-native/) / [gl-react](https://github.com/ProjectSeptemberInc/gl-react/)** / [#gl-react on reactiflux](https://discordapp.com/channels/102860784329052160/106102146109325312)
