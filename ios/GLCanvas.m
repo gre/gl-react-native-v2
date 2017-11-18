@@ -11,7 +11,7 @@
 #import "GLTexture.h"
 #import "GLImage.h"
 #import "GLRenderData.h"
-#import "UIView+React.h"
+#import <React/UIView+React.h>
 
 NSString* imageSourceHash (RCTImageSource *is) {
   return is.request.URL;
