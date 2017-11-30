@@ -265,7 +265,7 @@ public class GLCanvas extends GLSurfaceView
 
     @Override
     public void setBackgroundColor(int color) {
-        super.setBackgroundColor(color);
+        super.setBackgroundColor(color & 0xFFFFFF);
         if (color == Color.TRANSPARENT) {
             this.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         }
