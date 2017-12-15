@@ -38,29 +38,43 @@ public class RNGLContext extends ReactContextBaseJavaModule {
     }
 
     public GLShaderData getShader (Integer id) {
-        return shaders.get(id);
+        GLShaderData data;
+        synchronized (this) {
+            data = shaders.get(id);
+        }
+        return data;
     }
 
     @ReactMethod
     public void addShader (final Integer id, final ReadableMap config, final Callback onCompile) {
         final String frag = config.getString("frag");
         final String name = config.getString("name");
-        shaders.put(id, new GLShaderData(name, STATIC_VERT, frag));
-        if (onCompile != null) {
-            onCompileCallbacks.put(id, onCompile);
+        GLShaderData data = new GLShaderData(name, STATIC_VERT, frag);
+        synchronized (this) {
+            shaders.put(id, data);
+            if (onCompile != null) {
+                onCompileCallbacks.put(id, onCompile);
+            }
         }
     }
 
     @ReactMethod
     public void removeShader (final Integer id) {
-        GLShaderData shader = shaders.remove(id);
+        GLShaderData shader;
+        synchronized (this) {
+            shader = shaders.remove(id);
+        }
         if (shader == null) {
             throw new Error("removeShader("+id+"): shader does not exist");
         }
     }
 
     public void shaderFailedToCompile(Integer id, GLShaderCompilationFailed e) {
-        Callback onCompile = onCompileCallbacks.get(id);
+        Callback onCompile;
+        synchronized (this) {
+            onCompile = onCompileCallbacks.get(id);
+            onCompileCallbacks.remove(id);
+        }
         if (onCompile == null) {
             Log.e("RNGLContext", e.getMessage());
         }
@@ -70,8 +84,11 @@ public class RNGLContext extends ReactContextBaseJavaModule {
     }
 
     public void shaderSucceedToCompile(Integer id, Map<String, Integer> uniformTypes) {
-        Callback onCompile = onCompileCallbacks.get(id);
-        onCompileCallbacks.remove(id);
+        Callback onCompile;
+        synchronized (this) {
+            onCompile = onCompileCallbacks.get(id);
+            onCompileCallbacks.remove(id);
+        }
         if (onCompile != null) {
             WritableMap res = Arguments.createMap();
             WritableMap uniforms = Arguments.createMap();
