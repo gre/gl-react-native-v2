@@ -38,7 +38,7 @@ pod 'RNGL', :path => './node_modules/gl-react-native'
 1. `android/settings.gradle`:: Add the following snippet
 ```gradle
 include ':RNGL'
-project(':RNGL').projectDir = file('../node_modules/gl-react-native/android')
+project(':RNGL').projectDir = file('../node_modules/gl-react-native/lib')
 ```
 2. `android/app/build.gradle`: Add in dependencies block.
 ```gradle
