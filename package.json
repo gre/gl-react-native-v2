@@ -1,6 +1,6 @@
 {
   "name": "gl-react-native",
-  "version": "2.48.0",
+  "version": "2.57.0",
   "description": "OpenGL bindings for react-native to implement complex effects over images and components, in the descriptive VDOM paradigm",
   "repository": {
     "type": "git",
@@ -19,8 +19,8 @@
   "author": "Project September <tech@projectseptember.com>",
   "license": "MIT",
   "peerDependencies": {
-    "react-native": "*",
-    "gl-react": "^2.2.4"
+    "gl-react": "^2.2.4",
+    "react-native": "*"
   },
   "dependencies": {
     "invariant": "2.2.0"
