@@ -9,5 +9,5 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/ProjectSeptemberInc/gl-react-native.git", :tag => "v2.42.1" }
   s.source_files = "ios/*.{h,m}"
   s.license      = "MIT"
-
+  s.dependency "React"
 end
