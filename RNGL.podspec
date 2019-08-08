@@ -10,4 +10,5 @@ Pod::Spec.new do |s|
   s.source_files = "ios/*.{h,m}"
   s.license      = "MIT"
   s.dependency "React"
+  s.dependency 'React-RCTImage'
 end
