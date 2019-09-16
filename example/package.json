@@ -7,12 +7,12 @@
   },
   "dependencies": {
     "crypto": "0.0.3",
-    "gl-react": "2.2.8",
+    "gl-react": "^2.0.0",
     "gl-react-blur": "^1.3.0",
     "gl-react-native": "file:..",
     "glsl-transitions": "^2017.1.10",
-    "react": "15.4.2",
-    "react-native": "0.42.0",
+    "react": "16.8.6",
+    "react-native": "0.60.5",
     "react-native-fs": "github:gre/react-native-fs#rn-40",
     "seedrandom": "gre/seedrandom#released"
   }
