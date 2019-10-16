@@ -80,7 +80,7 @@ RCT_NOT_IMPLEMENTED(-init)
   else {
     // Load the image (without resizing it)
     __weak GLImage *weakSelf = self;
-    _loading = [_bridge.imageLoader loadImageWithURLRequest:source.request
+    _loading = [[_bridge moduleForClass:[RCTImageLoader class]] loadImageWithURLRequest:source.request
                                        size:CGSizeZero
                                       scale:0
                                       clipped:YES
