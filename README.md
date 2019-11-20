@@ -30,7 +30,7 @@ npm i --save gl-react-native
 or if you use Cocapods:
 
 ```ruby
-pod 'RNGL', :path => './node_modules/gl-react-native'
+pod 'RNGL', :path => '../node_modules/gl-react-native'
 ```
 
 **on Android:**
