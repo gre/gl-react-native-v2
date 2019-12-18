@@ -30,5 +30,7 @@ repositories {
 }
 
 dependencies {
-  compile "com.facebook.react:react-native:+"  // From node_modules
+  implementation "com.facebook.react:react-native:+"  // From node_modules
+  implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
+  implementation 'androidx.annotation:annotation:1.0.2'
 }

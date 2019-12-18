@@ -1,6 +1,6 @@
 package com.projectseptember.RNGL;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.imagepipeline.core.DefaultExecutorSupplier;
 import com.facebook.imagepipeline.core.ExecutorSupplier;
